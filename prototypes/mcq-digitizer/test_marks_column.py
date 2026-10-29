@@ -1,6 +1,6 @@
 """Run: python3 -m unittest test_marks_column   (from prototypes/mcq-digitizer)"""
 import unittest
-from extract_mcq import marks_column_total
+from extract_mcq import marks_column_total, marks_without_subtotal
 
 L = lambda text, page, y0, x0, bold=False: {"text": text, "page": page, "y0": y0, "x0": x0, "bold": bold}
 HEADER = [L("Question", 0, 70, 120), L("Answer", 0, 70, 400), L("Marks", 0, 70, 790)]
@@ -33,6 +33,26 @@ class BoldSubtotals(unittest.TestCase):
         self.assertEqual(marks_column_total(self.ROWS, 0, 90, 0, None, bold=False), 3)
     def test_bold_digits_are_the_subtotals(self):
         self.assertEqual(marks_column_total(self.ROWS, 0, 90, 0, None, bold=True), 3)
+
+class CentredHeader(unittest.TestCase):
+    def test_plain_marks_left_of_a_centred_header_still_count(self):
+        header = [L("Marks", 0, 70, 724)]
+        lines = header + [L("1", 0, 100, 703), L("1", 0, 120, 703), L("2", 0, 140, 840, bold=True)]
+        self.assertEqual(marks_column_total(lines, 0, 90, 0, None, bold=False), 2)
+    def test_answer_column_numbers_far_to_the_left_still_do_not(self):
+        header = [L("Marks", 0, 70, 724)]
+        self.assertEqual(marks_column_total(header + [L("3", 0, 100, 400)], 0, 90, 0, None), 0)
+
+class SubtotalsPrintedTwice(unittest.TestCase):
+    def test_section_subtotals_then_the_question_total(self):
+        self.assertEqual(marks_without_subtotal("[1]\n[11]\n[4]\n[1]\n[2]\n[1]\n[1]\n[1]\n[2]\n[1]\n[1]\nTotal\n[26]"), 26)
+    def test_a_plain_list_is_left_alone(self):
+        self.assertIsNone(marks_without_subtotal("[2]\n[3]\n[5]\n[1]"))
+    def test_no_brackets(self):
+        self.assertIsNone(marks_without_subtotal("no marks here"))
+    def test_two_marks_and_a_half_bracket_is_only_a_candidate(self):
+        # [2] [1] [1]: the 2 is half of 4, so it reads as a total here; the paper-level check (sum 40) is what accepts or refuses it
+        self.assertEqual(marks_without_subtotal("[2] [1] [1]"), 2)
 
 if __name__ == "__main__":
     unittest.main()

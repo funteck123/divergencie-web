@@ -2919,10 +2919,19 @@ def marks_from_text(text):
     return max(total, printed[-1]) if printed and printed[-1] > total else total
 
 
+def marks_without_subtotal(text):
+    """Marks of a block that prints a bracketed subtotal per section AND a bracketed total for the question (2009 to 2010 Chemistry Paper 3 mark
+    schemes: [1] [11] [4] ... then [26], where 26 is the sum of the ones before it), so the plain bracket sum counts every mark twice.
+    When one bracket equals exactly half of all of them, that bracket is the question's total. Returns None when no bracket does."""
+    vals = [int(m) for m in re.findall(r"\[(\d+)\]", text or "")]
+    total = sum(vals)
+    return total // 2 if total and total % 2 == 0 and total // 2 in vals else None
+
+
 def marks_column_total(lines, page_start, y_start, page_end, y_end, bold=None):
     """Marks of one mark scheme block read from a Question | Answer | Marks TABLE whose marks are a bare number in the last column
     (Chemistry and Biology 9701 and 9700 Paper 3, TKT-0301 defect 1), with no [N] brackets anywhere. A page's Marks column is found from its
-    own "Marks" header cell; only a lone 1 to 2 digit number at or right of that header counts, so a numbered rubric list in the answer column never does.
+    own "Marks" header cell (whose text is centred in a wide cell, so plain per-point marks can sit up to 60 pt left of it); only a lone 1 to 2 digit number there or right of it counts, so a numbered rubric list in the answer column never does.
     `bold` tells the two layouts apart: older Chemistry schemes print a mark against every point AND a bold running subtotal per sub-question, so
     summing every digit counts twice (None = every digit, False = only the plain digits, True = only the bold ones). Returns 0 when the block's pages have no such header."""
     header_x = {l["page"]: l["x0"] for l in lines if l["text"].strip().lower() == "marks"}
@@ -2934,7 +2943,7 @@ def marks_column_total(lines, page_start, y_start, page_end, y_end, bold=None):
         if pos < (page_start, y_start) or l["page"] > page_end or (y_end is not None and pos >= (page_end, y_end)):
             continue
         hx = header_x.get(l["page"])
-        if hx is not None and re.fullmatch(r"\d{1,2}", l["text"].strip()) and l["x0"] >= hx - 6 and (bold is None or bool(l.get("bold")) == bold):
+        if hx is not None and re.fullmatch(r"\d{1,2}", l["text"].strip()) and l["x0"] >= hx - 60 and (bold is None or bool(l.get("bold")) == bold):
             total += int(l["text"].strip())
     return total
 
@@ -3028,12 +3037,18 @@ def parse_structured(pdf_path, subject=None, component=None, only_numbers=None, 
             "corrupted": _looks_garbled(text),
         })
     doc.close()
-    if column_marks and blocks and not all(b["marks"] for b in blocks):
-        for bold in (None, False, True):
-            cols = [b["marks"] or marks_column_total(lines, *r, bold=bold) for b, r in zip(blocks, ranges)]
-            if sum(cols) == column_marks:
-                for b, c in zip(blocks, cols): b["marks"] = c
-                break
+    if column_marks and blocks and sum(b["marks"] for b in blocks) != column_marks:
+        # Every reading below is kept only when the whole paper then adds up to the printed total. Otherwise the marks stay as they were.
+        for halve in (False, True):
+            base = [(marks_without_subtotal(b["text"]) or b["marks"]) if halve else b["marks"] for b in blocks]
+            for bold in (None, False, True):
+                cols = [m or marks_column_total(lines, *r, bold=bold) for m, r in zip(base, ranges)]
+                if sum(cols) == column_marks:
+                    for b, c in zip(blocks, cols): b["marks"] = c
+                    break
+            else:
+                continue
+            break
     return blocks
 
 
