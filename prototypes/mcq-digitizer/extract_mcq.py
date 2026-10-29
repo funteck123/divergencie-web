@@ -2971,7 +2971,7 @@ def marks_column_total(lines, page_start, y_start, page_end, y_end, bold=None, s
     return total
 
 
-def parse_structured(pdf_path, subject=None, component=None, only_numbers=None, column_marks=False):
+def parse_structured(pdf_path, subject=None, component=None, only_numbers=None, column_marks=False, tolerant_text=False):
     """One image + one text block per question/answer block, cropped
     exactly like a real MCQ question (reuses render_question_image) but
     with no option-letter detection or answer resolution at all -- this
@@ -2988,6 +2988,8 @@ def parse_structured(pdf_path, subject=None, component=None, only_numbers=None, 
     pick a subject/component-specific detector chain instead of the
     universal one -- see STRUCTURED_CHAIN_BY_SUBJECT_COMPONENT above.
 
+    `tolerant_text` (mark schemes only, TKT-0301 defect 3): once the marks are final, the block's text is read again with its start and end moved up 4 pt, so the
+    row printed on the question's own heading line (a fraction of a point above the heading) is part of its question, not cut off the start of it.
     `column_marks` (mark schemes only, TKT-0301): the paper's printed total (40 for Paper 3). Blocks with no [N] brackets then take their marks from the
     table's bare Marks column, but only with a reading (every digit, the plain digits, or the bold ones) whose paper total equals this number; otherwise they stay 0."""
     doc = fitz.open(pdf_path)
@@ -3087,6 +3089,9 @@ def parse_structured(pdf_path, subject=None, component=None, only_numbers=None, 
         _ = (accept([(sk, bo, False, False, False) for sk, bo in combos]) or accept([(sk, bo, True, False, False) for sk, bo in combos])
              or accept([(sk, bo, cm, True, False) for cm in (False, True) for sk, bo in combos])
              or accept([(sk, bo, cm, tol, True) for tol in (False, True) for cm in (False, True) for sk, bo in combos]))
+    if tolerant_text:
+        for b, r in zip(blocks, ranges):
+            b["text"] = extract_block_text(lines, r[0], r[1] - 4, r[2], None if r[3] is None else r[3] - 4)
     return blocks
 
 
@@ -3741,12 +3746,12 @@ def main():
         component = sys.argv[5] if len(sys.argv) == 6 else None
         ms_column_total = PAPER3_TOTAL_MARKS if component and "Advanced Practical Skills" in component else 0   # TKT-0301
         questions = parse_structured(qp_path, subject, component)
-        answers = parse_structured(ms_path, subject, component, column_marks=ms_column_total)
+        answers = parse_structured(ms_path, subject, component, column_marks=ms_column_total, tolerant_text=bool(ms_column_total))
         if component and "Advanced Practical Skills" in component:
             common = {str(q["questionNumber"]) for q in questions} & {str(a["questionNumber"]) for a in answers}
             if common and (len(common) < len(questions) or len(common) < len(answers)):
                 questions = parse_structured(qp_path, subject, component, common)
-                answers = parse_structured(ms_path, subject, component, common, column_marks=ms_column_total)
+                answers = parse_structured(ms_path, subject, component, common, column_marks=ms_column_total, tolerant_text=bool(ms_column_total))
             questions = apply_equal_marks(questions, _cover_text(qp_path))
         print(json.dumps({"questions": questions, "answers": answers}))
         return
