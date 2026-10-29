@@ -2941,19 +2941,23 @@ def marks_without_subtotal(text):
     return total // 2 if total and total % 2 == 0 and total // 2 in vals else None
 
 
-def marks_column_total(lines, page_start, y_start, page_end, y_end, bold=None):
+def marks_column_total(lines, page_start, y_start, page_end, y_end, bold=None, skip_total_rows=False):
     """Marks of one mark scheme block read from a Question | Answer | Marks TABLE whose marks are a bare number in the last column
     (Chemistry and Biology 9701 and 9700 Paper 3, TKT-0301 defect 1), with no [N] brackets anywhere. A page's Marks column is found from its
     own "Marks" header cell (whose text is centred in a wide cell, so plain per-point marks can sit up to 60 pt left of it); only a lone 1 to 2 digit number there or right of it counts, so a numbered rubric list in the answer column never does.
     `bold` tells the two layouts apart: older Chemistry schemes print a mark against every point AND a bold running subtotal per sub-question, so
-    summing every digit counts twice (None = every digit, False = only the plain digits, True = only the bold ones). Returns 0 when the block's pages have no such header."""
+    summing every digit counts twice (None = every digit, False = only the plain digits, True = only the bold ones). `skip_total_rows` leaves out the number on
+    a row labelled "Total" (2017 and later Physics tables print "Total: 20" under each question, which is the sum of the rows above it). Returns 0 when the block's pages have no such header."""
     header_x = {l["page"]: l["x0"] for l in lines if l["text"].strip().lower() == "marks"}
     if not header_x:
         return 0
     total = 0
+    total_rows = [(l["page"], l["y0"]) for l in lines if skip_total_rows and re.match(r"total\b", l["text"].strip(), re.IGNORECASE)]
     for l in lines:
         pos = (l["page"], l["y0"])
         if pos < (page_start, y_start) or l["page"] > page_end or (y_end is not None and pos >= (page_end, y_end)):
+            continue
+        if any(p == l["page"] and abs(y - l["y0"]) < 4 for p, y in total_rows):
             continue
         hx = header_x.get(l["page"])
         if hx is not None and re.fullmatch(r"\d{1,2}", l["text"].strip()) and l["x0"] >= hx - 60 and (bold is None or bool(l.get("bold")) == bold):
@@ -3063,8 +3067,8 @@ def parse_structured(pdf_path, subject=None, component=None, only_numbers=None, 
                    lambda b, r: marks_from_text(tolerant(r)) + max_marks_total(b["text"]))
         for reader in readers:
             base = [reader(b, r) for b, r in zip(blocks, ranges)]
-            for bold in (None, False, True):
-                cols = [m or marks_column_total(lines, *r, bold=bold) for m, r in zip(base, ranges)]
+            for skip, bold in ((False, None), (False, False), (False, True), (True, None), (True, False), (True, True)):
+                cols = [m or marks_column_total(lines, *r, bold=bold, skip_total_rows=skip) for m, r in zip(base, ranges)]
                 if sum(cols) == column_marks:
                     for b, c in zip(blocks, cols): b["marks"] = c
                     break

@@ -42,6 +42,13 @@ class PrintedTotal(unittest.TestCase):
     def test_none_when_absent(self):
         self.assertIsNone(printed_total_mark("[1] [2]"))
 
+class TotalRows(unittest.TestCase):
+    ROWS = HEADER + [L("1", 0, 100, 790, bold=True), L("5", 0, 130, 790, bold=True), L("Total:", 0, 200, 700, bold=True), L("6", 0, 200, 790, bold=True)]
+    def test_the_total_row_is_counted_unless_skipped(self):
+        self.assertEqual(marks_column_total(self.ROWS, 0, 90, 0, None), 12)
+    def test_skipping_total_rows_leaves_the_real_marks(self):
+        self.assertEqual(marks_column_total(self.ROWS, 0, 90, 0, None, skip_total_rows=True), 6)
+
 class MaxMarks(unittest.TestCase):
     def test_limitations_and_improvements_columns(self):
         self.assertEqual(max_marks_total("(f)\n(i) Limitations (4 max.)\n(ii) Improvements (4 max.)"), 8)
