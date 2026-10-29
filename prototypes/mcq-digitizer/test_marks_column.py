@@ -42,6 +42,13 @@ class PrintedTotal(unittest.TestCase):
     def test_none_when_absent(self):
         self.assertIsNone(printed_total_mark("[1] [2]"))
 
+class TotalsOnly(unittest.TestCase):
+    ROWS = HEADER + [L("1", 0, 100, 800), L("1+1", 0, 120, 800), L("Total", 0, 200, 700, bold=True), L("7", 0, 200, 810, bold=True)]
+    def test_only_the_number_on_the_total_row_counts(self):
+        self.assertEqual(marks_column_total(self.ROWS, 0, 90, 0, None, totals_only=True), 7)
+    def test_skip_and_only_are_opposites(self):
+        self.assertEqual(marks_column_total(self.ROWS, 0, 90, 0, None, skip_total_rows=True), 1)
+
 class MaxCells(unittest.TestCase):
     ROWS = HEADER + [L("5", 0, 100, 800, bold=True), L("4 max", 0, 130, 790, bold=True)]
     def test_a_max_cell_is_ignored_by_default(self):
