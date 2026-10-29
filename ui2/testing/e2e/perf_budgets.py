@@ -10,12 +10,15 @@ IMG = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAI
 TIMED = """async (act) => { const t0 = performance.now(); act(); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); return performance.now() - t0; }"""
 
 def js_kb(s, path):
-    sizes = {}
+    """Gzipped JavaScript the page needs to load: what arrives before the browser's `load` event. Code fetched afterwards on idle
+    (the Sentry SDK, loaded on demand since TKT-0385) is not part of getting the page ready, so it is not counted."""
+    sizes = {}; loaded = {"done": False}
     def on_resp(r):
+        if loaded["done"]: return
         if r.url.endswith(".js") or ".js?" in r.url:
             try: sizes[r.url] = len(gzip.compress(r.body()))
             except Exception: pass
-    s.page.on("response", on_resp)
+    s.page.on("response", on_resp); s.page.on("load", lambda *_: loaded.update(done=True))
     s.goto(path)
     s.page.remove_listener("response", on_resp)
     return round(sum(sizes.values()) / 1024)

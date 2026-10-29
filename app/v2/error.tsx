@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import * as Sentry from "@sentry/nextjs";
 import { Button } from "@/ui2/components/Button";
 import { roleHomePath } from "@/lib/client";
 
@@ -12,9 +11,13 @@ import { roleHomePath } from "@/lib/client";
 export default function V2Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   const [leaving, setLeaving] = useState(false);
   useEffect(() => {
-    Sentry.withScope((scope) => {
-      scope.setTag("ui", "v2");
-      Sentry.captureException(error);
+    // The SDK is loaded on demand (instrumentation-client.js, TKT-0385), so it is not in this route's JavaScript.
+    const load = (window as unknown as { __dcSentry?: () => Promise<typeof import("@sentry/nextjs")> }).__dcSentry ?? (() => import("@sentry/nextjs"));
+    void load().then((Sentry) => {
+      Sentry.withScope((scope) => {
+        scope.setTag("ui", "v2");
+        Sentry.captureException(error);
+      });
     });
   }, [error]);
 
