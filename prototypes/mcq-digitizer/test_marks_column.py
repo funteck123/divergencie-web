@@ -1,6 +1,6 @@
 """Run: python3 -m unittest test_marks_column   (from prototypes/mcq-digitizer)"""
 import unittest
-from extract_mcq import marks_column_total, marks_without_subtotal
+from extract_mcq import marks_column_total, marks_without_subtotal, printed_total_mark
 
 L = lambda text, page, y0, x0, bold=False: {"text": text, "page": page, "y0": y0, "x0": x0, "bold": bold}
 HEADER = [L("Question", 0, 70, 120), L("Answer", 0, 70, 400), L("Marks", 0, 70, 790)]
@@ -33,6 +33,14 @@ class BoldSubtotals(unittest.TestCase):
         self.assertEqual(marks_column_total(self.ROWS, 0, 90, 0, None, bold=False), 3)
     def test_bold_digits_are_the_subtotals(self):
         self.assertEqual(marks_column_total(self.ROWS, 0, 90, 0, None, bold=True), 3)
+
+class PrintedTotal(unittest.TestCase):
+    def test_reads_the_printed_total(self):
+        self.assertEqual(printed_total_mark("[1]\n[1]\n[Total: 20]"), 20)
+    def test_the_last_one_wins_and_spacing_is_free(self):
+        self.assertEqual(printed_total_mark("[Total: 5]\n[ total  20 marks ]"), 20)
+    def test_none_when_absent(self):
+        self.assertIsNone(printed_total_mark("[1] [2]"))
 
 class CentredHeader(unittest.TestCase):
     def test_plain_marks_left_of_a_centred_header_still_count(self):

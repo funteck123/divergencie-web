@@ -2919,6 +2919,13 @@ def marks_from_text(text):
     return max(total, printed[-1]) if printed and printed[-1] > total else total
 
 
+def printed_total_mark(text):
+    """The question's own printed "[Total: N]", or None. marks_from_text lets a bracket sum that is larger than this win (right for 9701_s14_53, where a mark
+    sits in a graph the text layer cannot read); some Physics schemes (2009 to 2012) instead add a row bracket too many, and then the printed total is the truth."""
+    printed = [int(m) for m in re.findall(r'\[\s*Total\s*:?\s*(\d+)\s*(?:marks?)?\s*\]', text or "", re.IGNORECASE)]
+    return printed[-1] if printed else None
+
+
 def marks_without_subtotal(text):
     """Marks of a block that prints a bracketed subtotal per section AND a bracketed total for the question (2009 to 2010 Chemistry Paper 3 mark
     schemes: [1] [11] [4] ... then [26], where 26 is the sum of the ones before it), so the plain bracket sum counts every mark twice.
@@ -3039,8 +3046,9 @@ def parse_structured(pdf_path, subject=None, component=None, only_numbers=None, 
     doc.close()
     if column_marks and blocks and sum(b["marks"] for b in blocks) != column_marks:
         # Every reading below is kept only when the whole paper then adds up to the printed total. Otherwise the marks stay as they were.
-        for halve in (False, True):
-            base = [(marks_without_subtotal(b["text"]) or b["marks"]) if halve else b["marks"] for b in blocks]
+        readers = (lambda b: b["marks"], lambda b: printed_total_mark(b["text"]) or b["marks"], lambda b: marks_without_subtotal(b["text"]) or b["marks"])
+        for reader in readers:
+            base = [reader(b) for b in blocks]
             for bold in (None, False, True):
                 cols = [m or marks_column_total(lines, *r, bold=bold) for m, r in zip(base, ranges)]
                 if sum(cols) == column_marks:
