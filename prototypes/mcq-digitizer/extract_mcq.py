@@ -2919,7 +2919,27 @@ def marks_from_text(text):
     return max(total, printed[-1]) if printed and printed[-1] > total else total
 
 
-def parse_structured(pdf_path, subject=None, component=None, only_numbers=None):
+def marks_column_total(lines, page_start, y_start, page_end, y_end, bold=None):
+    """Marks of one mark scheme block read from a Question | Answer | Marks TABLE whose marks are a bare number in the last column
+    (Chemistry and Biology 9701 and 9700 Paper 3, TKT-0301 defect 1), with no [N] brackets anywhere. A page's Marks column is found from its
+    own "Marks" header cell; only a lone 1 to 2 digit number at or right of that header counts, so a numbered rubric list in the answer column never does.
+    `bold` tells the two layouts apart: older Chemistry schemes print a mark against every point AND a bold running subtotal per sub-question, so
+    summing every digit counts twice (None = every digit, False = only the plain digits, True = only the bold ones). Returns 0 when the block's pages have no such header."""
+    header_x = {l["page"]: l["x0"] for l in lines if l["text"].strip().lower() == "marks"}
+    if not header_x:
+        return 0
+    total = 0
+    for l in lines:
+        pos = (l["page"], l["y0"])
+        if pos < (page_start, y_start) or l["page"] > page_end or (y_end is not None and pos >= (page_end, y_end)):
+            continue
+        hx = header_x.get(l["page"])
+        if hx is not None and re.fullmatch(r"\d{1,2}", l["text"].strip()) and l["x0"] >= hx - 6 and (bold is None or bool(l.get("bold")) == bold):
+            total += int(l["text"].strip())
+    return total
+
+
+def parse_structured(pdf_path, subject=None, component=None, only_numbers=None, column_marks=False):
     """One image + one text block per question/answer block, cropped
     exactly like a real MCQ question (reuses render_question_image) but
     with no option-letter detection or answer resolution at all -- this
@@ -2934,7 +2954,10 @@ def parse_structured(pdf_path, subject=None, component=None, only_numbers=None):
     `subject`/`component` are optional real metadata (from
     yearly-papers.json, or a topical paper's own library entry) used to
     pick a subject/component-specific detector chain instead of the
-    universal one -- see STRUCTURED_CHAIN_BY_SUBJECT_COMPONENT above."""
+    universal one -- see STRUCTURED_CHAIN_BY_SUBJECT_COMPONENT above.
+
+    `column_marks` (mark schemes only, TKT-0301): the paper's printed total (40 for Paper 3). Blocks with no [N] brackets then take their marks from the
+    table's bare Marks column, but only with a reading (every digit, the plain digits, or the bold ones) whose paper total equals this number; otherwise they stay 0."""
     doc = fitz.open(pdf_path)
     lines = extract_lines(doc)
     chain = STRUCTURED_CHAIN_BY_SUBJECT_COMPONENT.get((subject, component), DEFAULT_STRUCTURED_CHAIN)
@@ -2966,6 +2989,7 @@ def parse_structured(pdf_path, subject=None, component=None, only_numbers=None):
     if only_numbers:
         starts = [s for s in starts if str(s["number"]) in only_numbers]
     blocks = []
+    ranges = []
     for i, s in enumerate(starts):
         # Two consecutive parents can share the EXACT same (page, y0) --
         # confirmed real, English 0510 Reading & Writing MS: the two
@@ -2995,6 +3019,7 @@ def parse_structured(pdf_path, subject=None, component=None, only_numbers=None):
         image_b64 = "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii")
         text = extract_block_text(lines, s["page"], s["y0"], end_page, end_y)
         marks = marks_from_text(text)
+        ranges.append((s["page"], s["y0"], end_page, end_y))
         blocks.append({
             "questionNumber": s["number"],
             "image": image_b64,
@@ -3003,6 +3028,12 @@ def parse_structured(pdf_path, subject=None, component=None, only_numbers=None):
             "corrupted": _looks_garbled(text),
         })
     doc.close()
+    if column_marks and blocks and not all(b["marks"] for b in blocks):
+        for bold in (None, False, True):
+            cols = [b["marks"] or marks_column_total(lines, *r, bold=bold) for b, r in zip(blocks, ranges)]
+            if sum(cols) == column_marks:
+                for b, c in zip(blocks, cols): b["marks"] = c
+                break
     return blocks
 
 
@@ -3655,13 +3686,14 @@ def main():
         # this existed.
         subject = sys.argv[4] if len(sys.argv) == 6 else None
         component = sys.argv[5] if len(sys.argv) == 6 else None
+        ms_column_total = PAPER3_TOTAL_MARKS if component and "Advanced Practical Skills" in component else 0   # TKT-0301
         questions = parse_structured(qp_path, subject, component)
-        answers = parse_structured(ms_path, subject, component)
+        answers = parse_structured(ms_path, subject, component, column_marks=ms_column_total)
         if component and "Advanced Practical Skills" in component:
             common = {str(q["questionNumber"]) for q in questions} & {str(a["questionNumber"]) for a in answers}
             if common and (len(common) < len(questions) or len(common) < len(answers)):
                 questions = parse_structured(qp_path, subject, component, common)
-                answers = parse_structured(ms_path, subject, component, common)
+                answers = parse_structured(ms_path, subject, component, common, column_marks=ms_column_total)
             questions = apply_equal_marks(questions, _cover_text(qp_path))
         print(json.dumps({"questions": questions, "answers": answers}))
         return
