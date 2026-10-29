@@ -2941,14 +2941,16 @@ def marks_without_subtotal(text):
     return total // 2 if total and total % 2 == 0 and total // 2 in vals else None
 
 
-def marks_column_total(lines, page_start, y_start, page_end, y_end, bold=None, skip_total_rows=False, count_max=False):
+def marks_column_total(lines, page_start, y_start, page_end, y_end, bold=None, skip_total_rows=False, count_max=False, lead_digit=False):
     """Marks of one mark scheme block read from a Question | Answer | Marks TABLE whose marks are a bare number in the last column
     (Chemistry and Biology 9701 and 9700 Paper 3, TKT-0301 defect 1), with no [N] brackets anywhere. A page's Marks column is found from its
     own "Marks" header cell (whose text is centred in a wide cell, so plain per-point marks can sit up to 60 pt left of it); only a lone 1 to 2 digit number there or right of it counts, so a numbered rubric list in the answer column never does.
     `bold` tells the two layouts apart: older Chemistry schemes print a mark against every point AND a bold running subtotal per sub-question, so
     summing every digit counts twice (None = every digit, False = only the plain digits, True = only the bold ones). `skip_total_rows` leaves out the number on
     a row labelled "Total" (2017 and later Physics tables print "Total: 20" under each question, which is the sum of the rows above it). `count_max` also reads a
-    cell such as "4 max" as 4 (2018 and later Physics planning tables). Returns 0 when the block's pages have no such header."""
+    cell such as "4 max" as 4 (2018 and later Physics planning tables). `lead_digit` reads a BOLD line that starts with a number followed by text, inside the marks
+    column, as that number (2026 Physics schemes put Marks before a Guidance column and the text layer joins the mark to the first Guidance line: "1 If OOR check ...").
+    Returns 0 when the block's pages have no such header."""
     header_x = {l["page"]: l["x0"] for l in lines if l["text"].strip().lower() in ("marks", "mark")}   # 2017 Physics schemes head the column "Mark"
     if not header_x:
         return 0
@@ -2962,6 +2964,8 @@ def marks_column_total(lines, page_start, y_start, page_end, y_end, bold=None, s
             continue
         hx = header_x.get(l["page"])
         cell = re.fullmatch(r"(\d{1,2})(?:\s*max\.?)?" if count_max else r"(\d{1,2})", l["text"].strip(), re.IGNORECASE)
+        if lead_digit and not cell and hx is not None and l.get("bold") and hx - 60 <= l["x0"] <= hx + 45:
+            cell = re.match(r"(\d{1,2})\s+\S", l["text"].strip())
         if hx is not None and cell and l["x0"] >= hx - 60 and (bold is None or bool(l.get("bold")) == bold):
             total += int(cell.group(1))
     return total
@@ -3070,9 +3074,9 @@ def parse_structured(pdf_path, subject=None, component=None, only_numbers=None, 
         def accept(attempts):
             for reader in readers:
                 base = [reader(b, r) for b, r in zip(blocks, ranges)]
-                for skip, bold, cm, tol in attempts:
+                for skip, bold, cm, tol, ld in attempts:
                     rs = [(r[0], r[1] - 4, r[2], None if r[3] is None else r[3] - 4) for r in ranges] if tol else ranges
-                    cols = [m or marks_column_total(lines, *r, bold=bold, skip_total_rows=skip, count_max=cm) for m, r in zip(base, rs)]
+                    cols = [m or marks_column_total(lines, *r, bold=bold, skip_total_rows=skip, count_max=cm, lead_digit=ld) for m, r in zip(base, rs)]
                     if sum(cols) == column_marks:
                         for b, c in zip(blocks, cols): b["marks"] = c
                         return True
@@ -3080,7 +3084,9 @@ def parse_structured(pdf_path, subject=None, component=None, only_numbers=None, 
         # Three rounds, each only when every earlier one failed, so a paper already read correctly keeps that reading: the original attempts; then a "N max"
         # cell counted as N; then ranges moved up 4 pt (a mark printed on its heading's own row sits a hair above the heading).
         combos = [(skip, bold) for skip in (False, True) for bold in (None, False, True)]
-        _ = accept([(sk, bo, False, False) for sk, bo in combos]) or accept([(sk, bo, True, False) for sk, bo in combos]) or accept([(sk, bo, cm, True) for cm in (False, True) for sk, bo in combos])
+        _ = (accept([(sk, bo, False, False, False) for sk, bo in combos]) or accept([(sk, bo, True, False, False) for sk, bo in combos])
+             or accept([(sk, bo, cm, True, False) for cm in (False, True) for sk, bo in combos])
+             or accept([(sk, bo, cm, tol, True) for tol in (False, True) for cm in (False, True) for sk, bo in combos]))
     return blocks
 
 

@@ -51,6 +51,15 @@ class MaxCells(unittest.TestCase):
     def test_older_chemistry_cap_cells_with_a_second_number_are_still_ignored(self):
         self.assertEqual(marks_column_total(HEADER + [L("4 max 3", 0, 100, 800, bold=True)], 0, 90, 0, None, count_max=True), 0)
 
+class LeadDigit(unittest.TestCase):
+    LINES = [L("Marks", 0, 56, 435, bold=True), L("1 If OOR check SV 0.050 V.", 0, 80, 462, bold=True), L("Allow negative values of V.", 0, 94, 479), L("3 Record the total number of sets", 0, 230, 462, bold=True), L("2 marks for the table", 0, 300, 479)]
+    def test_off_by_default(self):
+        self.assertEqual(marks_column_total(self.LINES, 0, 60, 0, None), 0)
+    def test_a_bold_line_starting_with_a_number_is_its_mark(self):
+        self.assertEqual(marks_column_total(self.LINES, 0, 60, 0, None, lead_digit=True), 4)
+    def test_a_plain_guidance_line_that_starts_with_a_number_is_not(self):
+        self.assertEqual(marks_column_total(self.LINES[:1] + [self.LINES[4]], 0, 60, 0, None, lead_digit=True), 0)
+
 class SingularHeader(unittest.TestCase):
     def test_a_column_headed_mark_counts(self):
         lines = [L("Mark", 0, 70, 752), L("1", 0, 100, 785, bold=True), L("5", 0, 130, 785, bold=True)]
