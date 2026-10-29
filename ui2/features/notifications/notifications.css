@@ -1,0 +1,8 @@
+/* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  .u2-notes { display: grid; gap: var(--u2-space-3); }
+  .u2-notes h1, .u2-notes p { margin: 0; }
+  .u2-notes__chips { display: flex; flex-wrap: wrap; gap: var(--u2-space-2); margin: 0; padding: 0; list-style: none; }
+  .u2-notes__chip { padding: var(--u2-space-2) var(--u2-space-3); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); }
+  .u2-notes__card { display: grid; gap: var(--u2-space-1); justify-items: start; overflow-wrap: anywhere; }
+}
