@@ -79,6 +79,7 @@ function DriveFolderGrid({ link }) {
 
   useEffect(() => {
     if (!isDriveFolder) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- the list is cleared before the new folder is fetched; this is the loading reset
     setFiles(null);
     setError("");
     api(`/api/resources/drive-folder?link=${encodeURIComponent(link)}`)

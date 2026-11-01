@@ -117,6 +117,7 @@ function MockPageDisabled() {
     if (view === 'exam' && !isPaused && timeLeft > 0) {
       timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
     } else if (timeLeft === 0 && view === 'exam') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- the exam ends when the timer reaches zero
       submitExam();
     }
     return () => clearInterval(timer);

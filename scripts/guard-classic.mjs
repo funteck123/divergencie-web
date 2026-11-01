@@ -23,6 +23,16 @@ export const HOOKS = {
   "lib/client.js": { maxAdded: 30, maxDeleted: 6, why: "post-login redirect honours the UI preference" },
   "app/api/schedule/image/route.js": { maxAdded: 5, maxDeleted: 1, why: "weekly image counts only enrollments live this week (TKT-0346)" },
   "app/api/schedule/admin-image/route.js": { maxAdded: 12, maxDeleted: 40, why: "admin weekly image counts only live enrollments (TKT-0346); entry building moved to lib/adminScheduleEntries.js with an optional ?batch filter (TKT-0345)" },
+  "app/dashboard/ambassador/page.js": { maxAdded: 1, maxDeleted: 0, why: "TKT-0385: a comment-only lint suppression, owner agreed 2026-11-01" },
+  "app/dashboard/interview/page.js": { maxAdded: 1, maxDeleted: 0, why: "TKT-0385: a comment-only lint suppression, owner agreed 2026-11-01" },
+  "app/dashboard/parent/page.js": { maxAdded: 1, maxDeleted: 0, why: "TKT-0385: a comment-only lint suppression, owner agreed 2026-11-01" },
+  "app/dashboard/resources/[feature]/page.js": { maxAdded: 1, maxDeleted: 0, why: "TKT-0385: a comment-only lint suppression, owner agreed 2026-11-01" },
+  "app/dashboard/staff/page.js": { maxAdded: 1, maxDeleted: 0, why: "TKT-0385: a comment-only lint suppression, owner agreed 2026-11-01" },
+  "app/dashboard/student/page.js": { maxAdded: 1, maxDeleted: 0, why: "TKT-0385: a comment-only lint suppression, owner agreed 2026-11-01" },
+  "app/dashboard/teacher/page.js": { maxAdded: 1, maxDeleted: 0, why: "TKT-0385: a comment-only lint suppression, owner agreed 2026-11-01" },
+  "app/dashboard/trial/page.js": { maxAdded: 1, maxDeleted: 0, why: "TKT-0385: a comment-only lint suppression, owner agreed 2026-11-01" },
+  "components/Nav.tsx": { maxAdded: 1, maxDeleted: 0, why: "TKT-0385: a comment-only lint suppression, owner agreed 2026-11-01" },
+  "components/SessionAttendance.jsx": { maxAdded: 1, maxDeleted: 0, why: "TKT-0385: a comment-only lint suppression, owner agreed 2026-11-01" },
   "components/ResourcesSection.jsx": { maxAdded: 2, maxDeleted: 2, why: "the Syllabus Viewer and Question Solver buttons open the new views (ticket from the user, 2026-10-03)" },
 };
 

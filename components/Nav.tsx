@@ -13,6 +13,7 @@ export default function Nav() {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- the mounted flag is the standard way to avoid a hydration mismatch
     setMounted(true);
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);

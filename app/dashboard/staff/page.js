@@ -35,6 +35,7 @@ function Body({ user }) {
     setData(bundle);
   }
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- load() sets state after its awaited request, not synchronously
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

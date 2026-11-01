@@ -103,6 +103,7 @@ export default function PricingPage() {
 
   useEffect(() => {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- the time zone exists only in the browser; a lazy initial value would differ from the server render
     if (tz.includes("Kuala_Lumpur")) setCurrency({ symbol: "RM", code: "MYR", data: PRICING_DATA.MYR });
     else if (tz.includes("Asia/Kolkata")) setCurrency({ symbol: "₹", code: "INR", data: PRICING_DATA.INR });
     else if (tz.includes("Riyadh")) setCurrency({ symbol: "SR", code: "SAR", data: PRICING_DATA.SAR });
