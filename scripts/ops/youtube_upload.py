@@ -31,16 +31,17 @@ def drive_meta(file_id):
 CHUNK = 32 * 256 * 1024  # 8 MB; YouTube wants a multiple of 256 KB for every chunk but the last
 
 
-def stream(file_id, size, title, description):
-    """Drive -> YouTube in memory: one chunk is read from Drive and sent on, so no video is written to disk. Returns YouTube's reply."""
+def stream(file_id, size, title, description, local_path=None):
+    """Drive -> YouTube in memory: one chunk is read from Drive and sent on, so no video is written to disk. Returns YouTube's reply.
+    With `local_path` the video is read from that file instead (post-ready copies on the D drive)."""
     body = {"snippet": {"title": title[:100], "description": description, "categoryId": "27"},
             "status": {"privacyStatus": "unlisted", "selfDeclaredMadeForKids": False}}
     init = urllib.request.Request("https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status", data=json.dumps(body).encode(), method="POST",
                                   headers={"Authorization": "Bearer " + token(), "Content-Type": "application/json; charset=UTF-8",
                                            "X-Upload-Content-Length": str(size), "X-Upload-Content-Type": "video/mp4"})
     session = urllib.request.urlopen(init, timeout=60).headers["Location"]
-    src = urllib.request.urlopen(urllib.request.Request(f"https://www.googleapis.com/drive/v3/files/{file_id}?alt=media&supportsAllDrives=true",
-                                                        headers={"Authorization": "Bearer " + token()}), timeout=600)
+    src = open(local_path, "rb") if local_path else urllib.request.urlopen(urllib.request.Request(f"https://www.googleapis.com/drive/v3/files/{file_id}?alt=media&supportsAllDrives=true",
+                                                                                                    headers={"Authorization": "Bearer " + token()}), timeout=600)
     sent = 0
     while sent < size:
         want = min(CHUNK, size - sent)
