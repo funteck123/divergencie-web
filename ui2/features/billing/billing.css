@@ -16,11 +16,11 @@
   .u2-lineitems { width: 100%; border-collapse: collapse; font-size: var(--u2-text-sm); }
   .u2-lineitems th, .u2-lineitems td { padding: var(--u2-space-1) var(--u2-space-2); text-align: left; border-bottom: 1px solid var(--u2-color-border); }
   .u2-lineitems .u2-money input { width: 88px; }
-  @media (max-width: 1023px) { .u2-split { grid-template-columns: 1fr; } .u2-lanes { grid-template-columns: repeat(4, 260px); } }}
-
-/* Status and Paid cells: the badge and its date sit on one line, date muted and never wrapped (TKT-0404). */
-.u2-statuscell { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 2px var(--u2-space-2); max-width: 100%; }
-.u2-statuscell > * { white-space: nowrap; }
-.u2-statuscell__date { color: var(--u2-color-text-muted); font-size: var(--u2-text-xs); font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; }
-.u2-statuscell__date--warn { color: var(--u2-color-warning-text); }
-.u2-mono { font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+  @media (max-width: 1023px) { .u2-split { grid-template-columns: 1fr; } .u2-lanes { grid-template-columns: repeat(4, 260px); } }
+  /* Status and Paid cells: the badge and its date sit on one line, date muted and never wrapped (TKT-0404). */
+  .u2-statuscell { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 2px var(--u2-space-2); max-width: 100%; }
+  .u2-statuscell > * { white-space: nowrap; }
+  .u2-statuscell__date { color: var(--u2-color-text-muted); font-size: var(--u2-text-xs); font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; }
+  .u2-statuscell__date--warn { color: var(--u2-color-warning-text); }
+  .u2-mono { font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+}

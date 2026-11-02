@@ -117,6 +117,9 @@ export function ResourcesCard({ services, user, showExternalTools = false }: { s
         {showExternalTools && (
           <Link className="u2-pill" href="/v2/question-solver">DC Question Solver</Link>
         )}
+        {showExternalTools && (
+          <Link className="u2-pill" href="/v2/recordings">Recording Library</Link>
+        )}
       </div>
       {services.length === 0 ? (
         <p className="u2-muted">No enrollments yet.</p>
