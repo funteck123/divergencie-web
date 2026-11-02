@@ -32,6 +32,10 @@ def fit_title(t):
             short = " | ".join([parts[0], parts[1], lesson[:1].upper() + lesson[1:]])
             if len(short) <= 100:
                 return short
+        elif ": " in lesson:  # lesson starts with its syllabus component (for example "Probability and Statistics 1: ...")
+            short = " | ".join([parts[0], parts[1], lesson.split(": ", 1)[1]])
+            if len(short) <= 100:
+                return short
     return None
 
 
