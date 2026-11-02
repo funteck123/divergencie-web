@@ -4,7 +4,7 @@ import { useDeferredValue, useMemo, useState } from "react";
 import { parseAsString, useQueryState } from "nuqs";
 import { DefaultViewButton, useDefaultView } from "@/ui2/lib/defaultView";
 import { toast } from "sonner";
-import { amountDueInOwnCurrency, lineItemName } from "@/lib/billing";
+import { amountDueInOwnCurrency, batchById, lineItemName } from "@/lib/billing";
 import { formatDate } from "@/lib/formatDate";
 import { discountBreakdown } from "@/lib/invoiceDiscount";
 import { Badge } from "@/ui2/components/Badge";
@@ -20,7 +20,7 @@ import { ApprovePayment } from "./ApprovePayment";
 import { BillSheet } from "./BillSheet";
 import { copyItems } from "./billActions";
 import {
-  KINDS, LANES, MODE_LABEL, STATUS_FILTER_LABEL, activeFilterCount, applyFilters, duplicateMonths, emptyFilters, fxRateTitle, groupBills, isSettled, laneOf, needsApproval, periodKey, personSummary,
+  KINDS, LANES, MODE_LABEL, NO_BATCH, STATUS_FILTER_LABEL, activeFilterCount, applyFilters, duplicateMonths, emptyFilters, fxRateTitle, groupBills, isSettled, laneOf, needsApproval, periodKey, personSummary,
   type BillFilters, type BillKind, type Mode, type StatusFilter,
 } from "./billingLogic";
 import "./billing.css";
@@ -73,6 +73,18 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
     return s ? (lineItemName(s, batchId) as string) : sid;
   };
 
+  /** The batch name(s) a bill covers, e.g. "B8" or "B8 + B4"; bills whose subjects have no batch name share one group. */
+  const batchOf = (r: BillRecord) => {
+    const pairs: [string, string | undefined][] = Array.isArray(r.LineItems) ? r.LineItems.map((li) => [li.ServiceID, li.BatchID]) : [[String(r.ServiceID), r.BatchID]];
+    const names = new Set<string>();
+    for (const [sid, bid] of pairs) {
+      const s = services.find((x) => x.ServiceID === sid);
+      const n = s ? String((batchById(s, bid) as { BatchName?: string } | undefined)?.BatchName ?? "").trim() : "";
+      if (n) names.add(n);
+    }
+    return names.size ? [...names].sort().join(" + ") : NO_BATCH;
+  };
+
   const actions = (r: BillRecord) => {
     const person = userById.get(personOf(r));
     const busy = busyId === idOf(r);
@@ -102,8 +114,9 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
   };
 
   const columns: Column<BillRecord>[] = [
+    { id: "id", header: "ID", title: `${k.noun[0]?.toUpperCase()}${k.noun.slice(1)} ID`, width: 76, sortValue: (r) => idOf(r), tip: (r) => idOf(r), cell: (r) => <span className="u2-mono">{idOf(r)}</span> },
     {
-      id: "person", header: k.personHeader, sortValue: (r) => nameOf(personOf(r)), tip: (r) => nameOf(personOf(r)),
+      id: "person", header: k.personHeader, width: 150, sortValue: (r) => nameOf(personOf(r)), tip: (r) => nameOf(personOf(r)),
       cell: (r) => (
         <>
           <strong className="u2-strong">{nameOf(personOf(r))}</strong>{" "}
@@ -116,7 +129,7 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
       ),
     },
     {
-      id: "subjects", header: "Subjects", width: 150,
+      id: "subjects", header: "Subjects", width: 104,
       sortValue: (r) => (Array.isArray(r.LineItems) ? r.LineItems.length : 0),
       tip: (r) => (Array.isArray(r.LineItems) ? r.LineItems.map((li) => nameOfService(li.ServiceID, li.BatchID)).join(", ") : nameOfService(String(r.ServiceID), r.BatchID)),
       cell: (r) => (Array.isArray(r.LineItems) ? (
@@ -127,7 +140,7 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
     },
     { id: "period", header: "Period", width: 76, sortValue: (r) => periodKey(r), cell: (r) => `${r.Month}/${r.Year}` },
     {
-      id: "amount", header: "Amount", width: 134, numeric: true, sortValue: (r) => Number(r.Amount),
+      id: "amount", header: "Amount", width: 124, numeric: true, sortValue: (r) => Number(r.Amount),
       cell: (r) => {
         const d = (discountBreakdown(r) as { total: number }).total;
         return (
@@ -138,41 +151,41 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
         );
       },
     },
-    { id: "due", header: "Amount due", width: 110, numeric: true, sortValue: (r) => amountDueInOwnCurrency(r) as number, cell: (r) => `${r.Currency || "INR"} ${(amountDueInOwnCurrency(r) as number).toFixed(2)}` },
-    { id: "inramt", header: "INR amt", title: "INR Amount", width: 84, numeric: true, sortValue: (r) => Number(r.INRAmount), cell: (r) => <span title={fxRateTitle(r) ?? undefined}>{Number(r.INRAmount).toFixed(2)}</span> },
-    { id: "inrdue", header: "INR due", title: "INR Due", width: 84, numeric: true, sortValue: (r) => Number(r.INRDue), cell: (r) => Number(r.INRDue).toFixed(2) },
+    { id: "due", header: "Amount due", width: 90, numeric: true, sortValue: (r) => amountDueInOwnCurrency(r) as number, cell: (r) => `${r.Currency || "INR"} ${(amountDueInOwnCurrency(r) as number).toFixed(2)}` },
+    { id: "inramt", header: "INR amt", title: "INR Amount", width: 78, numeric: true, sortValue: (r) => Number(r.INRAmount), cell: (r) => <span title={fxRateTitle(r) ?? undefined}>{Number(r.INRAmount).toFixed(2)}</span> },
+    { id: "inrdue", header: "INR due", title: "INR Due", width: 78, numeric: true, sortValue: (r) => Number(r.INRDue), cell: (r) => Number(r.INRDue).toFixed(2) },
     {
-      id: "status", header: "Status", width: 84, sortValue: (r) => r.Status,
+      id: "status", header: "Status", width: 142, sortValue: (r) => r.Status,
       cell: (r) => (
-        <>
+        <span className="u2-statuscell">
           <Badge kind={r.Status === "Sent" ? "success" : "neutral"}>{r.Status}</Badge>
-          {r.SentAt && <span className="u2-sub">{formatDate(r.SentAt) as string}</span>}
-        </>
+          {r.SentAt && <span className="u2-statuscell__date" title={`Sent ${formatDate(r.SentAt) as string}`}>{formatDate(r.SentAt) as string}</span>}
+        </span>
       ),
     },
     {
-      id: "paid", header: kind === "invoice" ? "Paid" : "Received", width: 150, sortValue: (r) => Number(!!(r as Record<string, unknown>)[k.paidKey]),
+      id: "paid", header: kind === "invoice" ? "Paid" : "Received", width: 156, sortValue: (r) => Number(!!(r as Record<string, unknown>)[k.paidKey]),
       cell: (r) => {
         const flag = !!(r as Record<string, unknown>)[k.paidKey];
         const at = r[k.paidAtKey] as string | undefined;
         return (
-          <>
+          <span className="u2-statuscell">
             <Badge kind={flag ? "success" : "neutral"}>{flag ? k.paidLabel : k.unpaidLabel}</Badge>
             {kind === "invoice" && r.PaymentProofPath && (
               <LinkButton href={`/api/invoices/proof?invoiceId=${idOf(r)}`} target="_blank" title="View payment proof">
                 Proof
               </LinkButton>
             )}
-            {at && <span className="u2-sub">{formatDate(at) as string}</span>}
-            {needsApproval(r, k) && <span className="u2-sub u2-sub--warn">Needs approval</span>}
-          </>
+            {at && <span className="u2-statuscell__date" title={`${flag ? k.paidLabel : "Received"} ${formatDate(at) as string}`}>{formatDate(at) as string}</span>}
+            {needsApproval(r, k) && <span className="u2-statuscell__date u2-statuscell__date--warn">Needs approval</span>}
+          </span>
         );
       },
     },
     { id: "actions", header: "", title: "Actions", width: 168, cell: actions },
   ];
 
-  const groups = useMemo(() => groupBills(rows, mode === "lanes" ? "table" : mode, k, nameOf), [rows, mode, k, users]); // eslint-disable-line react-hooks/exhaustive-deps
+  const groups = useMemo(() => groupBills(rows, mode === "lanes" ? "table" : mode, k, nameOf, new Date(), batchOf), [rows, mode, k, users, services]); // eslint-disable-line react-hooks/exhaustive-deps
   const card = (r: BillRecord) => (
     <div className="u2-card">
       <div className="u2-card__top">

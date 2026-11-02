@@ -95,8 +95,11 @@ export const periodLabel = (r: BillRecord) => `${MONTH_NAMES[r.Month - 1]} ${r.Y
 /** The invoice PDF calls the first day of the billing month its due date. */
 export const dueDateOf = (r: BillRecord) => new Date(r.Year, r.Month - 1, 1);
 
-export type Mode = "table" | "person" | "month" | "due" | "lanes";
-export const MODE_LABEL: Record<Mode, string> = { table: "Table", person: "By person", month: "By month", due: "By due date", lanes: "By status" };
+export type Mode = "table" | "person" | "batch" | "month" | "due" | "lanes";
+export const MODE_LABEL: Record<Mode, string> = { table: "Table", person: "By person", batch: "By batch", month: "By month", due: "By due date", lanes: "By status" };
+
+/** Group label for a bill whose subjects have no batch name. */
+export const NO_BATCH = "No batch";
 
 export interface Group {
   key: string;
@@ -121,7 +124,7 @@ export function laneOf(r: BillRecord, k: KindConfig): StatusFilter {
   return "draft";
 }
 
-export function groupBills(rows: readonly BillRecord[], mode: Mode, k: KindConfig, nameOf: (id: string) => string, now = new Date()): Group[] {
+export function groupBills(rows: readonly BillRecord[], mode: Mode, k: KindConfig, nameOf: (id: string) => string, now = new Date(), batchOf?: (r: BillRecord) => string): Group[] {
   const bucket = (keyFn: (r: BillRecord) => string, labelFn: (key: string, rows: BillRecord[]) => string) => {
     const m = new Map<string, BillRecord[]>();
     for (const r of rows) m.set(keyFn(r), [...(m.get(keyFn(r)) ?? []), r]);
@@ -131,6 +134,10 @@ export function groupBills(rows: readonly BillRecord[], mode: Mode, k: KindConfi
     return bucket((r) => String((r as Flags)[k.personKey]), (key) => nameOf(key))
       .map((g) => ({ ...g, rows: [...g.rows].sort((a, b) => periodKey(b) - periodKey(a)) }))
       .sort((a, b) => a.label.localeCompare(b.label));
+  if (mode === "batch" && batchOf)
+    return bucket(batchOf, (key) => key)
+      .map((g) => ({ ...g, rows: [...g.rows].sort((a, b) => periodKey(b) - periodKey(a) || String(nameOf(String((a as Flags)[k.personKey]))).localeCompare(String(nameOf(String((b as Flags)[k.personKey]))))) }))
+      .sort((a, b) => (a.key === NO_BATCH ? 1 : b.key === NO_BATCH ? -1 : a.label.localeCompare(b.label)));
   if (mode === "month")
     return bucket((r) => String(periodKey(r)), (_k, list) => periodLabel(list[0] as BillRecord)).sort((a, b) => Number(b.key) - Number(a.key));
   if (mode === "due") {

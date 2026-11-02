@@ -102,3 +102,12 @@ describe("monthly action summaries", () => {
     expect(rebuildSummary(null, 0, null, 0)).toBe("Nothing selected to rebuild.");
   });
 });
+
+describe("by batch (TKT-0403)", () => {
+  const nameOf = (id: string) => id;
+  const batchOf = (r: BillRecord) => (r.InvoiceID === "INV-NB" ? "No batch" : r.InvoiceID === "INV-B4" ? "B4" : "B8");
+  const rows = [mk({ InvoiceID: "INV-NB", StudentID: "STU-3" }), mk({ InvoiceID: "INV-B8a", StudentID: "STU-2" }), mk({ InvoiceID: "INV-B4", StudentID: "STU-4" }), mk({ InvoiceID: "INV-B8b", StudentID: "STU-1", Month: 9 })];
+  it("one group per batch, alphabetical, no batch last", () => expect(groupBills(rows, "batch", inv, nameOf, new Date(), batchOf).map((x) => [x.label, x.rows.length])).toEqual([["B4", 1], ["B8", 2], ["No batch", 1]]));
+  it("newest month first inside a batch", () => expect(groupBills(rows, "batch", inv, nameOf, new Date(), batchOf).find((x) => x.label === "B8")?.rows.map((r) => r.InvoiceID)).toEqual(["INV-B8a", "INV-B8b"]));
+  it("without a batchOf function it falls back to one flat group", () => expect(groupBills(rows, "batch", inv, nameOf).length).toBe(1));
+});
