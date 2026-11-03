@@ -126,7 +126,7 @@ export function ResourcesCard({ services, user, showExternalTools = false }: { s
       ) : (
         <div className="u2-rows">
           {services.map((s) => (
-            <div key={s._key} className="u2-box u2-box--inner">
+            <div key={s._key} className="u2-subsection">
               <strong className="u2-strong">{s.Name}{s._myBatch ? ` · ${s._myBatch}` : ""}</strong>
               <div className="u2-checks">
                 {SERVICE_FEATURES.filter((f) => t[f.toggleKey]).map((f) => {

@@ -1,5 +1,7 @@
 /* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  /* A group inside a portal card: a divider and the same left edge as the card's own content, no second box (the card stays the only box). */
+  .u2-subsection { display: grid; align-content: start; gap: var(--u2-space-3); padding-top: var(--u2-space-4); border-top: 1px solid var(--u2-color-border); }
   .u2-pill--off { opacity: 0.5; cursor: not-allowed; }
   .u2-week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
   .u2-week__day { min-height: 90px; display: grid; align-content: start; gap: 3px; padding: 4px; background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); }

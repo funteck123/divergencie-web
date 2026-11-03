@@ -64,7 +64,7 @@ function TrialList({ trials, slots, services, onFeedback, withTz, emptyText }: {
         const slot = slots?.get(t.ScheduleItemID ?? "");
         const name = services?.find((s) => s.ServiceID === t.ServiceID)?.Name;
         return (
-          <div key={t.TrialID} className="u2-box u2-box--inner">
+          <div key={t.TrialID} className="u2-subsection">
             <p>{name ? `${name}${slot ? ", " : ""}` : ""}{slot ? when(slot, t.ScheduleItemID, withTz, withTz) : name ? "" : t.ScheduleItemID} <Badge kind="info">{t.Status}</Badge></p>
             {t.Status === "Pending" && <p className="u2-muted">Your booking is being reviewed.</p>}
             {t.Status === "Rejected" && <p className="u2-form__error">This request was rejected.</p>}
@@ -130,7 +130,7 @@ export function InterviewPortal({ user }: { user: SessionUser }) {
           const slot = slots.data?.get(it.ScheduleItemID ?? "");
           const name = services.find((s) => s.ServiceID === it.ServiceID)?.Name || it.ServiceID;
           return (
-            <div key={it.InterviewID} className="u2-box u2-box--inner">
+            <div key={it.InterviewID} className="u2-subsection">
               <p>{name}{slot ? `, ${formatDate(slot.Date) as string} at ${slot.Time}` : ""} <Badge kind="info">{it.Status}</Badge></p>
               {it.Status === "Pending" && <p className="u2-muted">Your request is being reviewed. A slot will be assigned once approved.</p>}
               {it.Status === "Rejected" && <p className="u2-form__error">This request was rejected.</p>}
