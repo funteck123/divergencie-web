@@ -10,7 +10,14 @@ import csv, json, os, re, sys, urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-def record(r):
+def lessons_by_path():
+    # The processed ledger keeps the full lesson text ("Probability and Statistics 1: Representation of data 4"); a long YouTube title may have lost that prefix.
+    path = os.path.join(ROOT, "data/youtube/processed_ledger.json")
+    return {v["processedPath"]: v.get("lesson", "") for v in json.load(open(path)).values() if isinstance(v, dict) and v.get("processedPath")} if os.path.exists(path) else {}
+
+COMPONENT_RE = r"^((?:Pure Mathematics|Probability and Statistics|Statistics|Mechanics) \d): (.+)$"
+
+def record(r, full_lessons=None):
     parts = [p.strip() for p in (r["processedYouTubeTitle"] or r["youtubeTitle"]).split(" | ")]
     if len(parts) < 3:
         raise ValueError(f"unexpected title: {parts}")
@@ -32,7 +39,8 @@ def record(r):
 
 def main():
     rows = [r for r in csv.DictReader(open(os.path.join(ROOT, "data/youtube/video_dataset.csv"), encoding="utf8")) if r["youtubeId"]]
-    recs = [record(r) for r in rows]
+    full = lessons_by_path()
+    recs = [record(r, full) for r in rows]
     for x in recs:
         print(f'{x["YouTubeId"]} | {x["Level"]} {x["Subject"]} {x["SubjectCode"]} | ch {x["ChapterNo"]} {x["ChapterName"]} | {x["Title"]} | {x["Date"]} | {x["Batch"] or "-"} | {x["DurationMin"]} min')
     print(f"{len(recs)} records")
