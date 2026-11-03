@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId, deleteRecords } from "@/lib/db";
-import { computeHoursAndAmount, ratesOf, rateById, isEnrollmentActiveForMonth, studentCurrencyOf, lineItemINR, refreshStudentTotal, applyInvoiceDiscount, validateDiscountInput, setDiscountFields, DISCOUNT_KEYS } from "@/lib/billing";
+import { carryOverLineItems, nextMonthOf, computeHoursAndAmount, ratesOf, rateById, isEnrollmentActiveForMonth, studentCurrencyOf, lineItemINR, refreshStudentTotal, applyInvoiceDiscount, validateDiscountInput, setDiscountFields, DISCOUNT_KEYS } from "@/lib/billing";
 import { getRateToINR } from "@/lib/fxRates";
 import { requireManagement, requireSelfOrParentOrManagement } from "@/lib/authz";
 import { logAudit } from "@/lib/logging";
@@ -184,8 +184,45 @@ export async function POST(req) {
     return NextResponse.json(Array.isArray(rawLineItems) ? { invoices: created } : { invoice: created[0] });
   }
 
+  // TKT-0406: action "carry-over" { invoiceId } -- a new Draft for the NEXT month with the same subjects, batches, amounts and discount.
+  // Hours and notes are not copied. Refuses a one-off invoice, and a student who already has an invoice for the target month.
+  if (action === "carry-over") {
+    const { invoiceId } = body;
+    if (!invoiceId) return NextResponse.json({ error: "invoiceId is required." }, { status: 400 });
+    const db = await readDB();
+    const src = db.invoices.find((i) => i.InvoiceID === invoiceId);
+    if (!src) return NextResponse.json({ error: "Invoice not found." }, { status: 404 });
+    const items = carryOverLineItems(src);
+    if (!items) return NextResponse.json({ error: "A one-off invoice is not repeated, so it cannot be carried over." }, { status: 400 });
+    const { year: y, month: m } = nextMonthOf(src.Year, src.Month);
+    const existing = db.invoices.find((i) => i.LineItems && i.StudentID === src.StudentID && i.Year === y && i.Month === m);
+    if (existing) {
+      return NextResponse.json({ error: `This student already has an invoice for ${m}/${y} (${existing.InvoiceID}). Delete it first if you need to recreate it.` }, { status: 400 });
+    }
+    const copy = {
+      InvoiceID: await nextId(db, "INV"),
+      StudentID: src.StudentID,
+      Year: y,
+      Month: m,
+      LineItems: items,
+      Amount: 0,
+      Currency: src.Currency,
+      INRAmount: 0,
+      INRDue: 0,
+      Status: "Draft",
+    };
+    for (const li of items) copy.INRAmount = Math.round((copy.INRAmount + (await lineItemINR(db, li, y, m))) * 100) / 100;
+    copy.INRDue = copy.INRAmount;
+    for (const k of DISCOUNT_KEYS) if (src[k] !== undefined && src[k] !== "" && src[k] !== 0) copy[k] = src[k];
+    db.invoices.push(copy);
+    await refreshStudentTotal(db, copy);
+    await writeDB(db, ["invoices"]);
+    await logAudit({ actorUserId: session.userId, action: "create", entityType: "Invoice", entityId: copy.InvoiceID, summary: `Carried ${src.InvoiceID} (${src.Month}/${src.Year}) over to ${m}/${y} for ${src.StudentID}: ${items.length} line item(s), ${copy.Currency} ${copy.Amount}` });
+    return NextResponse.json({ invoice: copy });
+  }
+
   if (action !== "generate") {
-    return NextResponse.json({ error: "action must be generate or manual." }, { status: 400 });
+    return NextResponse.json({ error: "action must be generate, manual or carry-over." }, { status: 400 });
   }
   // TKT-0110: "Rebuild Drafts" -- onlyStudentIds scopes generate to just
   // the selected people (an empty/omitted array means everyone, the

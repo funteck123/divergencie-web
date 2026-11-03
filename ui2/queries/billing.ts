@@ -109,3 +109,12 @@ export function usePaymentOptions() {
     queryFn: async () => await apiList<PaymentOption>("/api/payment-details", "options"),
   });
 }
+
+/** TKT-0406: copy an invoice into a Draft for the next month (same subjects, amounts and discount). The server refuses a one-off invoice or a month that already has one. */
+export function useCarryOver() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (invoiceId: string) => (await apiFetch<{ invoice: BillRecord }>("/api/invoices", { method: "POST", body: { action: "carry-over", invoiceId } })).invoice,
+    onSettled: () => void qc.invalidateQueries({ queryKey: keys.invoices }),
+  });
+}

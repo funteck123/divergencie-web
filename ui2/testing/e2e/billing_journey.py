@@ -41,6 +41,9 @@ def handler(method, path, body, st):
     if method == "DELETE":
         st[kind] = [x for x in rows if x[idkey] != body[bodykey]]; return 200, {}
     if method == "POST":
+        if body.get("action") == "carry-over" and kind == "invoices":
+            src = next(x for x in rows if x["InvoiceID"] == body["invoiceId"])
+            return 200, {"invoice": {**src, "InvoiceID": "INV-CO", "Month": src["Month"] + 1, "Status": "Draft"}}
         if body.get("action") == "generate": return 200, {"created": [1, 2], "skipped": [{"studentId": "STU-1", "serviceId": "SVC-9"}] if kind == "invoices" else []}
         if body.get("action") == "manual" and kind == "invoices": return 200, {"invoices": [{**mk_invoices()[0], "InvoiceID": "INV-M", "StudentID": body["studentId"]}]}
 
@@ -60,6 +63,13 @@ def main():
         out["dup_badges"] = s.page.get_by_text("⚠ dup?").count()
         out["hscroll"] = s.hscroll()
         s.page.screenshot(path="snapshots/v2-billing-table.png")
+        # TKT-0406: carry over to next month, from the three-dot menu of an invoice row
+        s.page.get_by_role("button", name=re.compile("^More actions")).first.click()
+        out["carry_item_visible"] = s.page.get_by_role("menuitem", name="Carry over to next month").count() == 1
+        s.page.get_by_role("menuitem", name="Carry over to next month").click()
+        s.page.get_by_text(re.compile("Created draft INV-CO")).wait_for()
+        out["carry_toast"] = s.page.get_by_text(re.compile("Created draft INV-CO")).first.inner_text()
+        out["carry_call"] = [c for c in s.calls if c[2] and c[2].get("action") == "carry-over"][-1][2]
         # status filter
         s.page.get_by_label("Status").click(); s.page.get_by_role("option", name="Needs approval").click()
         s.page.wait_for_timeout(300)
