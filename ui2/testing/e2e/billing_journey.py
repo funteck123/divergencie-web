@@ -22,7 +22,10 @@ def mk_paychecks():
 def handler(method, path, body, st):
     if path.startswith("/api/invoices/carry-over"):
         src = next(x for x in st["invoices"] if x["InvoiceID"] == body["invoiceId"])
-        return 200, {"invoice": {**src, "InvoiceID": "INV-CO", "Month": src["Month"] + 1, "Status": "Draft"}}
+        return 200, {"invoice": {**src, "InvoiceID": "INV-CO", "Month": src["Month"] + 1, "Status": "Draft"}, "skipped": ["Chemistry (enrollment ended 31/10/2026)"]}
+    if path.startswith("/api/paychecks/carry-over"):
+        src = next(x for x in st["paychecks"] if x["PaycheckID"] == body["paycheckId"])
+        return 200, {"paycheck": {**src, "PaycheckID": "PAY-CO", "Month": src["Month"] + 1, "Status": "Draft"}, "skipped": []}
     if path.startswith("/api/payment-details"):
         return 200, {"options": [{"key": "upi", "label": "UPI", "text": "Pay by UPI: x@bank"}, {"key": "bank", "label": "Bank transfer", "text": ""}]}
     kind = "invoices" if path.startswith("/api/invoices") else "paychecks" if path.startswith("/api/paychecks") else None
@@ -69,6 +72,7 @@ def main():
         s.page.get_by_role("menuitem", name="Carry over to next month").click()
         s.page.get_by_text(re.compile("Created draft INV-CO")).wait_for()
         out["carry_toast"] = s.page.get_by_text(re.compile("Created draft INV-CO")).first.inner_text()
+        out["carry_toast_names_skipped"] = "Left out: Chemistry (enrollment ended 31/10/2026)" in out["carry_toast"]
         out["carry_call"] = [c for c in s.calls if c[2] and c[1].startswith("/api/invoices/carry-over")][-1][2]
         # status filter
         s.page.get_by_label("Status").click(); s.page.get_by_role("option", name="Needs approval").click()
@@ -116,6 +120,11 @@ def main():
         s.page.get_by_role("tab", name="Paychecks").click()
         s.page.get_by_role("table").wait_for()
         out["paycheck_rows"] = s.page.locator("tbody tr").count()
+        s.page.get_by_role("button", name=re.compile("^More actions")).first.click()
+        s.page.get_by_role("menuitem", name="Carry over to next month").click()
+        s.page.get_by_text(re.compile("Created draft PAY-CO")).wait_for()
+        out["paycheck_carry_toast"] = s.page.get_by_text(re.compile("Created draft PAY-CO")).first.inner_text()
+        out["paycheck_carry_call"] = [c for c in s.calls if c[1].startswith("/api/paychecks/carry-over")][-1][2]
         # monthly actions
         s.page.get_by_role("tab", name="Generate and create").click()
         s.page.get_by_role("button", name="Generate drafts for this month").click()

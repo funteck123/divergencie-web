@@ -21,7 +21,9 @@ const post = (body: unknown) => POST(new Request("http://x/api/invoices/carry-ov
 const inv = (o: Record<string, unknown>) => ({ InvoiceID: "INV-1", StudentID: "STU-1", Year: 2026, Month: 10, Currency: "INR", Amount: 11340, INRAmount: 11340, INRDue: 11340, Status: "Sent", SentAt: "2026-10-01T00:00:00Z", StudentPaidFlag: true, PaidAt: "2026-10-07T00:00:00Z",
   LineItems: [{ ServiceID: "S1", BatchID: "B1", ScheduledHours: 13, AttendedHours: 9, Amount: 7560, Currency: "INR", Note: "old note" }, { ServiceID: "S2", BatchID: "B2", ScheduledHours: 5, AttendedHours: 5, Amount: 3780, Currency: "INR" }], ...o });
 
-beforeEach(() => { state.written = []; state.audit = []; state.db = { invoices: [inv({})], services: [], enrollments: [], users: [] }; });
+const enr = (o: Record<string, unknown>[] = [{}, {}]) => [{ UserID: "STU-1", ServiceID: "S1", BatchID: "B1", StartDate: "2026-10-01", ...o[0] }, { UserID: "STU-1", ServiceID: "S2", BatchID: "B2", StartDate: "2026-10-01", ...o[1] }];
+const mk = (invoices: unknown[], enrollments = enr()) => ({ invoices, services: [{ ServiceID: "S1", Name: "Biology" }, { ServiceID: "S2", Name: "Chemistry" }], enrollments, users: [] });
+beforeEach(() => { state.written = []; state.audit = []; state.db = mk([inv({})]); });
 
 describe("carry over to next month", () => {
   it("creates a Draft for the next month with the same subjects and amounts, and nothing else of the old month", async () => {
@@ -44,33 +46,57 @@ describe("carry over to next month", () => {
     expect((state.db as { invoices: unknown[] }).invoices[0]).toEqual(inv({}));
   });
   it("December carries over to January of the next year", async () => {
-    state.db = { invoices: [inv({ Year: 2026, Month: 12 })], services: [], enrollments: [], users: [] };
+    state.db = mk([inv({ Year: 2026, Month: 12 })]);
     const { invoice } = await (await post({ invoiceId: "INV-1" })).json();
     expect([invoice.Year, invoice.Month]).toEqual([2027, 1]);
   });
   it("keeps the discount, applied to the new subtotal", async () => {
-    state.db = { invoices: [inv({ DiscountPercent: 10 })], services: [], enrollments: [], users: [] };
+    state.db = mk([inv({ DiscountPercent: 10 })]);
     const { invoice } = await (await post({ invoiceId: "INV-1" })).json();
     expect(invoice.DiscountPercent).toBe(10);
     expect(invoice.INRDue).toBe(10206); // 11340 less 10%
   });
   it("converts a foreign-currency invoice at the new month's rate", async () => {
-    state.db = { invoices: [inv({ Currency: "SAR", Amount: 500, INRAmount: 12500, INRDue: 12500, LineItems: [{ ServiceID: "S1", BatchID: "B1", Amount: 500, Currency: "SAR" }] })], services: [], enrollments: [], users: [] };
+    state.db = mk([inv({ Currency: "SAR", Amount: 500, INRAmount: 12500, INRDue: 12500, LineItems: [{ ServiceID: "S1", BatchID: "B1", Amount: 500, Currency: "SAR" }] })]);
     const { invoice } = await (await post({ invoiceId: "INV-1" })).json();
     expect(invoice).toMatchObject({ Currency: "SAR", Amount: 500, INRAmount: 12500 });
   });
   it("refuses when the student already has an invoice for the next month", async () => {
-    state.db = { invoices: [inv({}), inv({ InvoiceID: "INV-2", Month: 11 })], services: [], enrollments: [], users: [] };
+    state.db = mk([inv({}), inv({ InvoiceID: "INV-2", Month: 11 })]);
     const res = await post({ invoiceId: "INV-1" });
     expect(res.status).toBe(400);
     expect((await res.json()).error).toContain("INV-2");
     expect(state.written).toEqual([]);
   });
   it("refuses a one-off invoice, an unknown invoice and a missing id", async () => {
-    state.db = { invoices: [{ InvoiceID: "INV-1", StudentID: "STU-1", ServiceID: "S1", Year: 2026, Month: 10, Amount: 500, Currency: "INR" }], services: [], enrollments: [], users: [] };
+    state.db = mk([{ InvoiceID: "INV-1", StudentID: "STU-1", ServiceID: "S1", Year: 2026, Month: 10, Amount: 500, Currency: "INR" }]);
     expect((await post({ invoiceId: "INV-1" })).status).toBe(400);
     expect((await post({ invoiceId: "INV-404" })).status).toBe(404);
     expect((await post({})).status).toBe(400);
+    expect(state.written).toEqual([]);
+  });
+  it("leaves out a subject whose enrollment has ended and names it", async () => {
+    state.db = mk([inv({})], enr([{}, { EndDate: "2026-10-31" }]));
+    const res = await post({ invoiceId: "INV-1" });
+    const body = await res.json();
+    expect(res.status).toBe(200);
+    expect(body.invoice.LineItems.map((l: { ServiceID: string }) => l.ServiceID)).toEqual(["S1"]);
+    expect(body.invoice).toMatchObject({ Amount: 7560, INRAmount: 7560, INRDue: 7560 });
+    expect(body.skipped).toEqual(["Chemistry (enrollment ended 31/10/2026)"]);
+  });
+  it("leaves out a subject the student is no longer enrolled in at all", async () => {
+    state.db = mk([inv({})], [enr()[0]!]);
+    const body = await (await post({ invoiceId: "INV-1" })).json();
+    expect(body.invoice.LineItems.length).toBe(1);
+    expect(body.skipped).toEqual(["Chemistry (no enrollment)"]);
+  });
+  it("makes nothing when every subject has ended, and says why", async () => {
+    state.db = mk([inv({})], enr([{ EndDate: "2026-10-31" }, { EndDate: "2026-09-30" }]));
+    const res = await post({ invoiceId: "INV-1" });
+    expect(res.status).toBe(400);
+    const msg = (await res.json()).error;
+    expect(msg).toContain("Biology (enrollment ended 31/10/2026)");
+    expect(msg).toContain("Chemistry (enrollment ended 30/09/2026)");
     expect(state.written).toEqual([]);
   });
 });

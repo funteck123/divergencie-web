@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ATTENDED_STATUSES, carryOverLineItems, computeHoursAndAmount, nextMonthOf } from "./billing";
+import { ATTENDED_STATUSES, carryOverLineItems, computeHoursAndAmount, describeSkipped, nextMonthOf, splitByActiveEnrollment } from "./billing";
 
 // One student, one service, three one-hour sessions in October 2026. attendance: what was logged for each session.
 function hours(attendance: { id: string; status?: string; hours: number }[], opts: Record<string, unknown> = {}) {
@@ -47,4 +47,26 @@ describe("carry over to next month (TKT-0406)", () => {
     ]);
   });
   it("a one-off invoice has no line items and is not carried over", () => expect(carryOverLineItems({ ServiceID: "S1", Amount: 500 })).toBeNull());
+});
+
+describe("only lines with a live enrollment are carried over", () => {
+  const items = [{ ServiceID: "S1", BatchID: "B1" }, { ServiceID: "S2", BatchID: "B2" }, { ServiceID: "S3", BatchID: "B3" }, { ServiceID: "S4", BatchID: "B4" }];
+  const db = {
+    services: [{ ServiceID: "S1", Name: "Biology" }, { ServiceID: "S2", Name: "Chemistry" }],
+    enrollments: [
+      { UserID: "U1", ServiceID: "S1", BatchID: "B1", StartDate: "2026-10-01" },                          // no end: active
+      { UserID: "U1", ServiceID: "S2", BatchID: "B2", StartDate: "2026-10-01", EndDate: "2026-10-31" },   // ended before November
+      { UserID: "U1", ServiceID: "S3", BatchID: "B3", StartDate: "2026-12-01" },                          // starts in December
+      { UserID: "U2", ServiceID: "S4", BatchID: "B4" },                                                    // belongs to another person
+    ],
+  };
+  const r = splitByActiveEnrollment(db, "U1", items, 2026, 11);
+  it("keeps the live enrollment", () => expect(r.kept.map((k) => k.line.ServiceID)).toEqual(["S1"]));
+  it("skips an ended enrollment, one not yet started, and one that belongs to someone else, each with its reason", () =>
+    expect(r.skipped.map((x) => [x.ServiceID, x.reason])).toEqual([["S2", "enrollment ended 31/10/2026"], ["S3", "enrollment starts 01/12/2026"], ["S4", "no enrollment"]]));
+  it("an enrollment ending in the target month still counts (any part of the month)", () =>
+    expect(splitByActiveEnrollment({ enrollments: [{ UserID: "U1", ServiceID: "S1", BatchID: "B1", EndDate: "2026-11-05" }] }, "U1", [items[0]], 2026, 11).kept.length).toBe(1));
+  it("an enrollment with no dates is always live", () =>
+    expect(splitByActiveEnrollment({ enrollments: [{ UserID: "U1", ServiceID: "S1", BatchID: "B1" }] }, "U1", [items[0]], 2030, 3).kept.length).toBe(1));
+  it("names skipped lines with their reason", () => expect(describeSkipped({ services: db.services }, r.skipped).slice(0, 1)).toEqual(["Chemistry (enrollment ended 31/10/2026)"]));
 });

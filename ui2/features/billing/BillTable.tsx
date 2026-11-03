@@ -33,7 +33,7 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
   const { data, isPending, error, refetch } = useBills(kind);
   const patch = usePatchBill(kind);
   const del = useDeleteBill(kind);
-  const carry = useCarryOver();
+  const carry = useCarryOver(kind);
   const options = usePaymentOptions();
   const [modeParam, setMode] = useQueryState(`${kind}Mode`, parseAsString.withDefault("table"));
   const mode: Mode = (MODES as string[]).includes(modeParam) ? (modeParam as Mode) : "table";
@@ -71,8 +71,10 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
 
   const carryOver = async (r: BillRecord) => {
     try {
-      const made = await carry.mutateAsync(idOf(r));
-      toast.success(`Created draft ${String(made.InvoiceID)} for ${nameOf(personOf(r))}, ${made.Month}/${made.Year}.`);
+      const { bill: made, skipped } = await carry.mutateAsync(idOf(r));
+      const hours = kind === "paycheck" ? " Amounts are the full rate: add the hours by hand, or Rebuild Drafts once attendance is logged." : "";
+      const left = skipped.length ? ` Left out: ${skipped.join("; ")}.` : "";
+      toast.success(`Created draft ${String(made[k.idKey])} for ${nameOf(personOf(r))}, ${made.Month}/${made.Year}.${hours}${left}`);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not carry over.");
     }
@@ -102,7 +104,7 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
     const items: RowMenuItem[] = [{ label: "Details, due and subjects…", onSelect: () => setOpenId(idOf(r)) }];
     if (kind === "invoice") items.push({ label: "Discount…", onSelect: () => setOpenId(idOf(r)) });
     items.push({ label: "Download PDF", href: k.pdf(idOf(r)), download: "" });
-    if (kind === "invoice" && Array.isArray(r.LineItems)) items.push({ label: "Carry over to next month", onSelect: () => void carryOver(r) });
+    if (Array.isArray(r.LineItems)) items.push({ label: "Carry over to next month", onSelect: () => void carryOver(r) });
     if (kind === "invoice") items.push(...copyItems(r, person, services, options.data, isSettled(r, k)));
     items.push({ label: "Delete", danger: true, onSelect: () => setDeleteTarget(r) });
     return (

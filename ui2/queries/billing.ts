@@ -110,11 +110,19 @@ export function usePaymentOptions() {
   });
 }
 
-/** TKT-0406: copy an invoice into a Draft for the next month (same subjects, amounts and discount). The server refuses a one-off invoice or a month that already has one. */
-export function useCarryOver() {
+/**
+ * TKT-0406: copy an invoice or a paycheck into a Draft for the next month. An invoice keeps last month's amounts and discount; a paycheck is priced
+ * at the current full rate with the hours left empty. Lines whose enrollment has ended are left out, and the reply names them. The server refuses a
+ * one-off record, a month that already has one, and a copy with nothing left.
+ */
+export function useCarryOver(kind: BillKind) {
   const qc = useQueryClient();
+  const k = KINDS[kind];
   return useMutation({
-    mutationFn: async (invoiceId: string) => (await apiFetch<{ invoice: BillRecord }>("/api/invoices/carry-over", { method: "POST", body: { invoiceId } })).invoice,
-    onSettled: () => void qc.invalidateQueries({ queryKey: keys.invoices }),
+    mutationFn: async (id: string) => {
+      const reply = await apiFetch<Record<string, unknown>>(`${k.endpoint}/carry-over`, { method: "POST", body: { [k.bodyIdKey]: id } });
+      return { bill: reply[k.responseKey] as BillRecord, skipped: (reply.skipped as string[] | undefined) ?? [] };
+    },
+    onSettled: () => void qc.invalidateQueries({ queryKey: keyOf(kind) }),
   });
 }
