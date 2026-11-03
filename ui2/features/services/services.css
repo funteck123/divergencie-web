@@ -26,7 +26,7 @@
   .u2-svcline--head { font-weight: var(--u2-weight-semibold); color: var(--u2-color-text-muted); padding: 4px var(--u2-space-2); }
   .u2-svcline__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .u2-batchlist { list-style: none; margin: 0; padding: var(--u2-space-2) var(--u2-space-3) var(--u2-space-3) 40px; display: grid; gap: var(--u2-space-2); }
-  .u2-batch { padding: var(--u2-space-3); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-left: 4px solid var(--u2-color-brand); border-radius: var(--u2-radius); font-size: var(--u2-text-md); }
+  .u2-batch { padding: var(--u2-space-3); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); font-size: var(--u2-text-md); }
   .u2-batch__title { margin: 0 0 var(--u2-space-2); font-size: var(--u2-text-md); font-weight: var(--u2-weight-bold); }
   .u2-batch__facts { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--u2-space-3); }
   .u2-batch__facts dt { margin-bottom: 2px; font-size: var(--u2-text-sm); font-weight: var(--u2-weight-semibold); color: var(--u2-color-text-muted); text-transform: uppercase; letter-spacing: 0.03em; }

@@ -29,7 +29,7 @@ export function ResultsStage({ results, saveStatus, canOpenProgress, onProgress,
                 <strong>Q{r.questionNumber}</strong>
                 <span className={`u2-verdict ${r.verdict === "correct" ? "u2-verdict--correct" : r.verdict === "incorrect" ? "u2-verdict--incorrect" : ""}`}>
                   {r.verdict === "correct" ? "Correct" : r.verdict === "incorrect" ? "Incorrect" : r.verdict === "unanswered" ? "Unanswered" : "Not auto-gradable"}
-                  {r.flagged ? " 🚩" : ""}
+                  {r.flagged ? " (flagged)" : ""}
                 </span>
                 <span>
                   Your answer: {r.studentAnswer ?? "(none selected)"}

@@ -108,7 +108,7 @@ export const TOKENS = {
   "radius": "6px", // the one corner radius for every control, card, chip and panel
   "radius-round": "50%",
   // type (dense UI scale inside the guideline family)
-  "font-sans": 'var(--font-inter), Inter, Arial, Helvetica, sans-serif',
+  "font-sans": '"Satoshi", var(--font-inter), Inter, Arial, Helvetica, sans-serif',
   "text-2xs": "11px",
   "text-xs": "12px",
   "text-sm": "13px",

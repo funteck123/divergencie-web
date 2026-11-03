@@ -13,7 +13,7 @@ import type { RegForm } from "@/ui2/queries/types";
 import { useIssued } from "@/ui2/features/management/IssuedCredentials";
 import "@/ui2/features/accounts/accounts.css";
 
-const BOOKING_LABEL: Record<string, string> = { Trial: "Trial", TeacherInterview: "Interview — Teacher", StaffInterview: "Interview — Staff", AmbassadorInterview: "Interview — Ambassador" };
+const BOOKING_LABEL: Record<string, string> = { Trial: "Trial", TeacherInterview: "Interview: Teacher", StaffInterview: "Interview: Staff", AmbassadorInterview: "Interview: Ambassador" };
 
 const detailsOf = (r: RegForm): [string, string][] =>
   ([

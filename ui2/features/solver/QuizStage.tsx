@@ -187,7 +187,7 @@ export function QuizStage(p: QuizStageProps) {
       )}
       {s.kind === "structured" && s.mode === "test" && (
         <details className="u2-box u2-box--inner">
-          <summary>📐 Answering with a table or diagram? Click for the text template</summary>
+          <summary>Answering with a table or diagram? Click for the text template</summary>
           <pre style={{ whiteSpace: "pre-wrap", margin: "var(--u2-space-2) 0 0" }}>{DIAGRAM_HINT}</pre>
         </details>
       )}
@@ -217,7 +217,7 @@ function McqCard({ q, state: s, dispatch, checked, onCheck }: { q: McqQuestion; 
         <strong>Question {q.questionNumber}</strong>
         {!practice && (
           <label className="u2-check u2-push">
-            <input type="checkbox" checked={flagged} onChange={() => dispatch({ type: "flag", q: q.questionNumber })} /> 🚩 Flag to come back to this one
+            <input type="checkbox" checked={flagged} onChange={() => dispatch({ type: "flag", q: q.questionNumber })} /> Flag to come back to this one
           </label>
         )}
       </div>

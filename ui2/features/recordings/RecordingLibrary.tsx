@@ -83,8 +83,8 @@ export function RecordingLibrary() {
                   />
                 </div>
                 <div className="u2-rec__info">
-                  <span className="u2-rec__kicker">{subjectLabel(current)}{current.ChapterName ? ` · ${current.ChapterNo > 0 ? `Chapter ${current.ChapterNo} ` : ""}${current.ChapterName}` : ""}</span>
                   <h2 className="u2-rec__title">{current.Title}</h2>
+                  <span className="u2-rec__sub">{subjectLabel(current)}{current.ChapterName ? ` · ${current.ChapterNo > 0 ? `Chapter ${current.ChapterNo} ` : ""}${current.ChapterName}` : ""}</span>
                   <div className="u2-rec__chips">
                     {current.Date && <Badge kind="neutral">{formatDate(current.Date) as string}</Badge>}
                     {current.DurationMin > 0 && <Badge kind="neutral">{durationLabel(current.DurationMin)}</Badge>}
@@ -99,8 +99,8 @@ export function RecordingLibrary() {
             {groups.map((g) => (
               <section key={g.key} className="u2-rec__group" aria-label={g.heading}>
                 <header className="u2-rec__grouphead">
-                  {subjects.length > 1 && !activeSubject && <span className="u2-rec__kicker">{g.subject}</span>}
                   <strong className="u2-strong">{g.heading}</strong>
+                  {subjects.length > 1 && !activeSubject && <span className="u2-rec__sub">{g.subject}</span>}
                 </header>
                 <ul className="u2-rec__items">
                   {g.rows.map((r) => (

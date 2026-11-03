@@ -30,7 +30,7 @@ import "./schedule.css";
 
 const BOOKING_TYPES = ["Trial", "TeacherInterview", "StaffInterview", "AmbassadorInterview"];
 const REQUIRED_GROUP: Record<string, string> = { Trial: "Student", TeacherInterview: "Teacher", StaffInterview: "Staff", AmbassadorInterview: "Ambassador" };
-const BOOKING_LABEL: Record<string, string> = { Trial: "Trial", TeacherInterview: "Interview — Teacher", StaffInterview: "Interview — Staff", AmbassadorInterview: "Interview — Ambassador" };
+const BOOKING_LABEL: Record<string, string> = { Trial: "Trial", TeacherInterview: "Interview: Teacher", StaffInterview: "Interview: Staff", AmbassadorInterview: "Interview: Ambassador" };
 
 const when = (s: ScheduleItem) => `${s.Time} ${tzAbbrFor(s.Date, normalizeTimezone(s.Timezone))}`;
 const swatch = (s: ScheduleItem) => <span title={(normalizeGroup(s.ServiceGroup) as string[]).join(" + ")} className="u2-swatch" style={{ background: groupGradient(normalizeGroup(s.ServiceGroup)) as string }} />;

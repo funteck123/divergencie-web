@@ -278,7 +278,7 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
             <section key={g.key} className="u2-group">
               <div className="u2-group__head">
                 <button type="button" className="u2-tree__toggle" aria-expanded={!isClosed} onClick={() => setClosed((p) => { const n = new Set(p); if (n.has(g.key)) n.delete(g.key); else n.add(g.key); return n; })}>
-                  <span aria-hidden="true">{isClosed ? "▸" : "▾"}</span> {g.label} — {g.rows.length} {k.noun}{g.rows.length === 1 ? "" : "s"}
+                  <span aria-hidden="true">{isClosed ? "▸" : "▾"}</span> {g.label} · {g.rows.length} {k.noun}{g.rows.length === 1 ? "" : "s"}
                 </button>
                 {g.overdue && <Badge kind="error">Overdue</Badge>}
                 {sum && sum.draft > 0 && <Badge kind="neutral">{sum.draft} draft</Badge>}
