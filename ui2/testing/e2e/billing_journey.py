@@ -20,6 +20,9 @@ def mk_paychecks():
              "LineItems": [{"ServiceID": "SVC-2", "ScheduledHours": 10, "AttendedHours": 9, "Amount": 9000, "Currency": "INR"}]}]
 
 def handler(method, path, body, st):
+    if path.startswith("/api/invoices/carry-over"):
+        src = next(x for x in st["invoices"] if x["InvoiceID"] == body["invoiceId"])
+        return 200, {"invoice": {**src, "InvoiceID": "INV-CO", "Month": src["Month"] + 1, "Status": "Draft"}}
     if path.startswith("/api/payment-details"):
         return 200, {"options": [{"key": "upi", "label": "UPI", "text": "Pay by UPI: x@bank"}, {"key": "bank", "label": "Bank transfer", "text": ""}]}
     kind = "invoices" if path.startswith("/api/invoices") else "paychecks" if path.startswith("/api/paychecks") else None
@@ -41,9 +44,6 @@ def handler(method, path, body, st):
     if method == "DELETE":
         st[kind] = [x for x in rows if x[idkey] != body[bodykey]]; return 200, {}
     if method == "POST":
-        if body.get("action") == "carry-over" and kind == "invoices":
-            src = next(x for x in rows if x["InvoiceID"] == body["invoiceId"])
-            return 200, {"invoice": {**src, "InvoiceID": "INV-CO", "Month": src["Month"] + 1, "Status": "Draft"}}
         if body.get("action") == "generate": return 200, {"created": [1, 2], "skipped": [{"studentId": "STU-1", "serviceId": "SVC-9"}] if kind == "invoices" else []}
         if body.get("action") == "manual" and kind == "invoices": return 200, {"invoices": [{**mk_invoices()[0], "InvoiceID": "INV-M", "StudentID": body["studentId"]}]}
 
@@ -69,7 +69,7 @@ def main():
         s.page.get_by_role("menuitem", name="Carry over to next month").click()
         s.page.get_by_text(re.compile("Created draft INV-CO")).wait_for()
         out["carry_toast"] = s.page.get_by_text(re.compile("Created draft INV-CO")).first.inner_text()
-        out["carry_call"] = [c for c in s.calls if c[2] and c[2].get("action") == "carry-over"][-1][2]
+        out["carry_call"] = [c for c in s.calls if c[2] and c[1].startswith("/api/invoices/carry-over")][-1][2]
         # status filter
         s.page.get_by_label("Status").click(); s.page.get_by_role("option", name="Needs approval").click()
         s.page.wait_for_timeout(300)

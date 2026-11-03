@@ -114,7 +114,7 @@ export function usePaymentOptions() {
 export function useCarryOver() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (invoiceId: string) => (await apiFetch<{ invoice: BillRecord }>("/api/invoices", { method: "POST", body: { action: "carry-over", invoiceId } })).invoice,
+    mutationFn: async (invoiceId: string) => (await apiFetch<{ invoice: BillRecord }>("/api/invoices/carry-over", { method: "POST", body: { invoiceId } })).invoice,
     onSettled: () => void qc.invalidateQueries({ queryKey: keys.invoices }),
   });
 }
