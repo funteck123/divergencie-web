@@ -1,4 +1,4 @@
-"""TKT-0292: message templates. Management adds, edits, deletes and copies; a Teacher sees them read-only with Copy."""
+"""TKT-0292, TKT-0409: message templates. Management adds, edits, deletes and copies; Teacher and Staff have no templates card and never ask for them."""
 import re, sys, os
 sys.path.insert(0, os.path.dirname(__file__))
 from harness import Session
@@ -58,20 +58,18 @@ def main():
         s.page.screenshot(path="snapshots/v2-templates.png")
         out["hscroll"] = s.hscroll(); out["errors"] = [e for e in s.errors if "status of 400" not in e][:3]  # the 400 is the deliberate duplicate name
         out["calls"] = [(m, p) for m, p, b in s.calls]
-    # a Teacher: read-only, can copy
-    user = {"UserID": "T", "UserType": "Teacher", "Name": "Test Teacher", "UiPreference": "next"}
-    with Session(user=user, state={}) as s:
-        s.on(r"^/api/templates", templates_handler)
-        s.on(r"^/api/", P.handler_for(user, "teacher"))
-        s.goto("/v2/teacher")
-        s.page.get_by_role("heading", name="Message templates").wait_for(timeout=90000)
-        s.page.get_by_role("article", name="Payment acknowledged").wait_for()
-        card = s.page.get_by_role("article", name="Payment acknowledged")
-        out["teacher_buttons"] = [b.inner_text() for b in card.get_by_role("button").all()]
-        card.get_by_role("button", name="Copy").click()
-        s.page.get_by_text("Copied Payment acknowledged.").wait_for()
-        out["teacher_clipboard"] = s.page.evaluate("navigator.clipboard.readText()")
-        out["teacher_hscroll"] = s.hscroll(); out["teacher_errors"] = s.errors[:3]
+    # TKT-0409: templates are for Management only. A Teacher and a Staff account get no card and never ask for templates.
+    for role, kind in (("Teacher", "teacher"), ("Staff", "staff")):
+        user = {"UserID": "T", "UserType": role, "Name": f"Test {role}", "UiPreference": "next"}
+        with Session(user=user, state={}) as s:
+            s.on(r"^/api/templates", templates_handler)
+            s.on(r"^/api/", P.handler_for(user, kind))
+            s.goto(f"/v2/{kind}")
+            s.page.get_by_role("heading", name="My Info").wait_for(timeout=90000)
+            s.page.wait_for_timeout(800)
+            out[f"{kind}_has_templates_card"] = s.page.get_by_role("heading", name="Message templates").count()
+            out[f"{kind}_asked_for_templates"] = len([1 for m, p, b in s.calls if p.startswith("/api/templates")])
+            out[f"{kind}_errors"] = s.errors[:3]
     for k, v in out.items(): print(k, v)
 
 if __name__ == "__main__":

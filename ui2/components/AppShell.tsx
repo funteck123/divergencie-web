@@ -112,7 +112,6 @@ export function AppShell({ user, tabs, children }: { user: SessionUser; tabs?: r
       <header className={`${styles.bar} u2-on-dark`} style={impersonator ? { top: 0 } : undefined}>
         <div className={styles.brand}>
           <Image src="/ui2/logo/logo-white-160.webp" alt="DivergenCIE Coaching" width={120} height={44} priority unoptimized />
-          <span className={styles.beta}>Beta</span>
         </div>
         <div className={styles.who}>
           <span className={styles.name}>{user.Name}</span>

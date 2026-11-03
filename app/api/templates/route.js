@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import { requireManagement, requireSession } from "@/lib/authz";
+import { requireManagement } from "@/lib/authz";
 import { logAudit } from "@/lib/logging";
 import { getTemplates, setTemplates } from "@/lib/mcqConfig";
 import { addTemplate, removeTemplate, sortTemplates, TemplateError, updateTemplate } from "@/lib/templates";
 
-// TKT-0292: reusable text templates. Management, Staff and Teachers can read and copy them; only Management changes them.
+// TKT-0292: reusable text templates. TKT-0409 (owner, 4 Nov 2026): Management only, for reading as well as changing.
 // body: POST { name, body } | PATCH { templateId, name, body } | DELETE { templateId }
-const READERS = ["Management", "Staff", "Teacher"];
 
 function fail(e) {
   if (e instanceof TemplateError) return NextResponse.json({ error: e.message }, { status: 400 });
@@ -14,9 +13,8 @@ function fail(e) {
 }
 
 export async function GET(req) {
-  const { session, error } = requireSession(req);
+  const { error } = requireManagement(req);
   if (error) return error;
-  if (!READERS.includes(session.userType)) return NextResponse.json({ error: "Forbidden." }, { status: 403 });
   try {
     return NextResponse.json({ templates: sortTemplates(await getTemplates()) });
   } catch (e) {

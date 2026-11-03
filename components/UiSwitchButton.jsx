@@ -25,7 +25,7 @@ export default function UiSwitchButton({ user }) {
 
   return (
     <button className="btn-ghost" onClick={open} disabled={state === "busy"} title="Opens the experimental new UI. You can switch back at any time.">
-      {state === "busy" ? "Opening…" : state === "failed" ? "Could not switch, try again" : "New UI (Beta)"}
+      {state === "busy" ? "Opening…" : state === "failed" ? "Could not switch, try again" : "New UI"}
     </button>
   );
 }

@@ -33,6 +33,8 @@ export const HOOKS = {
   "app/dashboard/trial/page.js": { maxAdded: 1, maxDeleted: 0, why: "TKT-0385: a comment-only lint suppression, owner agreed 2026-11-01" },
   "components/Nav.tsx": { maxAdded: 1, maxDeleted: 0, why: "TKT-0385: a comment-only lint suppression, owner agreed 2026-11-01" },
   "components/SessionAttendance.jsx": { maxAdded: 1, maxDeleted: 0, why: "TKT-0385: a comment-only lint suppression, owner agreed 2026-11-01" },
+  "app/api/templates/route.js": { maxAdded: 5, maxDeleted: 9, why: "TKT-0409: templates are Management only, reading included (owner request 4 Nov 2026)" },
+  "components/UiSwitchButton.jsx": { maxAdded: 1, maxDeleted: 1, why: "the switch button no longer says Beta (owner request 4 Nov 2026)" },
   "components/ResourcesSection.jsx": { maxAdded: 2, maxDeleted: 2, why: "the Syllabus Viewer and Question Solver buttons open the new views (ticket from the user, 2026-10-03)" },
 };
 

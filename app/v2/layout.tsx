@@ -8,7 +8,7 @@ import "@/ui2/styles/shared.css";
 
 // The experimental new UI (TKT-0322). Opt-in Beta, never indexed. Everything is scoped under .u2.
 export const metadata: Metadata = {
-  title: "DivergenCIE (new UI, Beta)",
+  title: "DivergenCIE (new UI)",
   robots: { index: false, follow: false },
 };
 

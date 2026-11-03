@@ -7,11 +7,6 @@
   background: var(--u2-color-brand); color: var(--u2-color-on-brand);
 }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .brand { display: flex; align-items: center; gap: var(--u2-space-2); }
-:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .beta {
-  background: var(--u2-color-accent); color: var(--u2-color-on-accent);
-  border-radius: var(--u2-radius); padding: 2px var(--u2-space-2);
-  font-size: var(--u2-text-xs); font-weight: var(--u2-weight-bold); text-transform: uppercase; letter-spacing: 0.04em;
-}
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .who { display: flex; flex-direction: column; line-height: 1.2; margin-left: auto; text-align: right; }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .name { font-weight: var(--u2-weight-semibold); font-size: var(--u2-text-md); }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .type { font-size: var(--u2-text-xs); opacity: 0.85; }

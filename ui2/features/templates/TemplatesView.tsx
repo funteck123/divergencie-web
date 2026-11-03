@@ -12,7 +12,7 @@ import "@/ui2/features/accounts/accounts.css";
 import { CopyButton } from "./CopyButton";
 import "./templates.css";
 
-/** Reusable messages (payment reminder, payment acknowledged ...). Everyone allowed here copies; `canEdit` (Management) also adds, edits and deletes. */
+/** Reusable messages (payment reminder, payment acknowledged ...). Management copies, adds, edits and deletes them (TKT-0409: nobody else sees them). */
 export function TemplateList({ canEdit }: { canEdit: boolean }) {
   const templates = useTemplates();
   const [editing, setEditing] = useState<string | null>(null);
@@ -103,7 +103,7 @@ export function TemplatesView() {
   return (
     <section className="u2-accounts">
       <h1>Message templates</h1>
-      <p className="u2-muted">Texts staff send again and again, for example a payment reminder or a payment acknowledgement. Teachers and Staff can copy them from their own page. Only Management changes them.</p>
+      <p className="u2-muted">Texts staff send again and again, for example a payment reminder or a payment acknowledgement. Only Management can see and change them.</p>
       <section className="u2-box">
         <h2>Add a template</h2>
         <TemplateForm />

@@ -16,7 +16,7 @@ with sync_playwright() as p:
         return route.fulfill(status=200,content_type="application/json",body=json.dumps(UNION))
     page.route("**/api/**",handle)
     page.goto("http://localhost:3111/dashboard/management",wait_until="domcontentloaded",timeout=120000)
-    btn=page.get_by_role("button",name="New UI (Beta)"); btn.wait_for(timeout=60000)
+    btn=page.get_by_role("button",name="New UI"); btn.wait_for(timeout=60000)
     print("classic shows switch:",btn.count())
     btn.click(); page.wait_for_url("**/v2",timeout=60000)
     page.get_by_role("heading",name="New UI").wait_for()
