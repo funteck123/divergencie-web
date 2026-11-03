@@ -1,50 +1,60 @@
 import type { RecordingRecord } from "@/ui2/queries/recordings";
 
-export interface SubjectOption {
-  code: string;
+/** One course the student can watch: a subject, and its component when the subject has several (9709 Pure 1 and 9709 Statistics 1 are two courses). */
+export interface CourseOption {
+  key: string;
   label: string;
   count: number;
 }
 export interface ChapterGroup {
   key: string;
-  /** "Mathematics 9709": the subject this chapter belongs to. */
-  subject: string;
   chapterNo: number;
   heading: string;
   rows: RecordingRecord[];
 }
 
-/** "Physics 9702": level words are dropped, the code stays so two levels of one subject stay apart. */
-export const subjectLabel = (r: Pick<RecordingRecord, "Subject" | "SubjectCode">) => `${r.Subject || "Subject"} ${r.SubjectCode}`.trim();
+export const courseKeyOf = (r: Pick<RecordingRecord, "SubjectCode" | "Component">) => `${r.SubjectCode}|${r.Component ?? ""}`;
 
-export function subjectsOf(rows: readonly RecordingRecord[]): SubjectOption[] {
-  const m = new Map<string, SubjectOption>();
+/** "A Level Mathematics 9709 · Pure Mathematics 1" */
+export const courseLabel = (r: Pick<RecordingRecord, "Level" | "Subject" | "SubjectCode" | "Component">) =>
+  `${[r.Level, r.Subject, r.SubjectCode].filter(Boolean).join(" ")}${r.Component ? ` · ${r.Component}` : ""}`;
+
+export function coursesOf(rows: readonly RecordingRecord[]): CourseOption[] {
+  const m = new Map<string, CourseOption>();
   for (const r of rows) {
-    const cur = m.get(r.SubjectCode);
+    const k = courseKeyOf(r);
+    const cur = m.get(k);
     if (cur) cur.count++;
-    else m.set(r.SubjectCode, { code: r.SubjectCode, label: subjectLabel(r), count: 1 });
+    else m.set(k, { key: k, label: courseLabel(r), count: 1 });
   }
   return [...m.values()].sort((a, b) => a.label.localeCompare(b.label));
 }
 
-export function filterRecordings(rows: readonly RecordingRecord[], opts: { q: string; subject: string }): RecordingRecord[] {
+/** Only the chosen course's recordings, narrowed by the search text. */
+export function filterRecordings(rows: readonly RecordingRecord[], opts: { q: string; course: string }): RecordingRecord[] {
   const q = opts.q.trim().toLowerCase();
-  return rows.filter((r) => (!opts.subject || r.SubjectCode === opts.subject) && (!q || `${r.Title} ${r.ChapterName} ${r.Subject} ${r.Batch}`.toLowerCase().includes(q)));
+  return rows.filter((r) => courseKeyOf(r) === opts.course && (!q || `${r.Title} ${r.ChapterName} ${r.Batch}`.toLowerCase().includes(q)));
 }
 
-/** Chapter order first (the syllabus order), then recording date inside a chapter (teaching order: Quadratics 3, 4, 5). Subjects stay apart. */
+/** Chapters in syllabus order, lessons inside a chapter in teaching order (by recording date). Call it with one course's rows. */
 export function groupByChapter(rows: readonly RecordingRecord[]): ChapterGroup[] {
   const m = new Map<string, ChapterGroup>();
   for (const r of rows) {
-    const key = `${r.SubjectCode}|${r.ChapterNo}|${r.ChapterName}`;
-    const heading = `${r.ChapterNo > 0 ? `Chapter ${r.ChapterNo} · ` : ""}${r.ChapterName || "Other recordings"}`;
-    const g = m.get(key) ?? { key, subject: subjectLabel(r), chapterNo: r.ChapterNo, heading, rows: [] };
+    const key = `${r.ChapterNo}|${r.ChapterName}`;
+    const g = m.get(key) ?? { key, chapterNo: r.ChapterNo, heading: `${r.ChapterNo > 0 ? `Chapter ${r.ChapterNo} · ` : ""}${r.ChapterName || "Other recordings"}`, rows: [] };
     g.rows.push(r);
     m.set(key, g);
   }
-  const groups = [...m.values()].sort((a, b) => a.subject.localeCompare(b.subject) || (a.chapterNo || 999) - (b.chapterNo || 999) || a.heading.localeCompare(b.heading));
+  const groups = [...m.values()].sort((a, b) => (a.chapterNo || 999) - (b.chapterNo || 999) || a.heading.localeCompare(b.heading));
   for (const g of groups) g.rows.sort((a, b) => a.Date.localeCompare(b.Date) || a.Title.localeCompare(b.Title));
   return groups;
+}
+
+/** The lesson before and after the current one, walking through the chapters in order. */
+export function neighbours(groups: readonly ChapterGroup[], id: string | undefined): { prev?: RecordingRecord; next?: RecordingRecord; index: number; total: number } {
+  const flat = groups.flatMap((g) => g.rows);
+  const i = flat.findIndex((r) => r.RecordingID === id);
+  return { prev: i > 0 ? flat[i - 1] : undefined, next: i >= 0 ? flat[i + 1] : undefined, index: i, total: flat.length };
 }
 
 export function durationLabel(min: number): string {

@@ -11,6 +11,8 @@ export interface RecordingRecord {
   Level: string;
   Subject: string;
   SubjectCode: string;
+  /** Set when the subject has several components, for example "Pure Mathematics 1" under 9709. */
+  Component?: string;
   ChapterNo: number;
   ChapterName: string;
   Date: string;

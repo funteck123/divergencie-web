@@ -19,9 +19,14 @@ def record(r):
     batch = (r["batchFromBoard"] or r["batch"]).strip()
     rest = [p for p in parts[2:] if p != batch]
     lesson = ", ".join(rest)
+    # A Maths lesson reads "Pure Mathematics 1: Quadratics 3": the part before the colon is the component (its own course), the rest is the lesson.
+    component = ""
+    m2 = re.match(r"^((?:Pure Mathematics|Probability and Statistics|Statistics|Mechanics) \d): (.+)$", lesson)
+    if m2:
+        component, lesson = m2[1], m2[2]
     return {
         "YouTubeId": r["youtubeId"], "Title": lesson, "Level": r["level"], "Subject": r["subject"].replace(r["subjectCode"], "").strip(),
-        "SubjectCode": r["subjectCode"], "ChapterNo": chapter_no, "ChapterName": chapter_name,
+        "SubjectCode": r["subjectCode"], "Component": component, "ChapterNo": chapter_no, "ChapterName": chapter_name,
         "Date": r["recordedDate"] or r["date"], "Batch": batch, "DurationMin": float(r["processedDurationMin"] or r["durationMin"] or 0),
     }
 
