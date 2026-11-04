@@ -162,6 +162,13 @@ export async function GET(req, { params }) {
     }
   }
 
+  // TKT-0237: question search. The service returns its best 200 hits across every subject; a student keeps only enrolled subjects, then the best 30.
+  if (subPath === "search" && upstream.ok && Array.isArray(body.results)) {
+    const allowedKeys = session.userType === "Management" ? null : await enrolledSubjectKeys(session.userId);
+    const results = body.results.filter((r) => !allowedKeys || allowedKeys.has(subjectMatchKey(r.board, r.subject)));
+    return NextResponse.json({ total: results.length, results: results.slice(0, 30) });
+  }
+
   return NextResponse.json(body, { status: upstream.status });
 }
 

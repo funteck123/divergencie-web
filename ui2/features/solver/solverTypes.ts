@@ -37,3 +37,6 @@ export interface RankEntry { accountId: string; name: string; attempts: number; 
 export interface Scope { byAvgPercent: RankEntry[]; byTotalCorrect: RankEntry[] }
 export interface Leaderboard { overall: RankEntry[]; bySubject: Record<string, Scope>; byChapter: Record<string, Record<string, Scope>>; byPaper: Record<string, Scope> }
 export interface QuestionResponse { question_number: string; marks_awarded: number | null; marks_available: number | null; remark?: string; flagged?: boolean; student_answer?: string; correct_answer?: string; line_feedback?: LineFeedback[]; mark_breakdown?: MarkBreakdown[]; style_checklist?: StyleItem[]; full_mark_answer?: string }
+
+/** One question found by the text search (TKT-0237). `msId` is null when no mark scheme was found for the paper. */
+export interface SearchHit { qpId: string; msId: string | null; board: string; subject: string; component: string; title: string; questionNumber: string; structured: boolean; snippet: string }

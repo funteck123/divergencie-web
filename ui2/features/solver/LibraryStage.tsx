@@ -8,6 +8,7 @@ import { Field } from "@/ui2/components/Field";
 import type { LibraryBundle } from "@/ui2/queries/solver";
 import { solvedPdfUrl, yearlyPdfUrl } from "@/ui2/queries/solver";
 import { boardsOf, chapterKey, chapterOf, componentsOf, fetchButtonLabel, isReadingComponent, isStructuredComponent, PAPER_TYPE_LABEL, paperTypeChoices, sessionsOf, subjectHasTypes, subjectsOf, topicalChapters, yearlyPaperLabel, yearsOf, type PaperType } from "./solverLogic";
+import { QuestionSearch } from "./QuestionSearch";
 import { NEW_PAPER, isGoodPick, pickHint, statusLabel, type PaperStatus } from "./progressLogic";
 import type { AttemptMeta, TopicalPaper, YearlyPaper } from "./solverTypes";
 import "./solver.css";
@@ -113,6 +114,7 @@ export function LibraryStage({ bundle, loading, error, canMistakes, busy, status
   return (
     <section className="u2-solver-picker" aria-label="Choose a paper from the library">
       <h2>Choose a paper from the library</h2>
+      <QuestionSearch busy={busy} onPick={onPick} />
       <Field label="Board"><Combobox value={b} onChange={(v) => { setBoard(v); setTypeChoice(""); }} options={boards.map(opt)} /></Field>
       <Field label="Subject"><Combobox value={s} onChange={(v) => { setSubject(v); setTypeChoice(""); }} options={subjects.map(opt)} /></Field>
       <Field label="Component">

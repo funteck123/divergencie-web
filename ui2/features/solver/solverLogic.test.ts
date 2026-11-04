@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { AUTOSAVE_MAX_AGE_MS, paperTypeChoices, subjectHasTypes, topicalChapters, yearlyPaperName, chapterKey, chapterLabel, chapterNameOf, chapterNames, chapterOf, comparePapers, componentsOf, fetchButtonLabel, formatTimer, gradeMcq, historyRows, isFullMarks, isReadingComponent, isStructuredComponent, mistakeResults, naturalQuestionSort, pctOf, resumable, scoreStructured, seriesByAccount, titleIndex, type AutosaveRecord } from "./solverLogic";
-import type { AttemptRow, Library, McqQuestion, SolvedLibrary, YearlyLibrary } from "./solverTypes";
+import { AUTOSAVE_MAX_AGE_MS, paperTypeChoices, subjectHasTypes, topicalChapters, yearlyPaperName, chapterKey, chapterLabel, chapterNameOf, chapterNames, chapterOf, comparePapers, componentsOf, fetchButtonLabel, formatTimer, gradeMcq, historyRows, hitToPick, searchQueryOf, isFullMarks, isReadingComponent, isStructuredComponent, mistakeResults, naturalQuestionSort, pctOf, resumable, scoreStructured, seriesByAccount, titleIndex, type AutosaveRecord } from "./solverLogic";
+import type { SearchHit, AttemptRow, Library, McqQuestion, SolvedLibrary, YearlyLibrary } from "./solverTypes";
 
 describe("titles", () => {
   it("chapter number from the two title styles", () => { expect(chapterOf("Ch3 Atoms (MCQ) Worksheet 2")).toBe("3"); expect(chapterOf("2.1-structure-_ial")).toBe("2.1"); expect(chapterOf("Mock")).toBeNull(); });
@@ -135,4 +135,14 @@ describe("yearly papers have no chapter (TKT-0350)", () => {
     const rows = historyRows([row("9618_w24_22", null), row("abc", null), row("xyz", "5")], (_s, ch) => `Ch ${ch}`);
     expect(rows.map((r) => r.chapter).reverse()).toEqual(["Past paper Oct/Nov 2024, Paper 22", "—", "Ch 5"]);
   });
+});
+
+describe("question search hit", () => {
+  const hit: SearchHit = { qpId: "QP1", msId: "MS1", board: "IGCSE", subject: "Mathematics", component: "Paper 2: Non-calculator (Extended)", title: "CAIE IGCSE Maths Ch1 Bounds (Paper 2 - Easy) Worksheet 1", questionNumber: "6", structured: true, snippet: "…upper bound…" };
+  it("opens as a topical paper with the hit's own component and the same tracking meta the picker makes", () => {
+    const pick = hitToPick(hit);
+    expect(pick).toEqual({ paper: { qpId: "QP1", msId: "MS1", title: hit.title }, structured: true, meta: { subject: "IGCSE Mathematics", chapter: chapterKey(hit.title), paperId: "QP1" }, component: hit.component });
+  });
+  it("a paper without a mark scheme cannot be opened", () => expect(hitToPick({ ...hit, msId: null })).toBeNull());
+  it("the query is trimmed and its spaces collapsed", () => expect(searchQueryOf("  upper \n  bound ")).toBe("upper bound"));
 });

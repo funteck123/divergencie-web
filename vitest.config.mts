@@ -5,7 +5,7 @@ import path from "path";
 export default defineConfig({
   resolve: { alias: { "@": path.resolve(import.meta.dirname) } },
   test: {
-    include: ["ui2/**/*.test.{ts,tsx}", "app/v2/**/*.test.{ts,tsx}", "lib/billing.test.ts", "lib/recordings.test.ts", "app/api/invoices/carry-over/carryover.test.ts", "app/api/paychecks/carry-over/carryover.test.ts", "lib/scheduleGen.test.ts"],
+    include: ["ui2/**/*.test.{ts,tsx}", "app/v2/**/*.test.{ts,tsx}", "lib/billing.test.ts", "lib/recordings.test.ts", "app/api/invoices/carry-over/carryover.test.ts", "app/api/paychecks/carry-over/carryover.test.ts", "app/api/mcq/[...path]/search.test.ts", "lib/scheduleGen.test.ts"],
     environment: "node",
     restoreMocks: true,
   },

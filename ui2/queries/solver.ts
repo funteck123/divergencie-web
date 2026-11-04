@@ -1,5 +1,5 @@
 import { apiFetch } from "./client";
-import type { AttemptMeta, AttemptRow, DigitizeResult, GradeResult, Leaderboard, Library, QuestionResponse, SolvedLibrary, SubjectMeta, YearlyLibrary } from "@/ui2/features/solver/solverTypes";
+import type { SearchHit, AttemptMeta, AttemptRow, DigitizeResult, GradeResult, Leaderboard, Library, QuestionResponse, SolvedLibrary, SubjectMeta, YearlyLibrary } from "@/ui2/features/solver/solverTypes";
 
 interface TitlesReply { titles?: Record<string, string>; subjects?: Record<string, string> }
 
@@ -106,3 +106,6 @@ export const pdfUrl = (fileId: string, filename: string) => `/api/mcq/pdf?fileId
 export const solvedPdfUrl = (solvedId: string) => `/api/mcq/solved-pdf?id=${encodeURIComponent(solvedId)}`;
 export const yearlyPdfUrl = (paperId: string, kind?: "qp" | "ms") => `/api/mcq/yearly-pdf?paperId=${encodeURIComponent(paperId)}${kind ? `&kind=${kind}` : ""}`;
 export const yearlyAudioUrl = (paperId: string) => `/api/mcq/yearly-audio?paperId=${encodeURIComponent(paperId)}`;
+
+/** Question text search over the library. The server already limits the hits to the subjects this account may see. */
+export const searchQuestions = (q: string) => apiFetch<{ total: number; results: SearchHit[] }>(`/api/mcq/search?q=${encodeURIComponent(q)}`);

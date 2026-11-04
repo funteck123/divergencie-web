@@ -75,6 +75,7 @@ import { execFile } from "child_process";
 import { promisify } from "util";
 import { recordAttempt, getProgressForAccount, getAllProgress, getLeaderboard, ScoresUnavailableError, InvalidAttemptError, recordQuestionResults, getMistakeChartData, getUnresolvedMistakes, InvalidMistakeResultsError, getQuestionResponsesForAttempt } from "./scores.mjs";
 import { SUBJECT_COMPONENTS } from "./subjectComponents.mjs";
+import { buildIndex, search as searchIndex } from "./searchIndex.mjs";
 
 const execFileAsync = promisify(execFile);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -1811,6 +1812,34 @@ function wrapResponseForGzip(req, res) {
   };
 }
 
+// TKT-0237: question search. data/mcq-digitizer/search-index/text.json is written by build_search_text.py (the wording of every library
+// question). The word index is built in memory on first use and rebuilt only when that file changes. Each question is joined to its paper's
+// mark scheme id and library component; a paper that is not in the library picker is left out, so every hit can be opened.
+const SEARCH_TEXT_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "search-index", "text.json");
+let searchCache = null;
+let searchCacheKey = "";
+function loadSearchIndex() {
+  const stat = fs.statSync(SEARCH_TEXT_PATH);
+  const key = `${stat.mtimeMs}:${fs.statSync(DRIVE_MAP_PATH).mtimeMs}`;
+  if (searchCache && key === searchCacheKey) return searchCache;
+  const where = new Map(); // qpId -> { component, msId, title }
+  for (const subjects of Object.values(buildLibrary())) for (const comps of Object.values(subjects)) for (const [component, papers] of Object.entries(comps)) {
+    for (const p of papers) where.set(p.qpId, { component, msId: p.msId, title: p.title });
+  }
+  const entries = [];
+  for (const paper of JSON.parse(fs.readFileSync(SEARCH_TEXT_PATH, "utf8"))) {
+    const w = where.get(paper.qpId);
+    if (!w) continue;
+    for (const [questionNumber, text] of Object.entries(paper.questions)) {
+      if (text.trim().length < 25) continue; // a bare number or a picture-only question has nothing to search
+      entries.push({ id: `${paper.qpId}:${questionNumber}`, text, also: `${w.title} ${w.component}`, qpId: paper.qpId, msId: w.msId, board: paper.board, subject: paper.subject, component: w.component, title: w.title, questionNumber, structured: paper.kind === "structured" });
+    }
+  }
+  searchCache = buildIndex(entries);
+  searchCacheKey = key;
+  return searchCache;
+}
+
 const server = http.createServer(async (req, res) => {
   wrapResponseForGzip(req, res);
   if (req.method === "POST" && req.url === "/api/digitize") {
@@ -1843,6 +1872,28 @@ const server = http.createServer(async (req, res) => {
       res.end(JSON.stringify(result));
     } catch (e) {
       res.writeHead(e instanceof InvalidPdfError ? 400 : 500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  if (req.method === "GET" && req.url.startsWith("/api/search")) {
+    try {
+      const params = new URL(req.url, "http://x").searchParams;
+      const q = (params.get("q") || "").slice(0, 200);
+      if (!fs.existsSync(SEARCH_TEXT_PATH)) {
+        res.writeHead(503, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "The question search index is not built yet (run prototypes/mcq-digitizer/build_search_text.py)." }));
+        return;
+      }
+      const board = params.get("board"), subject = params.get("subject");
+      const filter = board || subject ? (d) => (!board || d.board === board) && (!subject || d.subject === subject) : undefined;
+      // Up to 200 raw hits: the proxy drops the subjects a student is not enrolled in and then keeps the best 30.
+      const body = JSON.stringify(searchIndex(loadSearchIndex(), q, { limit: 200, filter }));
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(body);
+    } catch (e) {
+      res.writeHead(500, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: e.message }));
     }
     return;

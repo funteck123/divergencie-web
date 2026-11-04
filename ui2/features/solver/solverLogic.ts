@@ -1,4 +1,4 @@
-import type { AttemptMeta, AttemptRow, GradeResult, Library, McqQuestion, SolvedLibrary, SubjectMeta, TopicalPaper, YearlyLibrary, YearlyPaper } from "./solverTypes";
+import type { AttemptMeta, AttemptRow, GradeResult, Library, McqQuestion, SearchHit, SolvedLibrary, SubjectMeta, TopicalPaper, YearlyLibrary, YearlyPaper } from "./solverTypes";
 
 // ---- chapter and title parsing (ported from the classic Question Solver) --------------------------------
 
@@ -218,4 +218,14 @@ export const AUTOSAVE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 /** May this saved attempt be offered for resuming? Same account, same kind of quiz, same paper, under a day old. */
 export function resumable(rec: AutosaveRecord | null, kind: "mcq" | "structured", account: string, meta: AttemptMeta | null, now = Date.now()): rec is AutosaveRecord {
   return !!rec && rec.v === 1 && rec.kind === kind && rec.acct === account && !!meta && rec.paperKey === meta.paperId && now - rec.savedAt < AUTOSAVE_MAX_AGE_MS;
+}
+
+/** The two or more words a search needs before it asks the server (one letter would match half the library). */
+export const MIN_SEARCH_LENGTH = 2;
+export const searchQueryOf = (raw: string): string => raw.replace(/\s+/g, " ").trim();
+
+/** What opening a search hit needs, in the same shape the library picker passes on (a topical worksheet; the hit names its own component). */
+export function hitToPick(h: SearchHit): { paper: TopicalPaper; structured: boolean; meta: AttemptMeta; component: string } | null {
+  if (!h.msId) return null; // no mark scheme: the paper cannot be marked, same rule as the picker
+  return { paper: { qpId: h.qpId, msId: h.msId, title: h.title }, structured: h.structured, meta: { subject: `${h.board} ${h.subject}`, chapter: chapterKey(h.title), paperId: h.qpId }, component: h.component };
 }
