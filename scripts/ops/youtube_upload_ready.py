@@ -40,9 +40,10 @@ def fit_title(t):
 
 
 def pending(rows, ledger):
-    """Ready, not yet on YouTube, in teaching order: chapter, then recording date, then title."""
+    """Ready, not yet on YouTube, in teaching order: A Level before IGCSE, then chapter, then recording date, then title."""
     todo = [r for r in rows if r.get("processedVideoPath") and r.get("readyToPost") == "yes" and not r.get("youtubeId") and f"md5:{r.get('processedMd5', '')}" not in ledger]
-    return sorted(todo, key=lambda r: (chapter_no(r), r.get("recordedDate", ""), r.get("processedYouTubeTitle", "")))
+    # A Level first (owner order: "AS Level first, chapter by chapter, then IGCSE"), then chapter, recording date, title
+    return sorted(todo, key=lambda r: (0 if r.get("level") == "A Level" else 1, chapter_no(r), r.get("recordedDate", ""), r.get("processedYouTubeTitle", "")))
 
 
 def row_key(r):
