@@ -36,7 +36,8 @@ def title(row, entry):
     no, name = chapter_of(row, entry)
     code = row.get("subjectCode") or "9702"
     lesson = entry.get("lesson") or row.get("topic", "")
-    return f"{row['level']} {row['subject']} {code} | " + (f"Ch {no} {name} | " if name else "") + lesson
+    chapter = (f"Ch {no} {name} | " if no else f"{name} | ") if name else ""  # a chapterless lesson (exam practice) has no "Ch N"
+    return f"{row['level']} {row['subject']} {code} | " + chapter + lesson
 
 
 def description(row, entry, duration):
