@@ -15,7 +15,7 @@ import { useBills, useDeleteBill, usePatchBill, usePaymentOptions } from "@/ui2/
 import type { BillLineItem, BillRecord, ServiceRecord, UserRecord } from "@/ui2/queries/types";
 import { ApprovePayment } from "./ApprovePayment";
 import { copyItems } from "./billActions";
-import { KINDS, fxRateTitle, isSettled, needsApproval, periodLabel, type BillKind } from "./billingLogic";
+import { KINDS, fxRateTitle, isSettled, needsApproval, periodLabel, unsendWarning, type BillKind } from "./billingLogic";
 import "./billing.css";
 import "@/ui2/features/accounts/accounts.css";
 
@@ -43,9 +43,11 @@ function Body({ kind, bill, person, services, onClose }: { kind: BillKind; bill:
   const [due, setDue] = useState(String(bill.INRDue));
   const [error, setError] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const [unsending, setUnsending] = useState(false);
   const approval = needsApproval(bill, k);
   const settled = isSettled(bill, k);
   const isDraft = bill.Status === "Draft";
+  const warning = unsendWarning(kind, !!(bill as Record<string, unknown>)[k.paidKey], bill[k.paidAtKey] ? (formatDate(bill[k.paidAtKey] as string) as string) : undefined);
   const fx = fxRateTitle(bill);
   const nameOfService = (sid: string, batchId?: string) => {
     const s = services.find((x) => x.ServiceID === sid);
@@ -92,7 +94,7 @@ function Body({ kind, bill, person, services, onClose }: { kind: BillKind; bill:
             Send
           </Button>
         ) : (
-          <Button variant="ghost" loading={patch.isPending} onClick={() => void run({ status: "Draft" }, "Moved back to draft.")}>
+          <Button variant="ghost" loading={patch.isPending} onClick={() => (warning ? setUnsending(true) : void run({ status: "Draft" }, "Moved back to draft."))}>
             Unsend
           </Button>
         )}
@@ -149,6 +151,18 @@ function Body({ kind, bill, person, services, onClose }: { kind: BillKind; bill:
           {error}
         </p>
       )}
+      <ConfirmDialog
+        open={unsending}
+        onOpenChange={setUnsending}
+        title={`Unsend this ${k.noun}?`}
+        description={warning ?? ""}
+        confirmLabel="Yes, unsend"
+        danger
+        onConfirm={async () => {
+          await patch.mutateAsync({ id, patch: { status: "Draft" } });
+          toast.success("Moved back to draft. The received mark was cleared and the change is in the audit log.");
+        }}
+      />
       <ConfirmDialog
         open={deleting}
         onOpenChange={setDeleting}

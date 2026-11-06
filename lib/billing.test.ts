@@ -82,8 +82,12 @@ describe("paycheck audit line (TKT-0411)", () => {
   });
   it("joins several changes and reports a changed amount due", () => {
     expect(describePaycheckChange(sent, { ...sent, Status: "Draft", StaffReceivedFlag: false, INRDue: 0 }, { byManagement: true })).toBe(
-      "Unsent paycheck PAY-9 (Sent to Draft); Management unmarked paycheck PAY-9 as received; INR due on PAY-9 changed from 500 to 0"
+      "Unsent paycheck PAY-9 (Sent to Draft) and cleared its received mark; INR due on PAY-9 changed from 500 to 0"
     );
+  });
+  it("an unsend that clears the received mark says so once and keeps the date the person marked it", () => {
+    const rec = { ...sent, ReceivedAt: "2026-11-05T09:30:00.000Z" };
+    expect(describePaycheckChange(rec, { ...rec, Status: "Draft", StaffReceivedFlag: false, ReceivedAt: "" }, { byManagement: true })).toBe("Unsent paycheck PAY-9 (Sent to Draft) and cleared its received mark (received 2026-11-05)");
   });
   it("returns null when nothing tracked changed, and treats a missing flag as not received", () => {
     expect(describePaycheckChange(sent, { ...sent }, { byManagement: true })).toBeNull();

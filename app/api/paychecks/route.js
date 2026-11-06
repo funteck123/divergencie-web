@@ -234,6 +234,11 @@ export async function POST(req) {
 
     let paycheck = db.paychecks.find((p) => p.LineItems && p.StaffID === enr.UserID && p.Year === y && p.Month === m);
     if (paycheck?.LineItems.some((li) => li.ServiceID === enr.ServiceID && li.BatchID === enr.BatchID)) continue;
+    // TKT-0413 (owner, 7 Nov 2026): Generate Drafts never changes a paycheck that was already sent; unsend it first if it needs this subject.
+    if (paycheck && paycheck.Status !== "Draft") {
+      skipped.push({ staffId: enr.UserID, serviceId: enr.ServiceID, batchId: enr.BatchID, reason: `Paycheck ${paycheck.PaycheckID} for this month is already ${paycheck.Status}, so Generate Drafts leaves it alone. Unsend it first if it needs this subject.` });
+      continue;
+    }
 
     // Also skip if an OLD flat-shape paycheck already covers this exact
     // Staff/Service/Batch/Year/Month — see the matching comment/fix in
@@ -389,7 +394,7 @@ export async function PATCH(req) {
     if (status !== undefined) {
       paycheck.Status = status;
       if (status === "Sent" && !paycheck.SentAt) paycheck.SentAt = new Date().toISOString();
-      if (status === "Draft") paycheck.SentAt = ""; // TKT-0411: unsent; the old date stays in the audit snapshot
+      if (status === "Draft") { paycheck.SentAt = ""; paycheck.StaffReceivedFlag = false; paycheck.ReceivedAt = ""; } // TKT-0411: unsent clears the sent date and the received mark; the old values stay in the audit snapshot
     }
     // inrAmount is a rare manual correction, not a normal edit path (the
     // per-line-item PATCH above is what keeps INRAmount in sync day to
@@ -416,7 +421,7 @@ export async function PATCH(req) {
     if (status !== undefined) {
       paycheck.Status = status;
       if (status === "Sent" && !paycheck.SentAt) paycheck.SentAt = new Date().toISOString();
-      if (status === "Draft") paycheck.SentAt = ""; // TKT-0411
+      if (status === "Draft") { paycheck.SentAt = ""; paycheck.StaffReceivedFlag = false; paycheck.ReceivedAt = ""; } // TKT-0411
     }
     if (staffReceivedFlag !== undefined) {
       paycheck.StaffReceivedFlag = Boolean(staffReceivedFlag);

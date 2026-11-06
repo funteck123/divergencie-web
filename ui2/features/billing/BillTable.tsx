@@ -20,7 +20,7 @@ import { ApprovePayment } from "./ApprovePayment";
 import { BillSheet } from "./BillSheet";
 import { copyItems } from "./billActions";
 import {
-  KINDS, LANES, MODE_LABEL, NO_BATCH, STATUS_FILTER_LABEL, activeFilterCount, applyFilters, duplicateMonths, emptyFilters, fxRateTitle, groupBills, isSettled, laneOf, needsApproval, periodKey, personSummary,
+  KINDS, LANES, MODE_LABEL, NO_BATCH, STATUS_FILTER_LABEL, activeFilterCount, applyFilters, duplicateMonths, emptyFilters, fxRateTitle, groupBills, isSettled, laneOf, needsApproval, periodKey, personSummary, unsendWarning,
   type BillFilters, type BillKind, type Mode, type StatusFilter,
 } from "./billingLogic";
 import "./billing.css";
@@ -44,6 +44,7 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
   const [showFilters, setShowFilters] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<BillRecord | null>(null);
+  const [unsendTarget, setUnsendTarget] = useState<BillRecord | null>(null);
   const [closed, setClosed] = useState<ReadonlySet<string>>(new Set());
   const [busyId, setBusyId] = useState<string | null>(null);
   const deferredQ = useDeferredValue(q);
@@ -68,6 +69,13 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
       setBusyId(null);
     }
   };
+
+  const warningFor = (r: BillRecord) => {
+    const at = r[k.paidAtKey] as string | undefined;
+    return unsendWarning(kind, !!(r as Record<string, unknown>)[k.paidKey], at ? (formatDate(at) as string) : undefined);
+  };
+  // TKT-0411: a paycheck the person marked received asks first, because unsending clears that mark.
+  const unsend = (r: BillRecord) => (warningFor(r) ? setUnsendTarget(r) : void run(r, { status: "Draft" }, "Moved back to draft."));
 
   const carryOver = async (r: BillRecord) => {
     try {
@@ -104,7 +112,7 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
     const received = kind === "paycheck" && !!(r as Record<string, unknown>)[k.paidKey];
     const items: RowMenuItem[] = [{ label: "Details, due and subjects…", onSelect: () => setOpenId(idOf(r)) }];
     // TKT-0411: while a payment waits for approval the row used to show only the approve control, with no way to send it back or undo the received mark.
-    if (approval && r.Status !== "Draft") items.push({ label: "Unsend (back to draft)", onSelect: () => void run(r, { status: "Draft" }, "Moved back to draft.") });
+    if (approval && r.Status !== "Draft") items.push({ label: "Unsend (back to draft)", onSelect: () => unsend(r) });
     if (received) items.push({ label: "Unmark received", onSelect: () => void run(r, { staffReceivedFlag: false }, "Unmarked as received.") });
     if (kind === "invoice") items.push({ label: "Discount…", onSelect: () => setOpenId(idOf(r)) });
     items.push({ label: "Download PDF", href: k.pdf(idOf(r)), download: "" });
@@ -120,7 +128,7 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
             Send
           </Button>
         ) : (
-          <Button size="sm" variant="ghost" className="u2-lead" loading={busy} onClick={() => void run(r, { status: "Draft" }, "Moved back to draft.")}>
+          <Button size="sm" variant="ghost" className="u2-lead" loading={busy} onClick={() => unsend(r)}>
             Unsend
           </Button>
         )}
@@ -311,6 +319,19 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
       )}
 
       <BillSheet kind={kind} billId={openId} users={users} services={services} onClose={() => setOpenId(null)} />
+      <ConfirmDialog
+        open={!!unsendTarget}
+        onOpenChange={(o) => !o && setUnsendTarget(null)}
+        title={`Unsend this ${k.noun}?`}
+        description={unsendTarget ? `${nameOf(personOf(unsendTarget))}, ${unsendTarget.Month}/${unsendTarget.Year}. ${warningFor(unsendTarget) ?? ""}` : ""}
+        confirmLabel="Yes, unsend"
+        danger
+        onConfirm={async () => {
+          if (!unsendTarget) return;
+          await patch.mutateAsync({ id: idOf(unsendTarget), patch: { status: "Draft" } });
+          toast.success("Moved back to draft. The received mark was cleared and the change is in the audit log.");
+        }}
+      />
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(o) => !o && setDeleteTarget(null)}

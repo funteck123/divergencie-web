@@ -87,7 +87,7 @@ describe("value and range filters", () => {
   it("counts active filters", () => expect(activeFilterCount(f({ search: "x", dueMin: "1" }))).toBe(2));
 });
 
-import { generateSummary, monthRange, rebuildSummary } from "./billingLogic";
+import { generateSummary, monthRange, rebuildSummary, unsendWarning } from "./billingLogic";
 describe("monthly action summaries", () => {
   it("plain run", () => expect(generateSummary({ invoices: { created: [1, 2] }, paychecks: { created: [1] } }).text).toBe("Generated 2 invoices, 1 paycheck."));
   it("singular and zero", () => expect(generateSummary({ invoices: { created: [1] }, paychecks: { created: [] } }).text).toBe("Generated 1 invoice, 0 paychecks."));
@@ -129,5 +129,16 @@ describe("rebuild several months (TKT-0412)", () => {
   it("the summary says how many months when there are several", () => {
     expect(rebuildSummary(2, 1, null, 0)).toBe("Rebuilt: 2 invoice line item(s) rebuilt for 1 student(s).");
     expect(rebuildSummary(null, 0, 6, 1, 3)).toBe("Rebuilt: 6 paycheck line item(s) rebuilt for 1 staff, over 3 months.");
+  });
+});
+
+describe("unsend warning (TKT-0411)", () => {
+  it("warns for a paycheck the person marked received, with the date when known", () => {
+    expect(unsendWarning("paycheck", true, "5 Nov 2026")).toMatch(/marked received on 5 Nov 2026.*clears that received mark.*audit log/);
+    expect(unsendWarning("paycheck", true)).toMatch(/^This paycheck was marked received\. Unsending/);
+  });
+  it("says nothing for an invoice or a paycheck not marked received", () => {
+    expect(unsendWarning("invoice", true)).toBeNull();
+    expect(unsendWarning("paycheck", false)).toBeNull();
   });
 });

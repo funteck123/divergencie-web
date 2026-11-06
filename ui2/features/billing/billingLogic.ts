@@ -286,3 +286,12 @@ export function rebuildSummary(invoiceCreated: number | null, studentCount: numb
   if (paycheckCreated !== null) parts.push(`${paycheckCreated} paycheck line item(s) rebuilt for ${staffCount} staff`);
   return parts.length > 0 ? `Rebuilt: ${parts.join(", ")}${months > 1 ? `, over ${months} months` : ""}.` : "Nothing selected to rebuild.";
 }
+
+/**
+ * Owner, 7 Nov 2026: unsending a paycheck that the person already marked received clears that mark, so the screen warns first.
+ * Returns the warning text, or null when there is nothing to warn about (invoices, or a paycheck not marked received).
+ */
+export function unsendWarning(kind: BillKind, received: boolean, receivedOn?: string): string | null {
+  if (kind !== "paycheck" || !received) return null;
+  return `This paycheck was marked received${receivedOn ? ` on ${receivedOn}` : ""}. Unsending moves it back to draft, hides it from the person, and clears that received mark. The change is saved in the audit log with the old values.`;
+}
