@@ -7,17 +7,17 @@ import { ConfirmDialog } from "@/ui2/components/ConfirmDialog";
 import { CheckField, Field, TextInput } from "@/ui2/components/Field";
 import { useGenerate, useManualInvoice, useManualPaycheck, useRebuild } from "@/ui2/queries/billing";
 import type { EnrollmentRecord, ServiceRecord, UserRecord } from "@/ui2/queries/types";
-import { generateSummary, rebuildSummary } from "./billingLogic";
+import { generateSummary, monthRange, rebuildSummary } from "./billingLogic";
 import "./billing.css";
 import "@/ui2/features/accounts/accounts.css";
 
 const now = new Date();
 
-function YearMonth({ year, month, setYear, setMonth }: { year: string; month: string; setYear: (v: string) => void; setMonth: (v: string) => void }) {
+function YearMonth({ year, month, setYear, setMonth, labels = ["Year", "Month"] }: { year: string; month: string; setYear: (v: string) => void; setMonth: (v: string) => void; labels?: [string, string] }) {
   return (
     <div className="u2-grid2">
-      <Field label="Year"><TextInput type="number" value={year} onChange={(e) => setYear(e.target.value)} /></Field>
-      <Field label="Month"><TextInput type="number" min="1" max="12" value={month} onChange={(e) => setMonth(e.target.value)} /></Field>
+      <Field label={labels[0]}><TextInput type="number" value={year} onChange={(e) => setYear(e.target.value)} /></Field>
+      <Field label={labels[1]}><TextInput type="number" min="1" max="12" value={month} onChange={(e) => setMonth(e.target.value)} /></Field>
     </div>
   );
 }
@@ -99,10 +99,17 @@ function GeneratePanel({ onDone }: { onDone: (s: { text: string; skippedItems: s
 function RebuildPanel({ users, onDone }: { users: readonly UserRecord[]; onDone: (text: string) => void }) {
   const [year, setYear] = useState(String(now.getFullYear()));
   const [month, setMonth] = useState(String(now.getMonth() + 1));
+  const [toYear, setToYear] = useState("");
+  const [toMonth, setToMonth] = useState("");
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState("");
   const rebuild = useRebuild();
+  // TKT-0412: leave "Through" empty to rebuild one month; fill it in to rebuild every month from the start to there (at most 12).
+  const ranged = toYear.trim() !== "" || toMonth.trim() !== "";
+  const months = useMemo(() => (ranged ? monthRange(Number(year), Number(month), Number(toYear), Number(toMonth)) : [{ year: Number(year), month: Number(month) }]), [ranged, year, month, toYear, toMonth]);
+  const rangeBad = ranged && months.length === 0;
+  const monthsLabel = months.length > 1 ? `${months[0]!.month}/${months[0]!.year} to ${months[months.length - 1]!.month}/${months[months.length - 1]!.year} (${months.length} months)` : `${month}/${year}`;
   const people = useMemo(() => users.filter((u) => ["Student", "Teacher", "Staff", "Ambassador"].includes(u.UserType)).sort((a, b) => a.Name.localeCompare(b.Name)), [users]);
   const toggle = (id: string, on: boolean) => setSelected((p) => { const n = new Set(p); if (on) n.add(id); else n.delete(id); return n; });
   return (
@@ -114,7 +121,9 @@ function RebuildPanel({ users, onDone }: { users: readonly UserRecord[]; onDone:
           Details
         </span>
       </p>
-      <YearMonth year={year} month={month} setYear={setYear} setMonth={setMonth} />
+      <YearMonth year={year} month={month} setYear={setYear} setMonth={setMonth} labels={ranged ? ["From year", "From month"] : ["Year", "Month"]} />
+      <YearMonth year={toYear} month={toMonth} setYear={setToYear} setMonth={setToMonth} labels={["Through year (optional)", "Through month (optional)"]} />
+      {rangeBad && <p role="alert" className="u2-form__error">The last month must be the same as or after the first, and at most 12 months apart.</p>}
       <div style={{ maxHeight: 220, overflowY: "auto", display: "grid", gap: 2 }}>
         {people.map((p) => (
           <CheckField key={p.UserID} label={`${p.Name} (${p.UserType})`} checked={selected.has(p.UserID)} onChange={(on) => toggle(p.UserID, on)} />
@@ -122,7 +131,7 @@ function RebuildPanel({ users, onDone }: { users: readonly UserRecord[]; onDone:
         {people.length === 0 && <p className="u2-muted">No people found.</p>}
       </div>
       <div className="u2-form__actions">
-        <Button variant="primary" disabled={selected.size === 0} disabledReason="Tick at least one person." onClick={() => setConfirming(true)}>
+        <Button variant="primary" disabled={selected.size === 0 || rangeBad} disabledReason={rangeBad ? "Fix the months first." : "Tick at least one person."} onClick={() => setConfirming(true)}>
           Rebuild {selected.size > 0 ? `${selected.size} selected` : ""}
         </Button>
       </div>
@@ -131,15 +140,27 @@ function RebuildPanel({ users, onDone }: { users: readonly UserRecord[]; onDone:
         open={confirming}
         onOpenChange={setConfirming}
         title="Rebuild drafts?"
-        description={`This deletes ${selected.size} person's existing draft(s) for ${month}/${year} and regenerates them. Confirm?`}
+        description={`This deletes ${selected.size} person's existing draft(s) for ${monthsLabel} and regenerates them. A Sent record is never touched. Confirm?`}
         confirmLabel="Yes, rebuild"
         danger
         onConfirm={async () => {
           setError("");
           const studentIds = people.filter((p) => p.UserType === "Student" && selected.has(p.UserID)).map((p) => p.UserID);
           const staffIds = people.filter((p) => p.UserType !== "Student" && selected.has(p.UserID)).map((p) => p.UserID);
-          const res = await rebuild.mutateAsync({ year: Number(year), month: Number(month), studentIds, staffIds });
-          onDone(rebuildSummary(res.invoiceRes ? res.invoiceRes.created?.length || 0 : null, studentIds.length, res.paycheckRes ? res.paycheckRes.created?.length || 0 : null, staffIds.length));
+          let invoices = 0, paychecks = 0, doneMonths = 0;
+          try {
+            for (const m of months) { // one month at a time, so a failure stops at a known month
+              const res = await rebuild.mutateAsync({ year: m.year, month: m.month, studentIds, staffIds });
+              invoices += res.invoiceRes?.created?.length || 0;
+              paychecks += res.paycheckRes?.created?.length || 0;
+              doneMonths += 1;
+            }
+          } catch (e) {
+            const msg = e instanceof Error ? e.message : "Could not rebuild.";
+            setError(doneMonths > 0 ? `Rebuilt ${doneMonths} of ${months.length} month(s), then stopped: ${msg}` : msg);
+            throw e;
+          }
+          onDone(rebuildSummary(studentIds.length ? invoices : null, studentIds.length, staffIds.length ? paychecks : null, staffIds.length, months.length));
           setSelected(new Set());
         }}
       />

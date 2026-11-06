@@ -96,6 +96,11 @@ function Body({ kind, bill, person, services, onClose }: { kind: BillKind; bill:
             Unsend
           </Button>
         )}
+        {kind === "paycheck" && !!(bill as Record<string, unknown>)[k.paidKey] && (
+          <Button variant="ghost" loading={patch.isPending} onClick={() => void run({ staffReceivedFlag: false }, "Unmarked as received.")}>
+            Unmark received
+          </Button>
+        )}
         <LinkButton href={k.pdf(id)} download>
           PDF
         </LinkButton>

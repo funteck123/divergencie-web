@@ -48,7 +48,7 @@ export function RolePortal({ role, user }: { role: PortalRole; user: SessionUser
       {student ? (
         <BillsCard kind="invoice" title="My Invoices" bills={data.invoices} services={allServices} currency={u.Currency || "INR"} email={u.Email} onMarkUnpaid={actions.markUnpaid} onConfirmPaid={actions.confirmPaid} />
       ) : (
-        <BillsCard kind="paycheck" title="My Paychecks" bills={data.paychecks} services={allServices} currency={u.Currency || "INR"} onMarkReceived={actions.markReceived} />
+        <BillsCard kind="paycheck" title="My Paychecks" bills={data.paychecks} services={allServices} currency={u.Currency || "INR"} onMarkReceived={actions.markReceived} onMarkNotReceived={actions.markNotReceived} />
       )}
     </div>
   );

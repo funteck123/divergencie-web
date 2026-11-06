@@ -268,9 +268,21 @@ export function generateSummary({ invoices, paychecks }: GenerateLike): { text: 
   return { text, skippedItems };
 }
 
-export function rebuildSummary(invoiceCreated: number | null, studentCount: number, paycheckCreated: number | null, staffCount: number): string {
+/** TKT-0412: the months from one month to another, both included, oldest first. Empty for a bad month, an end before the start, or more than `max` months. */
+export function monthRange(fromYear: number, fromMonth: number, toYear: number, toMonth: number, max = 12): { year: number; month: number }[] {
+  const ok = (y: number, m: number) => Number.isInteger(y) && Number.isInteger(m) && m >= 1 && m <= 12 && y >= 2000 && y <= 2100;
+  if (!ok(fromYear, fromMonth) || !ok(toYear, toMonth)) return [];
+  const count = (toYear - fromYear) * 12 + (toMonth - fromMonth) + 1;
+  if (count < 1 || count > max) return [];
+  return Array.from({ length: count }, (_, i) => {
+    const index = fromYear * 12 + (fromMonth - 1) + i;
+    return { year: Math.floor(index / 12), month: (index % 12) + 1 };
+  });
+}
+
+export function rebuildSummary(invoiceCreated: number | null, studentCount: number, paycheckCreated: number | null, staffCount: number, months = 1): string {
   const parts: string[] = [];
   if (invoiceCreated !== null) parts.push(`${invoiceCreated} invoice line item(s) rebuilt for ${studentCount} student(s)`);
   if (paycheckCreated !== null) parts.push(`${paycheckCreated} paycheck line item(s) rebuilt for ${staffCount} staff`);
-  return parts.length > 0 ? `Rebuilt: ${parts.join(", ")}.` : "Nothing selected to rebuild.";
+  return parts.length > 0 ? `Rebuilt: ${parts.join(", ")}${months > 1 ? `, over ${months} months` : ""}.` : "Nothing selected to rebuild.";
 }

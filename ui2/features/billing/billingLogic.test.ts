@@ -87,7 +87,7 @@ describe("value and range filters", () => {
   it("counts active filters", () => expect(activeFilterCount(f({ search: "x", dueMin: "1" }))).toBe(2));
 });
 
-import { generateSummary, rebuildSummary } from "./billingLogic";
+import { generateSummary, monthRange, rebuildSummary } from "./billingLogic";
 describe("monthly action summaries", () => {
   it("plain run", () => expect(generateSummary({ invoices: { created: [1, 2] }, paychecks: { created: [1] } }).text).toBe("Generated 2 invoices, 1 paycheck."));
   it("singular and zero", () => expect(generateSummary({ invoices: { created: [1] }, paychecks: { created: [] } }).text).toBe("Generated 1 invoice, 0 paychecks."));
@@ -110,4 +110,24 @@ describe("by batch (TKT-0403)", () => {
   it("one group per batch, alphabetical, no batch last", () => expect(groupBills(rows, "batch", inv, nameOf, new Date(), batchOf).map((x) => [x.label, x.rows.length])).toEqual([["B4", 1], ["B8", 2], ["No batch", 1]]));
   it("newest month first inside a batch", () => expect(groupBills(rows, "batch", inv, nameOf, new Date(), batchOf).find((x) => x.label === "B8")?.rows.map((r) => r.InvoiceID)).toEqual(["INV-B8a", "INV-B8b"]));
   it("without a batchOf function it falls back to one flat group", () => expect(groupBills(rows, "batch", inv, nameOf).length).toBe(1));
+});
+
+describe("rebuild several months (TKT-0412)", () => {
+  it("lists the months from one to another, both included", () => {
+    expect(monthRange(2026, 8, 2026, 10)).toEqual([{ year: 2026, month: 8 }, { year: 2026, month: 9 }, { year: 2026, month: 10 }]);
+    expect(monthRange(2026, 10, 2026, 10)).toEqual([{ year: 2026, month: 10 }]);
+  });
+  it("crosses a year end", () => expect(monthRange(2026, 11, 2027, 2).map((m) => `${m.month}/${m.year}`)).toEqual(["11/2026", "12/2026", "1/2027", "2/2027"]));
+  it("refuses an end before the start, a bad month, and more than 12 months", () => {
+    expect(monthRange(2026, 10, 2026, 9)).toEqual([]);
+    expect(monthRange(2026, 0, 2026, 3)).toEqual([]);
+    expect(monthRange(2026, 1, 2026, 13)).toEqual([]);
+    expect(monthRange(Number.NaN, 1, 2026, 3)).toEqual([]);
+    expect(monthRange(2026, 1, 2027, 1)).toEqual([]); // 13 months
+    expect(monthRange(2026, 1, 2026, 12)).toHaveLength(12);
+  });
+  it("the summary says how many months when there are several", () => {
+    expect(rebuildSummary(2, 1, null, 0)).toBe("Rebuilt: 2 invoice line item(s) rebuilt for 1 student(s).");
+    expect(rebuildSummary(null, 0, 6, 1, 3)).toBe("Rebuilt: 6 paycheck line item(s) rebuilt for 1 staff, over 3 months.");
+  });
 });

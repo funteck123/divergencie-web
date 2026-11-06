@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId, deleteRecords } from "@/lib/db";
-import { computeHoursAndAmount, ratesOf, rateById, isEnrollmentActiveForMonth } from "@/lib/billing";
+import { computeHoursAndAmount, describePaycheckChange, ratesOf, rateById, isEnrollmentActiveForMonth } from "@/lib/billing";
 import { getRateToINR, convertINRAmount } from "@/lib/fxRates";
 import { requireManagement, requireSelfOrManagement } from "@/lib/authz";
 import { logAudit } from "@/lib/logging";
@@ -389,6 +389,7 @@ export async function PATCH(req) {
     if (status !== undefined) {
       paycheck.Status = status;
       if (status === "Sent" && !paycheck.SentAt) paycheck.SentAt = new Date().toISOString();
+      if (status === "Draft") paycheck.SentAt = ""; // TKT-0411: unsent; the old date stays in the audit snapshot
     }
     // inrAmount is a rare manual correction, not a normal edit path (the
     // per-line-item PATCH above is what keeps INRAmount in sync day to
@@ -415,6 +416,7 @@ export async function PATCH(req) {
     if (status !== undefined) {
       paycheck.Status = status;
       if (status === "Sent" && !paycheck.SentAt) paycheck.SentAt = new Date().toISOString();
+      if (status === "Draft") paycheck.SentAt = ""; // TKT-0411
     }
     if (staffReceivedFlag !== undefined) {
       paycheck.StaffReceivedFlag = Boolean(staffReceivedFlag);
@@ -422,6 +424,8 @@ export async function PATCH(req) {
     }
     summary = managementOnly ? `Edited paycheck ${paycheck.PaycheckID}` : `Staff self-reported paycheck ${paycheck.PaycheckID} as ${staffReceivedFlag ? "received" : "not received"}`;
   }
+  // TKT-0411: every sent, unsent, received or unmarked change gets its own plain line in the audit log (who is in actorUserId).
+  summary = describePaycheckChange(before, paycheck, { byManagement: session.userType === "Management" }) || summary;
 
   await writeDB(db, ["paychecks"]);
   await logAudit({

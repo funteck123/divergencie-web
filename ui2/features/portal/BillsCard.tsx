@@ -24,11 +24,13 @@ export interface BillsCardProps {
   onMarkUnpaid?: (id: string) => Promise<void>;
   onConfirmPaid?: (id: string, file: File) => Promise<void>;
   onMarkReceived?: (id: string) => Promise<void>;
+  /** TKT-0411: undo a received mark made by mistake. */
+  onMarkNotReceived?: (id: string) => Promise<void>;
   searchHint?: string;
 }
 
 /** The person's own invoices (pay online, proof of payment, PDF) or paychecks (mark received, PDF). Drafts are never shown. */
-export function BillsCard({ kind, title, bills, services, currency, email, compact, onMarkUnpaid, onConfirmPaid, onMarkReceived }: BillsCardProps) {
+export function BillsCard({ kind, title, bills, services, currency, email, compact, onMarkUnpaid, onConfirmPaid, onMarkReceived, onMarkNotReceived }: BillsCardProps) {
   const [q, setQ] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
   const gateway = process.env.NEXT_PUBLIC_STRIPE_GATEWAY;
@@ -55,7 +57,10 @@ export function BillsCard({ kind, title, bills, services, currency, email, compa
             kind === "invoice" ? (
               <InvoicePaid invoice={b} onMarkUnpaid={onMarkUnpaid!} onConfirmPaid={onConfirmPaid!} />
             ) : (b as Record<string, unknown>)[flag] ? (
-              <span className="u2-rows" style={{ gap: 2 }}><Badge kind="success">Received ✓</Badge>{b.ReceivedAt && <span className="u2-muted">{formatDate(b.ReceivedAt) as string}</span>}</span>
+              <span className="u2-rows" style={{ gap: 2 }}>
+                <span className="u2-inline"><Badge kind="success">Received ✓</Badge>{onMarkNotReceived && <Button size="sm" variant="ghost" loading={busy === idOf(b)} onClick={async () => { setBusy(idOf(b)); try { await onMarkNotReceived(idOf(b)); } finally { setBusy(null); } }}>Undo</Button>}</span>
+                {b.ReceivedAt && <span className="u2-muted">{formatDate(b.ReceivedAt) as string}</span>}
+              </span>
             ) : (
               <Button size="sm" variant="ghost" loading={busy === idOf(b)} onClick={async () => { setBusy(idOf(b)); try { await onMarkReceived!(idOf(b)); } finally { setBusy(null); } }}>Mark as received</Button>
             ),

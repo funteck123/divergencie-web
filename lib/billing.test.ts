@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ATTENDED_STATUSES, carryOverLineItems, computeHoursAndAmount, describeSkipped, nextMonthOf, splitByActiveEnrollment } from "./billing";
+import { ATTENDED_STATUSES, carryOverLineItems, computeHoursAndAmount, describePaycheckChange, describeSkipped, nextMonthOf, splitByActiveEnrollment } from "./billing";
 
 // One student, one service, three one-hour sessions in October 2026. attendance: what was logged for each session.
 function hours(attendance: { id: string; status?: string; hours: number }[], opts: Record<string, unknown> = {}) {
@@ -69,4 +69,24 @@ describe("only lines with a live enrollment are carried over", () => {
   it("an enrollment with no dates is always live", () =>
     expect(splitByActiveEnrollment({ enrollments: [{ UserID: "U1", ServiceID: "S1", BatchID: "B1" }] }, "U1", [items[0]], 2030, 3).kept.length).toBe(1));
   it("names skipped lines with their reason", () => expect(describeSkipped({ services: db.services }, r.skipped).slice(0, 1)).toEqual(["Chemistry (enrollment ended 31/10/2026)"]));
+});
+
+describe("paycheck audit line (TKT-0411)", () => {
+  const sent = { PaycheckID: "PAY-9", Status: "Sent", StaffReceivedFlag: true, INRDue: 500 };
+  it("says unsent when a Sent paycheck goes back to Draft", () => expect(describePaycheckChange(sent, { ...sent, Status: "Draft" }, { byManagement: true })).toBe("Unsent paycheck PAY-9 (Sent to Draft)"));
+  it("says sent when a Draft is sent", () => expect(describePaycheckChange({ ...sent, Status: "Draft" }, sent, { byManagement: true })).toBe("Sent paycheck PAY-9 (Draft to Sent)"));
+  it("names who unmarked or marked received", () => {
+    expect(describePaycheckChange(sent, { ...sent, StaffReceivedFlag: false }, { byManagement: false })).toBe("Staff unmarked paycheck PAY-9 as received");
+    expect(describePaycheckChange(sent, { ...sent, StaffReceivedFlag: false }, { byManagement: true })).toBe("Management unmarked paycheck PAY-9 as received");
+    expect(describePaycheckChange({ ...sent, StaffReceivedFlag: false }, sent, { byManagement: false })).toBe("Staff marked paycheck PAY-9 as received");
+  });
+  it("joins several changes and reports a changed amount due", () => {
+    expect(describePaycheckChange(sent, { ...sent, Status: "Draft", StaffReceivedFlag: false, INRDue: 0 }, { byManagement: true })).toBe(
+      "Unsent paycheck PAY-9 (Sent to Draft); Management unmarked paycheck PAY-9 as received; INR due on PAY-9 changed from 500 to 0"
+    );
+  });
+  it("returns null when nothing tracked changed, and treats a missing flag as not received", () => {
+    expect(describePaycheckChange(sent, { ...sent }, { byManagement: true })).toBeNull();
+    expect(describePaycheckChange({ PaycheckID: "PAY-9", Status: "Sent", INRDue: 1 }, { PaycheckID: "PAY-9", Status: "Sent", StaffReceivedFlag: false, INRDue: 1 }, { byManagement: true })).toBeNull();
+  });
 });

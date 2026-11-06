@@ -100,8 +100,12 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
   const actions = (r: BillRecord) => {
     const person = userById.get(personOf(r));
     const busy = busyId === idOf(r);
-    if (needsApproval(r, k)) return <ApprovePayment onApprove={async (v) => { await patch.mutateAsync({ id: idOf(r), patch: { inrDue: v } }); toast.success("Payment recorded."); }} />;
+    const approval = needsApproval(r, k);
+    const received = kind === "paycheck" && !!(r as Record<string, unknown>)[k.paidKey];
     const items: RowMenuItem[] = [{ label: "Details, due and subjects…", onSelect: () => setOpenId(idOf(r)) }];
+    // TKT-0411: while a payment waits for approval the row used to show only the approve control, with no way to send it back or undo the received mark.
+    if (approval && r.Status !== "Draft") items.push({ label: "Unsend (back to draft)", onSelect: () => void run(r, { status: "Draft" }, "Moved back to draft.") });
+    if (received) items.push({ label: "Unmark received", onSelect: () => void run(r, { staffReceivedFlag: false }, "Unmarked as received.") });
     if (kind === "invoice") items.push({ label: "Discount…", onSelect: () => setOpenId(idOf(r)) });
     items.push({ label: "Download PDF", href: k.pdf(idOf(r)), download: "" });
     if (Array.isArray(r.LineItems)) items.push({ label: "Carry over to next month", onSelect: () => void carryOver(r) });
@@ -109,7 +113,9 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
     items.push({ label: "Delete", danger: true, onSelect: () => setDeleteTarget(r) });
     return (
       <span className="u2-rowactions">
-        {r.Status === "Draft" ? (
+        {approval ? (
+          <ApprovePayment onApprove={async (v) => { await patch.mutateAsync({ id: idOf(r), patch: { inrDue: v } }); toast.success("Payment recorded."); }} />
+        ) : r.Status === "Draft" ? (
           <Button size="sm" variant="primary" className="u2-lead" loading={busy} onClick={() => void run(r, { status: "Sent" }, "Sent.")}>
             Send
           </Button>

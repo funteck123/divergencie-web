@@ -24,5 +24,10 @@ export function useBillActions(userId: string) {
       await apiFetch("/api/paychecks", { method: "PATCH", body: { paycheckId, staffReceivedFlag: true } });
       await reload();
     },
+    /** TKT-0411: the person undoes their own received mark. The server writes it to the audit log. */
+    markNotReceived: async (paycheckId: string) => {
+      await apiFetch("/api/paychecks", { method: "PATCH", body: { paycheckId, staffReceivedFlag: false } });
+      await reload();
+    },
   };
 }
