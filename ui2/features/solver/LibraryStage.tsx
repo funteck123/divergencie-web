@@ -7,7 +7,7 @@ import { Combobox, type ComboOption } from "@/ui2/components/Combobox";
 import { Field } from "@/ui2/components/Field";
 import type { LibraryBundle } from "@/ui2/queries/solver";
 import { solvedPdfUrl, yearlyPdfUrl } from "@/ui2/queries/solver";
-import { boardsOf, chapterKey, chapterOf, componentsOf, fetchButtonLabel, isReadingComponent, isStructuredComponent, PAPER_TYPE_LABEL, paperTypeChoices, sessionsOf, subjectHasTypes, subjectsOf, topicalChapters, yearlyPaperLabel, yearsOf, type PaperType } from "./solverLogic";
+import { boardsOf, chapterKey, pickerChapterOf, componentsOf, fetchButtonLabel, isReadingComponent, isStructuredComponent, PAPER_TYPE_LABEL, paperTypeChoices, sessionsOf, subjectHasTypes, subjectsOf, topicalChapters, yearlyPaperLabel, yearsOf, type PaperType } from "./solverLogic";
 import { QuestionSearch } from "./QuestionSearch";
 import { NEW_PAPER, isGoodPick, pickHint, statusLabel, type PaperStatus } from "./progressLogic";
 import type { AttemptMeta, TopicalPaper, YearlyPaper } from "./solverTypes";
@@ -71,7 +71,7 @@ export function LibraryStage({ bundle, loading, error, canMistakes, busy, status
   const se = sessions.includes(session) ? session : (sessions[0] ?? "");
 
   const chapters = type === "topical" ? topicalChapters(topical) : [];
-  const solvedIn = (key: string) => topical.filter((p) => (chapterOf(p.title) ?? OTHER_CHAPTER) === key && !isGoodPick(stateOf(p.qpId))).length;
+  const solvedIn = (key: string) => topical.filter((p) => (pickerChapterOf(p.title) ?? OTHER_CHAPTER) === key && !isGoodPick(stateOf(p.qpId))).length;
   const chap = chapters.some((c) => c.key === chapterPick) ? chapterPick : "";
   const stateOf = (id: string) => statuses[id] ?? NEW_PAPER;
   const tag = (id: string) => ` · ${statusLabel(stateOf(id))}`;
@@ -79,7 +79,7 @@ export function LibraryStage({ bundle, loading, error, canMistakes, busy, status
     type === "solved"
       ? solvedItems.map((i) => ({ value: i.solvedId, label: `${i.title} · ${i.kind} · ${i.pages} pages` }))
       : type === "topical"
-      ? topical.map((p, i) => ({ p, i })).filter(({ p }) => !chap || (chapterOf(p.title) ?? OTHER_CHAPTER) === chap).map(({ p, i }) => ({ value: String(i), label: `${p.title}${p.msId ? "" : " (no mark scheme found)"}${tag(p.qpId)}` }))
+      ? topical.map((p, i) => ({ p, i })).filter(({ p }) => !chap || (pickerChapterOf(p.title) ?? OTHER_CHAPTER) === chap).map(({ p, i }) => ({ value: String(i), label: `${p.title}${p.msId ? "" : " (no mark scheme found)"}${tag(p.qpId)}` }))
       : reading
         ? yearlyPapers.map((p) => ({ value: p.paperId, label: p.title }))
         : yearlyPapers.filter((p) => p.year === Number(y) && p.session === se).map((p) => ({ value: p.paperId, label: `${yearlyPaperLabel(p)}${tag(p.paperId)}` }));

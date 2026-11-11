@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AUTOSAVE_MAX_AGE_MS, paperTypeChoices, subjectHasTypes, topicalChapters, yearlyPaperName, chapterKey, chapterLabel, chapterNameOf, chapterNames, chapterOf, comparePapers, componentsOf, fetchButtonLabel, formatTimer, gradeMcq, historyRows, hitToPick, searchQueryOf, isFullMarks, isReadingComponent, isStructuredComponent, mistakeResults, naturalQuestionSort, pctOf, resumable, scoreStructured, seriesByAccount, titleIndex, type AutosaveRecord } from "./solverLogic";
+import { AUTOSAVE_MAX_AGE_MS, paperTypeChoices, subjectHasTypes, topicalChapters, pickerChapterOf, ELECTRICITY_GROUP, yearlyPaperName, chapterKey, chapterLabel, chapterNameOf, chapterNames, chapterOf, comparePapers, componentsOf, fetchButtonLabel, formatTimer, gradeMcq, historyRows, hitToPick, searchQueryOf, isFullMarks, isReadingComponent, isStructuredComponent, mistakeResults, naturalQuestionSort, pctOf, resumable, scoreStructured, seriesByAccount, titleIndex, type AutosaveRecord } from "./solverLogic";
 import type { SearchHit, AttemptRow, Library, McqQuestion, SolvedLibrary, YearlyLibrary } from "./solverTypes";
 
 describe("titles", () => {
@@ -110,6 +110,28 @@ describe("picker helpers (TKT-0336, TKT-0337)", () => {
     expect(topicalChapters(papers)).toEqual([
       { key: "1.1", label: "Ch 1.1: Quadratics", count: 1 }, { key: "1.2", label: "Ch 1.2: Functions", count: 2 }, { key: "~", label: "Other worksheets", count: 1 },
     ]);
+  });
+  // TKT-0416: IGCSE Physics numbers Electric Circuits and Digital Electronics both Ch4.3; the student sees one chapter, Electricity.
+  const physics = [
+    "CAIE IGCSE Physics Ch4.1 Simple Phenomena of Magnetism (Theory) Worksheet 1", "CAIE IGCSE Physics Ch4.2 Electrical Quantities (Theory) Worksheet 1",
+    "CAIE IGCSE Physics Ch4.3 Electric Circuits (Theory) Worksheet 1", "CAIE IGCSE Physics Ch4.3 Digital Electronics (Theory) Worksheet 1",
+    "CAIE IGCSE Physics Ch4.4 Dangers of Electricity (MCQ) Worksheet 1", "CAIE IGCSE Physics Ch4.5 Electromagnetic Effects (Theory) Worksheet 1",
+  ].map((title, i) => ({ qpId: `p${i}`, title }));
+  it("puts the electricity sections of IGCSE Physics (4.2, 4.3 twice, 4.4) in one chapter, Electricity", () => {
+    expect(topicalChapters(physics)).toEqual([
+      { key: "4.1", label: "Ch 4.1: Simple Phenomena of Magnetism", count: 1 },
+      { key: ELECTRICITY_GROUP, label: "Ch 4: Electricity", count: 4 },
+      { key: "4.5", label: "Ch 4.5: Electromagnetic Effects", count: 1 },
+    ]);
+  });
+  it("gives Electric Circuits and Digital Electronics the same picker group, and leaves magnetism and other subjects alone", () => {
+    expect(pickerChapterOf(physics[2]!.title)).toBe(ELECTRICITY_GROUP);
+    expect(pickerChapterOf(physics[3]!.title)).toBe(ELECTRICITY_GROUP);
+    expect(pickerChapterOf(physics[0]!.title)).toBe("4.1");
+    expect(pickerChapterOf(physics[5]!.title)).toBe("4.5");
+    expect(pickerChapterOf("CAIE IGCSE Chemistry Ch4.3 Something (Theory) Worksheet 1")).toBe("4.3");
+    expect(pickerChapterOf("CAIE A Level Physics Ch4 Forces (Theory) Worksheet 1")).toBe("4");
+    expect(pickerChapterOf("Mixed revision")).toBeNull();
   });
   it("sorts chapter 10 after chapter 9", () => {
     expect(topicalChapters([{ qpId: "x", title: "Ch10 A (P1) Worksheet 1" }, { qpId: "y", title: "Ch9 B (P1) Worksheet 1" }]).map((c) => c.key)).toEqual(["9", "10"]);

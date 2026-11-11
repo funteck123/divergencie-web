@@ -90,12 +90,25 @@ export function subjectHasTypes(lib: Library, yearly: YearlyLibrary, solved: Sol
   return { topical: has(lib[board]?.[subject]), yearly: has(yearly[board]?.[subject]), solved: has(solved[board]?.[subject]) };
 }
 /** The chapters of a component's topical worksheets in chapter order, each with how many worksheets it has (TKT-0336). */
+/**
+ * The picker's chapter of a worksheet (TKT-0416). IGCSE Physics files its electricity worksheets as Ch4.2 Electrical Quantities, Ch4.3 Electric Circuits,
+ * Ch4.3 Digital Electronics (a second topic under the same number) and Ch4.4 Dangers of Electricity. A student sees one chapter, Electricity, so these
+ * four sections share one picker group. Magnetism (Ch4.1, Ch4.5) and every other chapter keep their own number.
+ */
+export const ELECTRICITY_GROUP = "4:electricity";
+const ELECTRICITY_SECTION = /\bIGCSE Physics Ch4\.[234]\b/i;
+export function pickerChapterOf(title: string | undefined): string | null {
+  return ELECTRICITY_SECTION.test(title || "") ? ELECTRICITY_GROUP : chapterOf(title);
+}
 export function topicalChapters(papers: readonly TopicalPaper[]): { key: string; label: string; count: number }[] {
   const m = new Map<string, { key: string; label: string; count: number; sort: number }>();
   for (const p of papers) {
     const num = chapterOf(p.title);
-    const key = num ?? "~"; // "~" groups worksheets with no chapter number
-    const cur = m.get(key) ?? { key, label: num ? (chapterNameOf(p.title) ? `Ch ${num}: ${chapterNameOf(p.title)}` : `Ch ${num}`) : "Other worksheets", count: 0, sort: num ? parseFloat(num) : Infinity };
+    const group = pickerChapterOf(p.title);
+    const key = group ?? "~"; // "~" groups worksheets with no chapter number
+    const cur = m.get(key) ?? (group === ELECTRICITY_GROUP
+      ? { key, label: "Ch 4: Electricity", count: 0, sort: 4.2 }
+      : { key, label: num ? (chapterNameOf(p.title) ? `Ch ${num}: ${chapterNameOf(p.title)}` : `Ch ${num}`) : "Other worksheets", count: 0, sort: num ? parseFloat(num) : Infinity });
     cur.count += 1;
     m.set(key, cur);
   }
