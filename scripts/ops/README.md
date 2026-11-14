@@ -26,3 +26,11 @@ DivergenCIE uses ... has expired" and writes one entry to the app log.
 1. In Google Cloud, set the OAuth consent screen's publishing status to **In production** (stops the 7 day expiry).
 2. As the account owner, on a computer with a browser: `node --env-file=.env.local scripts/ops/google-reauth.mjs`, open the link, sign in.
 3. Put the printed value into `GOOGLE_OAUTH_REFRESH_TOKEN` in Vercel (Production) and `.env.local`, then redeploy.
+
+## Node for the unit (TKT-0419, 14 Nov 2026)
+
+The unit sets `NODE_BIN=~/.local/bin/node-qs`, a link to the Node 22 install (the Supabase client needs Node 22 or later; Node 20 starts but the leaderboard fails). It used to point straight at `~/.nvm/versions/node/v22.22.2/bin/node`; when that folder went missing after a restart, the supervisor kept failing to start the servers while the tunnels stayed up, and production answered 502. If Node changes again, repoint the link (`ln -sfn <new node> ~/.local/bin/node-qs`) and `systemctl --user restart question-solver`. The user's crontab (NPC browser jobs, monthly invoice and paycheck jobs) still uses the `v22.22.2` path directly.
+
+## Daily YouTube upload (TKT-0358)
+
+`daily_upload.sh` runs `daily_upload.py`: it works out the current quota day (starts 16:00), uploads the remaining slots as unlisted after checking each file, loads the Recording Library, and writes `~/.local/state/daily-upload/status.json` plus one log per run in `runs/`. Idempotent and locked, so it can run often. It is started by the Windows scheduled task "DivergenCIE daily YouTube upload" (16:07, hourly for 8 hours, and at logon), registered from `C:\Users\<user>\dcp1-tasks\register_daily_upload.ps1` with `schtasks.exe`. `--dry-run` decides and checks without uploading.
