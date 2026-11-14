@@ -78,7 +78,8 @@ export function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendan
     const style = colorByGroup ? { background: groupGradient(groups) as string, color: readableText(groups.map((g) => (GROUP_COLORS as Record<string, string>)[g] ?? GROUP_FALLBACK_COLOR)) } : portalColor ? { background: portalColor, color: readableText([portalColor]) } : undefined;
     const tz = tzAbbrFor(s.Date, viewerTz || normalizeTimezone(s.Timezone));
     const parts = { time: s.Time, tz, name: s.ServiceName, occurrence: occ.get(s.ScheduleID), facilitator: s.Facilitator };
-    const label = chipText({ mark: attendanceMark(att?.Status), ...parts });
+    const mark = attendanceMark(att?.Status);
+    const label = chipText({ mark, ...parts });
     const fullLabel = `${chipText({ mark: "", ...parts })}${att ? ` · ${att.Status}` : ""}`;
     return (
       <div key={s.ScheduleID}>
@@ -98,7 +99,10 @@ export function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendan
             else setExpandedId(expandedId === s.ScheduleID ? null : s.ScheduleID); // already inside the day dialog, which scrolls: inline
           }}
         >
-          {label}
+          {/* Three spans so a narrow day cell can show just the time (schedule.css): the mark, the time, and the rest. The text is the same string chipText builds. */}
+          <span className="u2-chip__m">{mark ? `${mark} ` : ""}</span>
+          <span className="u2-chip__t">{s.Time}</span>
+          <span className="u2-chip__r">{label.slice((mark ? mark.length + 1 : 0) + s.Time.length)}</span>
         </button>
         {!truncate && expandedId === s.ScheduleID && clickable && (
           <div className="u2-chip__panel" onClick={(e) => e.stopPropagation()}>

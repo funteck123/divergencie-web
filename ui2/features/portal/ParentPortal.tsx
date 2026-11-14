@@ -1,7 +1,7 @@
 "use client";
 
 import { Skeleton } from "@/ui2/components/Skeleton";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { formatDate } from "@/lib/formatDate";
 import { Badge } from "@/ui2/components/Badge";
 import { DataTable, type Column } from "@/ui2/components/DataTable";
@@ -11,7 +11,8 @@ import type { SessionUser } from "@/ui2/components/RequireUser";
 import type { AttendanceItem, MeBundle } from "@/ui2/queries/types";
 import { BillsCard } from "./BillsCard";
 import { Card, GuidesCard, MyInfoCard, PortalTitle } from "./Cards";
-import { enrolledServices } from "./portalLogic";
+import { LinkButton } from "@/ui2/components/Button";
+import { amountsOwed, enrolledServices, nextSession, nextSessionText } from "./portalLogic";
 import { ScheduleCard } from "./ScheduleCard";
 
 type Child = NonNullable<MeBundle["children"]>[number];
@@ -28,6 +29,7 @@ export function ParentPortal({ user }: { user: SessionUser }) {
   return (
     <div className="u2-accounts">
       <PortalTitle />
+      {children.map((c) => <GlanceCard key={`glance-${c.student?.UserID}`} child={c} />)}
       <MyInfoCard user={data.user} linkedChildren={children.map((c) => c.student).filter((s): s is NonNullable<typeof s> => !!s)} />
       <GuidesCard guides={data.guides} />
       {children.length === 0 ? <Card title="Children"><p className="u2-muted">No children linked to this account yet.</p></Card> : children.map((c) => <ChildSection key={c.student?.UserID} child={c} data={data} parent={user} actions={actions} onChanged={() => void reload()} />)}
@@ -65,7 +67,37 @@ function ChildSection({ child, data, parent, actions, onChanged }: { child: Chil
       <Card title={`Attendance: ${student?.Name ?? ""}`}>
         <DataTable caption="Attendance" rows={child.attendance} columns={cols} rowKey={(a) => a.AttendanceID} emptyText="No attendance logged." />
       </Card>
+      <div id={`invoices-${student?.UserID}`}>
       <BillsCard kind="invoice" title={`Invoices: ${student?.Name ?? ""}`} bills={child.invoices} services={data.services ?? []} currency={student?.Currency || "INR"} onMarkUnpaid={actions.markUnpaid} onConfirmPaid={actions.confirmPaid} />
+      </div>
     </>
+  );
+}
+
+/** The two things a parent opens the page for, first on the page: the child's next class and what is still to pay (TKT-0421). */
+function GlanceCard({ child }: { child: Child }) {
+  const [now] = useState(() => Date.now());
+  const next = nextSession(child.schedule, now);
+  const owed = amountsOwed(child.invoices);
+  const count = owed.reduce((n, o) => n + o.count, 0);
+  return (
+    <Card title={`At a glance: ${child.student?.Name ?? ""}`}>
+      <dl className="u2-facts">
+        <div>
+          <dt>Next class</dt>
+          <dd>{next ? <><strong>{nextSessionText(next)}</strong><br />{next.serviceName}{next.facilitator ? ` · ${next.facilitator}` : ""}</> : "No class coming up in the schedule."}</dd>
+        </div>
+        <div>
+          <dt>To pay</dt>
+          <dd>
+            {owed.length ? (
+              <>
+                <strong>{owed.map((o) => `${o.currency} ${o.amount.toFixed(2)}`).join(" + ")}</strong> ({count} {count === 1 ? "invoice" : "invoices"}) <LinkButton href={`#invoices-${child.student?.UserID}`}>See invoice</LinkButton>
+              </>
+            ) : "Nothing to pay right now."}
+          </dd>
+        </div>
+      </dl>
+    </Card>
   );
 }
