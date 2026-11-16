@@ -1,6 +1,5 @@
-import { amountDueInOwnCurrency, batchesOf, lineItemName, rateById } from "@/lib/billing";
+import { batchesOf, lineItemName, rateById } from "@/lib/billing";
 import { daysAgoStr, todayDateStr } from "@/lib/client";
-import { convertScheduleDateTime, normalizeTimezone, tzAbbrFor } from "@/lib/timezones";
 import type { AttendanceItem, BillRecord, EnrollmentRecord, ScheduleItem, ServiceRecord } from "@/ui2/queries/types";
 
 export interface MyOccurrence {
@@ -134,71 +133,4 @@ export function showUserFeature(feature: { slug: string; toggleKey: string; link
   if (toggles[feature.toggleKey]) return true;
   const link = user[feature.linkField];
   return feature.slug === "timesheet" && typeof link === "string" && link.trim() !== "";
-}
-
-// ---- "At a glance" for a parent (TKT-0421): the two things a parent opens the page for ------------------------------------------------------
-
-export interface NextSession {
-  /** Start of the class as a UTC time stamp (ms), used for ordering. */
-  when: number;
-  date: string;
-  time: string;
-  /** Short label of the class's own time zone, e.g. "IST". */
-  tz: string;
-  serviceName: string;
-  facilitator: string;
-}
-
-/**
- * The soonest class that has not ended yet, from a child's schedule. A rescheduled class counts at its new date and time. Times are read in the
- * class's own time zone and compared as real moments, so a class at 17:00 IST is not "tomorrow" because the viewer is somewhere else. A cancelled
- * class and one without a date or a time are skipped. Anything that is not a list gives null.
- */
-export function nextSession(items: readonly ScheduleItem[] | null | undefined, nowMs: number): NextSession | null {
-  let best: NextSession | null = null;
-  for (const it of asList<ScheduleItem>(items)) {
-    const date = String(it.RescheduledDate || it.Date || "");
-    const time = String(it.RescheduledTime || it.Time || "");
-    if (!date || !time || String(it.Status ?? "").toLowerCase() === "cancelled") continue;
-    const tz = normalizeTimezone(it.Timezone) as string;
-    const utc = convertScheduleDateTime(date, time, tz, "UTC") as { date: string; time: string };
-    const when = Date.parse(`${utc.date}T${utc.time}:00Z`);
-    if (!Number.isFinite(when)) continue;
-    const hours = Number(it.Duration) > 0 ? Number(it.Duration) : 1;
-    if (when + hours * 3600000 < nowMs) continue; // already over
-    if (!best || when < best.when) best = { when, date, time, tz: tzAbbrFor(date, tz) as string, serviceName: String(it.ServiceName ?? ""), facilitator: String(it.Facilitator ?? "").trim() };
-  }
-  return best;
-}
-
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-/** "Mon 16 Nov, 17:00 IST" */
-export function nextSessionText(n: Pick<NextSession, "date" | "time" | "tz">): string {
-  const [y, m, d] = n.date.split("-").map(Number) as [number, number, number];
-  const wd = WEEKDAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
-  return `${wd} ${d} ${MONTHS[m - 1]}, ${n.time}${n.tz ? ` ${n.tz}` : ""}`;
-}
-
-export interface Owed {
-  currency: string;
-  amount: number;
-  count: number;
-}
-
-/**
- * What is still to pay: sent invoices that nobody has marked paid, added up per currency, in the invoice's own currency (the same figure the
- * invoice table shows as "Amount Due"). Drafts and invoices already marked paid are left out. Anything that is not a list gives [].
- */
-export function amountsOwed(bills: readonly BillRecord[] | null | undefined): Owed[] {
-  const out: Owed[] = [];
-  for (const b of asList<BillRecord>(bills)) {
-    if (b.Status !== "Sent" || (b as { StudentPaidFlag?: unknown }).StudentPaidFlag) continue;
-    const amount = amountDueInOwnCurrency(b) as number;
-    if (!(amount > 0)) continue;
-    const currency = b.Currency || "INR";
-    const row = out.find((o) => o.currency === currency);
-    if (row) { row.amount = Math.round((row.amount + amount) * 100) / 100; row.count += 1; } else out.push({ currency, amount, count: 1 });
-  }
-  return out;
 }

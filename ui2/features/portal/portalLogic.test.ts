@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { amountsOwed, enrolledServices, inRange, myAttendance, nextSession, nextSessionText, occurrencesText, sessionGroups, showUserFeature, stripeLink, visibleBills, weekly } from "./portalLogic";
-import type { BillRecord, ScheduleItem, ServiceRecord } from "@/ui2/queries/types";
+import { enrolledServices, inRange, myAttendance, occurrencesText, sessionGroups, showUserFeature, stripeLink, visibleBills, weekly } from "./portalLogic";
+import type { BillRecord, ServiceRecord } from "@/ui2/queries/types";
 
 const svc: ServiceRecord = {
   ServiceID: "S1", Name: "Physics", Type: "Course", Group: ["Student"],
@@ -113,58 +113,4 @@ describe("session groups (TKT-0359)", () => {
     expect(g).toEqual([{ facilitator: "", sessions: [{ when: "Monday 17:30", hours: "1h" }, { when: "Wednesday 09:00", hours: "1h" }] }]);
   });
   it("no sessions: no groups, and the text form still says not scheduled", () => expect(sessionGroups({ _myOccurrences: [] })).toEqual([]));
-});
-
-// TKT-0421: the "At a glance" card of the parent portal
-describe("next class", () => {
-  const slot = (o: Partial<ScheduleItem> & { Date: string; Time: string }): ScheduleItem => ({ ScheduleID: `${o.Date}-${o.Time}`, ServiceName: "Physics", Timezone: "Asia/Kolkata", Duration: 1.5, ...o });
-  const now = Date.UTC(2026, 10, 15, 0, 0); // Sun 15 Nov 2026, 00:00 UTC
-  it("takes the soonest class that is not over, skipping past, cancelled and incomplete ones", () => {
-    const items = [
-      slot({ Date: "2026-11-14", Time: "17:00" }),
-      slot({ Date: "2026-11-17", Time: "09:00", ServiceName: "Maths" }),
-      slot({ Date: "2026-11-16", Time: "17:00", Facilitator: " Ms Rao " }),
-      slot({ Date: "2026-11-15", Time: "10:00", Status: "Cancelled" }),
-      slot({ Date: "", Time: "10:00" }),
-    ];
-    const n = nextSession(items, now);
-    expect(n).toMatchObject({ date: "2026-11-16", time: "17:00", tz: "IST", serviceName: "Physics", facilitator: "Ms Rao" });
-    expect(nextSessionText(n!)).toBe("Mon 16 Nov, 17:00 IST");
-  });
-  it("compares real moments in the class's own zone: 05:00 IST on the 15th is 23:30 UTC on the 14th", () => {
-    const early = slot({ Date: "2026-11-15", Time: "05:00" });
-    expect(nextSession([early], Date.UTC(2026, 10, 14, 23, 0))).not.toBeNull(); // 30 minutes before it starts
-    expect(nextSession([early], Date.UTC(2026, 10, 15, 0, 31))).not.toBeNull(); // a 1.5 h class that began at 23:30 UTC is still running at 00:31 UTC
-  });
-  it("a class that has ended is not next", () => {
-    expect(nextSession([slot({ Date: "2026-11-15", Time: "05:00" })], Date.UTC(2026, 10, 15, 1, 1))).toBeNull();
-  });
-  it("a rescheduled class counts at its new date and time", () => {
-    const moved = slot({ Date: "2026-11-16", Time: "17:00", RescheduledDate: "2026-11-20", RescheduledTime: "18:30" });
-    const n = nextSession([moved, slot({ Date: "2026-11-18", Time: "10:00" })], now);
-    expect(n).toMatchObject({ date: "2026-11-18", time: "10:00" });
-    expect(nextSession([moved], now)).toMatchObject({ date: "2026-11-20", time: "18:30" });
-  });
-  it("copes with anything that is not a list", () => {
-    expect(nextSession(null, now)).toBeNull();
-    expect(nextSession(undefined, now)).toBeNull();
-    expect(nextSession({ error: "x" } as unknown as ScheduleItem[], now)).toBeNull();
-    expect(nextSession([], now)).toBeNull();
-  });
-});
-
-describe("amount to pay", () => {
-  const bill = (o: Record<string, unknown>) => ({ Status: "Sent", Year: 2026, Month: 10, Amount: 5000, INRAmount: 5000, INRDue: 5000, Currency: "INR", ...o }) as unknown as BillRecord;
-  it("adds up sent invoices nobody has marked paid, per currency", () => {
-    const out = amountsOwed([bill({}), bill({ Month: 9, INRDue: 2500.5 }), bill({ Currency: "SAR", Amount: 250, INRAmount: 5500, INRDue: 5500 })]);
-    expect(out).toEqual([{ currency: "INR", amount: 7500.5, count: 2 }, { currency: "SAR", amount: 250, count: 1 }]);
-  });
-  it("leaves out drafts, invoices marked paid and invoices with nothing due", () => {
-    expect(amountsOwed([bill({ Status: "Draft" }), bill({ StudentPaidFlag: true }), bill({ INRDue: 0 })])).toEqual([]);
-  });
-  it("copes with anything that is not a list", () => {
-    expect(amountsOwed(null)).toEqual([]);
-    expect(amountsOwed(undefined)).toEqual([]);
-    expect(amountsOwed({ error: "x" } as unknown as BillRecord[])).toEqual([]);
-  });
 });
