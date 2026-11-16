@@ -30,8 +30,8 @@ const useImpersonator = () => {
 };
 
 /**
- * Two-tier shell (sketch 1A): the pinned top bar with the logo, the Beta marker, the person, Report an Issue, Install app,
- * the switch back to classic and Sign out; the optional second tier holds the section tabs. On a phone the actions fold
+ * Two-tier shell (sketch 1A): the pinned top bar with the logo, the person, Report an Issue, My tickets, Install app and Sign out
+ * (no switch back to the old UI: it was discontinued on 17 Nov 2026); the optional second tier holds the section tabs. On a phone the actions fold
  * into one menu. An admin viewing as someone else always sees the amber banner with Stop impersonating.
  */
 export function AppShell({ user, tabs, children }: { user: SessionUser; tabs?: readonly ShellTab[]; children: ReactNode }) {
@@ -40,7 +40,6 @@ export function AppShell({ user, tabs, children }: { user: SessionUser; tabs?: r
   const phone = useMediaQuery("(max-width: 639px)");
   const impersonator = useImpersonator();
   const install = useInstallApp();
-  const [leaving, setLeaving] = useState(false);
   const [stopping, setStopping] = useState(false);
   const [reporting, setReporting] = useState(false);
   const [reportKey, setReportKey] = useState(0); // a new key per opening: the report dialog starts clean every time
@@ -55,17 +54,6 @@ export function AppShell({ user, tabs, children }: { user: SessionUser; tabs?: r
     setReporting(true);
   }
 
-  async function backToClassic() {
-    setLeaving(true);
-    try {
-      await apiFetch("/api/me/ui-preference", { method: "PATCH", body: { preference: "classic" } });
-    } catch {
-      /* never trap the person in the beta: go to classic even if saving the choice failed */
-    } finally {
-      setCurrentUser({ ...user, UiPreference: "classic" });
-      router.push(roleHomePath(user.UserType));
-    }
-  }
   async function stopImpersonating() {
     setStopping(true);
     try {
@@ -87,7 +75,6 @@ export function AppShell({ user, tabs, children }: { user: SessionUser; tabs?: r
     { label: "Report an Issue", onSelect: () => openReport() },
     { label: "My tickets", onSelect: () => setMyTickets(true) },
     ...(install.available ? [{ label: "Install app", onSelect: () => void install.run() }] : []),
-    { label: leaving ? "Opening classic…" : "Classic UI", onSelect: () => void backToClassic() },
     { label: "Sign out", onSelect: signOut },
   ];
 
@@ -139,9 +126,6 @@ export function AppShell({ user, tabs, children }: { user: SessionUser; tabs?: r
                   Install app
                 </Button>
               )}
-              <Button variant="ghost" size="sm" onDark loading={leaving} onClick={() => void backToClassic()}>
-                Classic UI
-              </Button>
               <Button variant="ghost" size="sm" onDark onClick={signOut}>
                 Sign out
               </Button>

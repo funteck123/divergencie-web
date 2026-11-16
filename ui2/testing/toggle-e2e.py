@@ -26,6 +26,6 @@ with sync_playwright() as p:
     page.goto("http://localhost:3111/v2/system",wait_until="domcontentloaded"); page.get_by_role("heading",name="Component gallery").wait_for(timeout=60000)
     page.screenshot(path="snapshots/v2-gallery.png",full_page=True)
     page.goto("http://localhost:3111/v2",wait_until="domcontentloaded")
-    page.get_by_role("button",name="Classic UI").click(); page.wait_for_url("**/dashboard/management",timeout=60000)
-    print("back on classic:",page.url,"pref:",json.loads(page.evaluate("localStorage.getItem('dcp1_user')")).get("UiPreference"))
+    # 17 Nov 2026: the old UI is discontinued, so the new top bar has no way back to it
+    print("Classic UI button in the new top bar (must be 0):",page.get_by_role("button",name="Classic UI").count())
     print("PATCHes:",sent); print("errors:",errs[:3]); b.close()
