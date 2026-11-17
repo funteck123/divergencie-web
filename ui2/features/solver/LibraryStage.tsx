@@ -2,12 +2,13 @@
 
 import { Skeleton } from "@/ui2/components/Skeleton";
 import { useMemo, useState } from "react";
-import { Button, LinkButton } from "@/ui2/components/Button";
+import { Button } from "@/ui2/components/Button";
+import { PdfViewer } from "@/ui2/features/viewer/PdfViewer";
 import { Combobox, type ComboOption } from "@/ui2/components/Combobox";
 import { Field } from "@/ui2/components/Field";
 import type { LibraryBundle } from "@/ui2/queries/solver";
 import { solvedPdfUrl, yearlyPdfUrl } from "@/ui2/queries/solver";
-import { boardsOf, chapterKey, pdfFileName, pickerChapterOf, componentsOf, fetchButtonLabel, isReadingComponent, isStructuredComponent, PAPER_TYPE_LABEL, paperTypeChoices, sessionsOf, subjectHasTypes, subjectsOf, topicalChapters, yearlyPaperLabel, yearsOf, type PaperType } from "./solverLogic";
+import { boardsOf, chapterKey, pickerChapterOf, componentsOf, fetchButtonLabel, isReadingComponent, isStructuredComponent, PAPER_TYPE_LABEL, paperTypeChoices, sessionsOf, subjectHasTypes, subjectsOf, topicalChapters, yearlyPaperLabel, yearsOf, type PaperType } from "./solverLogic";
 import { QuestionSearch } from "./QuestionSearch";
 import { NEW_PAPER, isGoodPick, pickHint, statusLabel, type PaperStatus } from "./progressLogic";
 import type { AttemptMeta, TopicalPaper, YearlyPaper } from "./solverTypes";
@@ -44,6 +45,7 @@ export function LibraryStage({ bundle, loading, error, canMistakes, busy, status
   const [board, setBoard] = useState("");
   const [subject, setSubject] = useState("");
   const [component, setComponent] = useState("");
+  const [viewer, setViewer] = useState<{ url: string; title: string } | null>(null); // the document being read (TKT-0426)
   const [typeChoice, setTypeChoice] = useState<PaperType | "">("");
   const [year, setYear] = useState("");
   const [session, setSession] = useState("");
@@ -95,16 +97,12 @@ export function LibraryStage({ bundle, loading, error, canMistakes, busy, status
   const elsewhere = types.options.filter((t) => t !== type && here[t] > 0).map((t) => PAPER_TYPE_LABEL[t]);
   const emptyNote = `No ${PAPER_TYPE_LABEL[type].toLowerCase()} for this component yet.${elsewhere.length ? ` It has ${elsewhere.join(" and ")}: switch Paper Type to see them.` : ""}`;
 
-  // A document to read can also be saved (TKT-0426): a real link with the download attribute, so a phone that cannot show a PDF in a tab still saves it.
-  const downloadHref = !pk ? null : type === "solved" ? solvedPdfUrl(pk) : reading ? yearlyPdfUrl(pk) : null;
-  const downloadLabel = paperOptions.find((o) => o.value === pk)?.label;
-
   function go() {
-    if (type === "solved") return void (pk && window.open(solvedPdfUrl(pk), "_blank")); // a document to read: no quiz, no score
+    if (type === "solved") return void (pk && setViewer({ url: solvedPdfUrl(pk), title: paperOptions.find((o) => o.value === pk)?.label ?? "Solved paper" })); // a document to read: no quiz, no score
     if (type === "yearly") {
       const paper = yearlyPapers.find((p) => p.paperId === pk);
       if (!paper) return;
-      if (reading) return void window.open(yearlyPdfUrl(paper.paperId), "_blank");
+      if (reading) return void setViewer({ url: yearlyPdfUrl(paper.paperId), title: paper.title });
       onPick({ source: "yearly", paper, structured, meta: { subject: `${b} ${s}`, chapter: null, paperId: paper.paperId } }, c);
       return;
     }
@@ -150,13 +148,9 @@ export function LibraryStage({ bundle, loading, error, canMistakes, busy, status
       {status && <p className="u2-muted" role="status">{status}</p>}
       {error && bundle && <p role="alert" className="u2-errorbox">{error} Your choices are kept. Press the button again to retry.</p>}
       <div className="u2-solver-picker__go">
-        {downloadHref && (
-          <LinkButton variant="secondary" size="md" href={downloadHref} download={pdfFileName(downloadLabel)} aria-label={`Download ${pdfFileName(downloadLabel)}`}>
-            Download PDF
-          </LinkButton>
-        )}
         <Button variant="primary" loading={busy} disabled={disabled} disabledReason={missingMs ? "This paper has no mark scheme." : "Choose a paper first."} onClick={go}>{type === "solved" ? "Open solved paper" : fetchButtonLabel(c)}</Button>
       </div>
+      <PdfViewer open={!!viewer} onOpenChange={(o) => !o && setViewer(null)} url={viewer?.url ?? ""} title={viewer?.title ?? ""} />
       <div className="u2-cluster">
         <Button size="sm" variant="ghost" onClick={onUpload}>Or upload your own QP + MS PDFs instead</Button>
         <Button size="sm" variant="ghost" onClick={onProgress}>View my progress &amp; the leaderboard</Button>

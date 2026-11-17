@@ -1,0 +1,17 @@
+/* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  .u2-pdfv { position: fixed; inset: 0; z-index: calc(var(--u2-z-sheet) + 1); display: flex; flex-direction: column; background: var(--u2-color-bg-subtle); outline: none; }
+  .u2-pdfv__bar { display: flex; align-items: center; gap: var(--u2-space-2); padding: var(--u2-space-2) var(--u2-space-3); background: var(--u2-color-brand); color: var(--u2-color-on-brand); }
+  .u2-pdfv__title { flex: 1 1 auto; min-width: 0; margin: 0; font-size: var(--u2-text-md); font-weight: var(--u2-weight-semibold); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .u2-pdfv__tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--u2-space-2); padding: var(--u2-space-2) var(--u2-space-3); background: var(--u2-color-surface); border-bottom: 1px solid var(--u2-color-border); }
+  .u2-pdfv__count { font-weight: var(--u2-weight-semibold); margin-right: auto; }
+  .u2-pdfv__goto { display: inline-flex; gap: var(--u2-space-2); align-items: center; }
+  .u2-pdfv__input { width: 72px; height: var(--u2-control-h); padding: 0 var(--u2-space-2); border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius); font: inherit; }
+  .u2-pdfv__zoom { min-width: 48px; text-align: center; font-variant-numeric: tabular-nums; }
+  .u2-pdfv__scroll { flex: 1 1 auto; overflow: auto; padding: var(--u2-space-3); display: flex; flex-direction: column; align-items: flex-start; gap: var(--u2-space-3); -webkit-overflow-scrolling: touch; }
+  .u2-pdfv__page { flex: 0 0 auto; margin-left: auto; margin-right: auto; background: #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25); }
+  .u2-pdfv__page canvas { display: block; }
+  .u2-pdfv__msg { margin: auto; max-width: 420px; text-align: center; display: grid; gap: var(--u2-space-3); justify-items: center; }
+  .u2-pdfv__progress { width: 260px; max-width: 100%; }
+  @media (max-width: 639px) { .u2-pdfv__tools .u2-pdfv__count { flex-basis: 100%; } }
+}
