@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AUTOSAVE_MAX_AGE_MS, paperTypeChoices, subjectHasTypes, topicalChapters, pickerChapterOf, ELECTRICITY_GROUP, yearlyPaperName, chapterKey, chapterLabel, chapterNameOf, chapterNames, chapterOf, comparePapers, componentsOf, fetchButtonLabel, formatTimer, gradeMcq, historyRows, hitToPick, searchQueryOf, isFullMarks, isReadingComponent, isStructuredComponent, mistakeResults, naturalQuestionSort, pctOf, resumable, scoreStructured, seriesByAccount, titleIndex, type AutosaveRecord } from "./solverLogic";
+import { AUTOSAVE_MAX_AGE_MS, paperTypeChoices, subjectHasTypes, topicalChapters, pickerChapterOf, ELECTRICITY_GROUP, pdfFileName, yearlyPaperName, chapterKey, chapterLabel, chapterNameOf, chapterNames, chapterOf, comparePapers, componentsOf, fetchButtonLabel, formatTimer, gradeMcq, historyRows, hitToPick, searchQueryOf, isFullMarks, isReadingComponent, isStructuredComponent, mistakeResults, naturalQuestionSort, pctOf, resumable, scoreStructured, seriesByAccount, titleIndex, type AutosaveRecord } from "./solverLogic";
 import type { SearchHit, AttemptRow, Library, McqQuestion, SolvedLibrary, YearlyLibrary } from "./solverTypes";
 
 describe("titles", () => {
@@ -167,4 +167,23 @@ describe("question search hit", () => {
   });
   it("a paper without a mark scheme cannot be opened", () => expect(hitToPick({ ...hit, msId: null })).toBeNull());
   it("the query is trimmed and its spaces collapsed", () => expect(searchQueryOf("  upper \n  bound ")).toBe("upper bound"));
+});
+
+// TKT-0426: the name a downloaded document is saved under
+describe("pdfFileName", () => {
+  it("keeps a normal label and adds one .pdf", () => {
+    expect(pdfFileName("ZNotes -- Physics Theory")).toBe("ZNotes -- Physics Theory.pdf");
+    expect(pdfFileName("ZNotes -- Physics Theory.pdf")).toBe("ZNotes -- Physics Theory.pdf");
+    expect(pdfFileName("Notes.PDF")).toBe("Notes.pdf");
+  });
+  it("removes characters a file system refuses and tidies spaces", () => {
+    expect(pdfFileName('Maths: P1/P2 "revision" <1>?')).toBe("Maths P1 P2 revision 1.pdf");
+    expect(pdfFileName("  two   spaces ")).toBe("two spaces.pdf");
+  });
+  it("copes with nothing, and keeps long names short", () => {
+    expect(pdfFileName("")).toBe("document.pdf");
+    expect(pdfFileName(undefined)).toBe("document.pdf");
+    expect(pdfFileName("///")).toBe("document.pdf");
+    expect(pdfFileName("a".repeat(300)).length).toBe(124);
+  });
 });

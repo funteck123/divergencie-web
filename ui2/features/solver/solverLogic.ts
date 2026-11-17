@@ -242,3 +242,18 @@ export function hitToPick(h: SearchHit): { paper: TopicalPaper; structured: bool
   if (!h.msId) return null; // no mark scheme: the paper cannot be marked, same rule as the picker
   return { paper: { qpId: h.qpId, msId: h.msId, title: h.title }, structured: h.structured, meta: { subject: `${h.board} ${h.subject}`, chapter: chapterKey(h.title), paperId: h.qpId }, component: h.component };
 }
+
+/**
+ * The file name a downloaded document is saved under (TKT-0426): the label the person chose, made safe for any phone or computer
+ * (no slashes or other characters a file system refuses), with one ".pdf" at the end. An empty label gives "document.pdf".
+ */
+export function pdfFileName(label: string | undefined): string {
+  const base = String(label ?? "")
+    .replace(/\.pdf$/i, "")
+    .replace(/[\\/:*?"<>|\u0000-\u001f]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 120)
+    .trim();
+  return `${base || "document"}.pdf`;
+}

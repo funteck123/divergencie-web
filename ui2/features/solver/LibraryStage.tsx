@@ -2,12 +2,12 @@
 
 import { Skeleton } from "@/ui2/components/Skeleton";
 import { useMemo, useState } from "react";
-import { Button } from "@/ui2/components/Button";
+import { Button, LinkButton } from "@/ui2/components/Button";
 import { Combobox, type ComboOption } from "@/ui2/components/Combobox";
 import { Field } from "@/ui2/components/Field";
 import type { LibraryBundle } from "@/ui2/queries/solver";
 import { solvedPdfUrl, yearlyPdfUrl } from "@/ui2/queries/solver";
-import { boardsOf, chapterKey, pickerChapterOf, componentsOf, fetchButtonLabel, isReadingComponent, isStructuredComponent, PAPER_TYPE_LABEL, paperTypeChoices, sessionsOf, subjectHasTypes, subjectsOf, topicalChapters, yearlyPaperLabel, yearsOf, type PaperType } from "./solverLogic";
+import { boardsOf, chapterKey, pdfFileName, pickerChapterOf, componentsOf, fetchButtonLabel, isReadingComponent, isStructuredComponent, PAPER_TYPE_LABEL, paperTypeChoices, sessionsOf, subjectHasTypes, subjectsOf, topicalChapters, yearlyPaperLabel, yearsOf, type PaperType } from "./solverLogic";
 import { QuestionSearch } from "./QuestionSearch";
 import { NEW_PAPER, isGoodPick, pickHint, statusLabel, type PaperStatus } from "./progressLogic";
 import type { AttemptMeta, TopicalPaper, YearlyPaper } from "./solverTypes";
@@ -95,6 +95,10 @@ export function LibraryStage({ bundle, loading, error, canMistakes, busy, status
   const elsewhere = types.options.filter((t) => t !== type && here[t] > 0).map((t) => PAPER_TYPE_LABEL[t]);
   const emptyNote = `No ${PAPER_TYPE_LABEL[type].toLowerCase()} for this component yet.${elsewhere.length ? ` It has ${elsewhere.join(" and ")}: switch Paper Type to see them.` : ""}`;
 
+  // A document to read can also be saved (TKT-0426): a real link with the download attribute, so a phone that cannot show a PDF in a tab still saves it.
+  const downloadHref = !pk ? null : type === "solved" ? solvedPdfUrl(pk) : reading ? yearlyPdfUrl(pk) : null;
+  const downloadLabel = paperOptions.find((o) => o.value === pk)?.label;
+
   function go() {
     if (type === "solved") return void (pk && window.open(solvedPdfUrl(pk), "_blank")); // a document to read: no quiz, no score
     if (type === "yearly") {
@@ -146,6 +150,11 @@ export function LibraryStage({ bundle, loading, error, canMistakes, busy, status
       {status && <p className="u2-muted" role="status">{status}</p>}
       {error && bundle && <p role="alert" className="u2-errorbox">{error} Your choices are kept. Press the button again to retry.</p>}
       <div className="u2-solver-picker__go">
+        {downloadHref && (
+          <LinkButton variant="secondary" size="md" href={downloadHref} download={pdfFileName(downloadLabel)} aria-label={`Download ${pdfFileName(downloadLabel)}`}>
+            Download PDF
+          </LinkButton>
+        )}
         <Button variant="primary" loading={busy} disabled={disabled} disabledReason={missingMs ? "This paper has no mark scheme." : "Choose a paper first."} onClick={go}>{type === "solved" ? "Open solved paper" : fetchButtonLabel(c)}</Button>
       </div>
       <div className="u2-cluster">
