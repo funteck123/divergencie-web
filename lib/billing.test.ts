@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ATTENDED_STATUSES, carryOverLineItems, computeHoursAndAmount, describePaycheckChange, describeSkipped, nextMonthOf, splitByActiveEnrollment } from "./billing";
+import { ATTENDED_STATUSES, billableStudentIds, carryOverLineItems, computeHoursAndAmount, describePaycheckChange, describeSkipped, inactiveStudentSkips, nextMonthOf, splitByActiveEnrollment } from "./billing";
 
 // One student, one service, three one-hour sessions in October 2026. attendance: what was logged for each session.
 function hours(attendance: { id: string; status?: string; hours: number }[], opts: Record<string, unknown> = {}) {
@@ -92,5 +92,37 @@ describe("paycheck audit line (TKT-0411)", () => {
   it("returns null when nothing tracked changed, and treats a missing flag as not received", () => {
     expect(describePaycheckChange(sent, { ...sent }, { byManagement: true })).toBeNull();
     expect(describePaycheckChange({ PaycheckID: "PAY-9", Status: "Sent", INRDue: 1 }, { PaycheckID: "PAY-9", Status: "Sent", StaffReceivedFlag: false, INRDue: 1 }, { byManagement: true })).toBeNull();
+  });
+});
+
+// TKT-0430: a deactivated student must not get invoices.
+describe("inactive students are not invoiced (TKT-0430)", () => {
+  const users = [
+    { UserID: "STU-A", UserType: "Student", Status: "Active" },
+    { UserID: "STU-B", UserType: "Student", Status: "Inactive" },
+    { UserID: "STU-C", UserType: "Student" },
+    { UserID: "STU-D", UserType: "Student", Status: "Converted" },
+    { UserID: "TCH-1", UserType: "Teacher", Status: "Active" },
+  ];
+  it("only active students (and ones with no status or Converted) can be invoiced, never an Inactive one, never a teacher", () => {
+    expect([...billableStudentIds(users, undefined)].sort()).toEqual(["STU-A", "STU-C", "STU-D"]);
+  });
+  it("an explicit list never brings an Inactive student back", () => {
+    expect([...billableStudentIds(users, ["STU-A", "STU-B"])]).toEqual(["STU-A"]);
+  });
+  it("names the skipped enrollments of Inactive students that would have been billed that month, and no others", () => {
+    const db = {
+      users,
+      enrollments: [
+        { UserID: "STU-B", ServiceID: "SVC-1", BatchID: "B8", StartDate: "2026-09-01" },
+        { UserID: "STU-B", ServiceID: "SVC-2", BatchID: "B8", StartDate: "2026-09-01", EndDate: "2026-09-30" },
+        { UserID: "STU-A", ServiceID: "SVC-1", BatchID: "B8" },
+      ],
+    };
+    const skips = inactiveStudentSkips(db, undefined, 2026, 11);
+    expect(skips).toHaveLength(1);
+    expect(skips[0]).toMatchObject({ studentId: "STU-B", serviceId: "SVC-1", batchId: "B8" });
+    expect(skips[0].reason).toMatch(/inactive/i);
+    expect(inactiveStudentSkips(db, ["STU-A"], 2026, 11)).toEqual([]);
   });
 });

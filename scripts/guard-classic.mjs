@@ -35,6 +35,7 @@ export const HOOKS = {
   "components/SessionAttendance.jsx": { maxAdded: 1, maxDeleted: 0, why: "TKT-0385: a comment-only lint suppression, owner agreed 2026-11-01" },
   "app/api/templates/route.js": { maxAdded: 5, maxDeleted: 9, why: "TKT-0409: templates are Management only, reading included (owner request 4 Nov 2026)" },
   "app/api/mcq/[...path]/route.js": { maxAdded: 30, maxDeleted: 4, why: "TKT-0237: question search hits are limited to the student's enrolled subjects, like the library; TKT-0420 (owner request 14 Nov 2026): saved copies answer when the live service is off, logic in lib/solverSavedProxy.js" },
+  "app/api/invoices/route.js": { maxAdded: 6, maxDeleted: 8, why: "TKT-0430 (owner ticket, 20 Nov 2026): an Inactive student account is never invoiced; the rule lives in lib/billing.js" },
   "app/api/paychecks/route.js": { maxAdded: 22, maxDeleted: 4, why: "TKT-0411/0413: unsent paychecks lose the old sent date and the received mark, every send, unsend and received change gets a precise audit line, and Generate Drafts leaves a sent paycheck alone" },
   "components/UiSwitchButton.jsx": { maxAdded: 1, maxDeleted: 1, why: "the switch button no longer says Beta (owner request 4 Nov 2026)" },
   "components/ResourcesSection.jsx": { maxAdded: 2, maxDeleted: 2, why: "the Syllabus Viewer and Question Solver buttons open the new views (ticket from the user, 2026-10-03)" },

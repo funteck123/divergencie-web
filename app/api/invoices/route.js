@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId, deleteRecords } from "@/lib/db";
-import { computeHoursAndAmount, ratesOf, rateById, isEnrollmentActiveForMonth, studentCurrencyOf, lineItemINR, refreshStudentTotal, applyInvoiceDiscount, validateDiscountInput, setDiscountFields, DISCOUNT_KEYS } from "@/lib/billing";
+import { billableStudentIds, inactiveStudentSkips, computeHoursAndAmount, ratesOf, rateById, isEnrollmentActiveForMonth, studentCurrencyOf, lineItemINR, refreshStudentTotal, applyInvoiceDiscount, validateDiscountInput, setDiscountFields, DISCOUNT_KEYS } from "@/lib/billing";
 import { getRateToINR } from "@/lib/fxRates";
 import { requireManagement, requireSelfOrParentOrManagement } from "@/lib/authz";
 import { logAudit } from "@/lib/logging";
@@ -220,11 +220,8 @@ export async function POST(req) {
     }
   }
 
-  const studentIds = new Set(
-    db.users
-      .filter((u) => u.UserType === "Student" && (!onlyStudentIds || onlyStudentIds.includes(u.UserID)))
-      .map((u) => u.UserID)
-  );
+  // TKT-0430: an Inactive account is never invoiced (see billableStudentIds in lib/billing.js).
+  const studentIds = billableStudentIds(db.users, onlyStudentIds);
   const studentEnrollments = db.enrollments.filter((e) => studentIds.has(e.UserID));
 
   const createdOneOffs = [];
@@ -235,7 +232,7 @@ export async function POST(req) {
   // rate that computes to 0) is skipped and reported here instead, so
   // Management still sees exactly what didn't get billed and why, without
   // a real $0 record sitting in Billing needing manual cleanup.
-  const skipped = [];
+  const skipped = inactiveStudentSkips(db, onlyStudentIds, y, m);
 
   for (const enr of studentEnrollments) {
     if (!isEnrollmentActiveForMonth(enr, y, m)) continue;
