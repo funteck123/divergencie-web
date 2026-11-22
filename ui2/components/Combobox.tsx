@@ -6,11 +6,23 @@ import { useId, useMemo, useState } from "react";
 import { useFieldControl } from "./Field";
 import "./Combobox.css";
 
+/** The cloud for a saved copy. Decorative and quiet: small, faint, and named only in the tooltip. */
+function SavedMark() {
+  return (
+    <svg className="u2-combo__saved" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+      <title>Saved copy: opens even when the main server is off</title>
+      <path d="M17.5 19a4.5 4.5 0 1 0-1.4-8.8A6 6 0 1 0 6 18.5h11.5z" />
+    </svg>
+  );
+}
+
 export interface ComboOption {
   value: string;
   label: string;
   group?: string;
   disabled?: boolean;
+  /** A very small, quiet cloud after the label: this paper has a saved copy that opens even when the main server is off (TKT-0420). */
+  saved?: boolean;
 }
 
 export interface ComboboxProps {
@@ -84,6 +96,7 @@ export function Combobox({ value, onChange, options, placeholder, id, disabled, 
               {ungrouped.map((o) => (
                 <Command.Item key={o.value} value={o.label + " " + o.value} disabled={o.disabled} className="u2-combo__item" onSelect={() => pick(o.value)} data-checked={o.value === value}>
                   {o.label}
+                  {o.saved && <SavedMark />}
                 </Command.Item>
               ))}
               {groups.map((g) => (
@@ -91,6 +104,7 @@ export function Combobox({ value, onChange, options, placeholder, id, disabled, 
                   {g.items.map((o) => (
                     <Command.Item key={o.value} value={`${o.label} ${o.group} ${o.value}`} disabled={o.disabled} className="u2-combo__item" onSelect={() => pick(o.value)} data-checked={o.value === value}>
                       {o.label}
+                      {o.saved && <SavedMark />}
                     </Command.Item>
                   ))}
                 </Command.Group>

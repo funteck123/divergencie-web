@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireSession } from "@/lib/authz";
 import { readDB } from "@/lib/db";
 import { getMcqExtractionUrl } from "@/lib/mcqConfig";
+import { FROM_CACHE, forcedCache, liveFailed, savedCopies } from "@/lib/solverSavedProxy";
 
 // Server-to-server proxy to the mcq-digitizer extraction service
 // (prototypes/mcq-digitizer/server.mjs), which stays on its own always-on
@@ -88,6 +89,9 @@ function filterLibraryByEnrollment(library, allowedKeys) {
   return filtered;
 }
 
+// TKT-0420: saved copies answer only when the live service cannot (lib/solverSavedProxy.js).
+const saved = savedCopies({ enrolledSubjectKeys, filterLibraryByEnrollment, subjectMatchKey });
+
 export async function GET(req, { params }) {
   const { session, error } = requireSession(req);
   if (error) return error;
@@ -100,6 +104,11 @@ export async function GET(req, { params }) {
   const { path } = await params;
   const subPath = path.join("/");
   const search = new URL(req.url).search;
+  const savedLibrary = async () => (subPath === "library" ? saved.library(session).catch(() => null) : null);
+  if (forcedCache(req, session) && subPath === "library") {
+    const s = await savedLibrary();
+    if (s) return NextResponse.json(s, FROM_CACHE);
+  }
 
   // TKT-0265: an <audio> element seeks/resumes with Range requests, so the
   // audio route must forward Range upstream and pass the 206 headers back.
@@ -109,8 +118,10 @@ export async function GET(req, { params }) {
 
   let upstream;
   try {
-    upstream = await fetch(`${extractionUrl}/api/${subPath}${search}`, isAudio ? { headers: upstreamHeaders } : undefined);
+    upstream = await fetch(`${extractionUrl}/api/${subPath}${search}`, isAudio ? { headers: upstreamHeaders } : subPath === "library" ? { signal: AbortSignal.timeout(10_000) } : undefined);
   } catch (e) {
+    const s = await savedLibrary();
+    if (s) return NextResponse.json(s, FROM_CACHE);
     // The whole reason this URL needs re-configuring after every restart
     // is that the tunnel is unstable -- an unreachable tunnel must not
     // surface as an unhandled exception/raw 500.
@@ -149,6 +160,8 @@ export async function GET(req, { params }) {
   }
 
   const body = await upstream.json().catch(() => null);
+  const s = liveFailed({ threw: false, status: upstream.status, jsonOk: body !== null }) ? await savedLibrary() : null;
+  if (s) return NextResponse.json(s, FROM_CACHE);
   if (body === null) {
     return NextResponse.json({ error: `Question Solver did not answer properly (it may be restarting or busy; upstream status ${upstream.status}). Wait a minute and try again.` }, { status: 502 });
   }
@@ -156,10 +169,12 @@ export async function GET(req, { params }) {
   if (subPath === "library" && upstream.ok) {
     // Management sees the full, unfiltered library -- everyone else only
     // sees subjects they're actually enrolled in.
+    const marked = await saved.mark(body); // TKT-0420: papers with a saved copy carry cached: true
     if (session.userType !== "Management") {
       const allowedKeys = await enrolledSubjectKeys(session.userId);
-      return NextResponse.json(filterLibraryByEnrollment(body, allowedKeys));
+      return NextResponse.json(filterLibraryByEnrollment(marked, allowedKeys));
     }
+    return NextResponse.json(marked);
   }
 
   // TKT-0237: question search. The service returns its best 200 hits across every subject; a student keeps only enrolled subjects, then the best 30.
@@ -173,7 +188,7 @@ export async function GET(req, { params }) {
 }
 
 export async function POST(req, { params }) {
-  const { error } = requireSession(req);
+  const { session, error } = requireSession(req);
   if (error) return error;
 
   const extractionUrl = await getMcqExtractionUrl();
@@ -184,6 +199,11 @@ export async function POST(req, { params }) {
   const { path } = await params;
   const subPath = path.join("/");
   const bodyText = await req.text();
+  const savedPaper = async () => (subPath === "fetch-and-digitize" ? saved.paper(session, bodyText).catch(() => null) : null);
+  if (forcedCache(req, session)) {
+    const s = await savedPaper();
+    if (s) return NextResponse.json(s, FROM_CACHE);
+  }
 
   let upstream;
   try {
@@ -193,9 +213,13 @@ export async function POST(req, { params }) {
       body: bodyText,
     });
   } catch (e) {
+    const s = await savedPaper();
+    if (s) return NextResponse.json(s, FROM_CACHE);
     return NextResponse.json({ error: `Extraction service unreachable: ${e.message}` }, { status: 503 });
   }
   const body = await upstream.json().catch(() => null);
+  const s = liveFailed({ threw: false, status: upstream.status, jsonOk: body !== null }) ? await savedPaper() : null;
+  if (s) return NextResponse.json(s, FROM_CACHE);
   if (body === null) {
     return NextResponse.json({ error: `Question Solver did not answer properly (it may be restarting or busy; upstream status ${upstream.status}). Wait a minute and try again.` }, { status: 502 });
   }

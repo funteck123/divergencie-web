@@ -81,7 +81,7 @@ export function LibraryStage({ bundle, loading, error, canMistakes, busy, status
     type === "solved"
       ? solvedItems.map((i) => ({ value: i.solvedId, label: `${i.title} · ${i.kind} · ${i.pages} pages` }))
       : type === "topical"
-      ? topical.map((p, i) => ({ p, i })).filter(({ p }) => !chap || (pickerChapterOf(p.title) ?? OTHER_CHAPTER) === chap).map(({ p, i }) => ({ value: String(i), label: `${p.title}${p.msId ? "" : " (no mark scheme found)"}${tag(p.qpId)}` }))
+      ? topical.map((p, i) => ({ p, i })).filter(({ p }) => !chap || (pickerChapterOf(p.title) ?? OTHER_CHAPTER) === chap).map(({ p, i }) => ({ value: String(i), label: `${p.title}${p.msId ? "" : " (no mark scheme found)"}${tag(p.qpId)}`, saved: p.cached === true }))
       : reading
         ? yearlyPapers.map((p) => ({ value: p.paperId, label: p.title }))
         : yearlyPapers.filter((p) => p.year === Number(y) && p.session === se).map((p) => ({ value: p.paperId, label: `${yearlyPaperLabel(p)}${tag(p.paperId)}` }));

@@ -51,6 +51,7 @@ export function SolverView({ user }: { user: SessionUser }) {
   const [stage, setStage] = useState<Stage>("library");
   const [quiz, dispatch] = useReducer(quizReducer, initialQuiz);
   const [paper, setPaper] = useState<Paper | null>(null);
+  const [fromCache, setFromCache] = useState(false); // TKT-0420: the open worksheet is the saved copy
   const [mcq, setMcq] = useState<McqQuestion[]>([]);
   const [structured, setStructured] = useState<StructuredItem[]>([]);
   const [busy, setBusy] = useState(false);
@@ -100,10 +101,12 @@ export function SolverView({ user }: { user: SessionUser }) {
         const data = await loadStructured(ref, () => setStatus("The service is waking up. Trying again in a few seconds…"));
         const byNo = new Map((data.answers ?? []).map((a) => [a.questionNumber, a.image]));
         const items = [...data.questions].sort((a, b) => naturalQuestionSort(a.questionNumber, b.questionNumber)).map((q) => ({ questionNumber: q.questionNumber, qImage: q.image, msImage: byNo.get(q.questionNumber) ?? null }));
+        setFromCache(false);
         setStructured(items);
         dispatch({ type: "load", kind: "structured", order: items.map((i) => i.questionNumber) });
       } else {
         const data = p.source === "yearly" ? await yearlyDigitizeMcq(p.paper.paperId) : await fetchAndDigitize(p.paper.qpId, p.paper.msId ?? "");
+        setFromCache(!!data.fromCache);
         setMcq(data.questions);
         dispatch({ type: "load", kind: "mcq", order: data.questions.map((q) => q.questionNumber) });
       }
@@ -291,6 +294,7 @@ export function SolverView({ user }: { user: SessionUser }) {
       <div className="u2-solver">
         <h2>{paper.title}</h2>
         <p role="status" className="u2-muted">{count} question{count === 1 ? "" : "s"} ready.</p>
+        {fromCache && <p role="note" className="u2-muted">Saved copy: the main Question Solver is offline right now. You can still practise. Your score may not be saved to your progress history until it is back.</p>}
         {resume && (
           <div className="u2-warnbox" role="alert">
             You have an unfinished attempt on this paper, saved {Math.max(1, Math.round((Date.now() - resume.savedAt) / 60000))} min ago.

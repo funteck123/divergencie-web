@@ -1,4 +1,4 @@
-export interface TopicalPaper { qpId: string; msId?: string; title: string }
+export interface TopicalPaper { qpId: string; msId?: string; title: string; /** TKT-0420: a saved copy of this worksheet exists, so it opens even when the main Question Solver is off. */ cached?: boolean }
 export interface YearlyPaper { paperId: string; year: number; session: string; variant?: string; title: string; component?: string; audioPath?: string }
 export type Library = Record<string, Record<string, Record<string, TopicalPaper[]>>>;
 export type YearlyLibrary = Record<string, Record<string, Record<string, YearlyPaper[]>>>;
@@ -8,7 +8,7 @@ export type SolvedLibrary = Record<string, Record<string, Record<string, SolvedI
 export type SubjectMeta = Record<string, Record<string, { mcqComponent?: string }>>;
 
 export interface McqQuestion { questionNumber: string; image: string; optionLetters: string[]; correctAnswer?: string | null; _origin?: { paperId: string; subject: string; chapter: string | null } }
-export interface DigitizeResult { questions: McqQuestion[]; ambiguousAnswerKey?: unknown[] }
+export interface DigitizeResult { questions: McqQuestion[]; ambiguousAnswerKey?: unknown[]; /** TKT-0420: this reply came from the saved copy, not the live Question Solver. */ fromCache?: boolean }
 export interface StructuredItem { questionNumber: string; qImage: string; msImage: string | null }
 
 /** What a result needs to remember about the paper being attempted (null for a manual upload, which is never tracked). */

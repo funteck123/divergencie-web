@@ -21,4 +21,6 @@
   .u2-combo__item[data-disabled="true"] { opacity: 0.5; cursor: not-allowed; }
   .u2-combo__item--empty { color: var(--u2-color-text-muted); }
   .u2-combo__group [cmdk-group-heading] { padding: var(--u2-space-2) var(--u2-space-3) var(--u2-space-1); font-size: var(--u2-text-xs); font-weight: var(--u2-weight-bold); color: var(--u2-color-text-muted); }
+  .u2-combo__saved { display: inline-block; vertical-align: -1px; margin-left: 6px; opacity: 0.35; color: var(--u2-color-text-muted, currentColor); }
+  .u2-combo__item[data-selected="true"] .u2-combo__saved { opacity: 0.55; }
 }
