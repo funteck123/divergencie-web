@@ -128,6 +128,7 @@ function Body({ kind, bill, person, services, onClose }: { kind: BillKind; bill:
           <h3 className="u2-sheet__title" style={{ fontSize: "var(--u2-text-lg)", marginBottom: "var(--u2-space-2)" }}>
             Subjects
           </h3>
+          <div className="u2-scrollx">
           <table className="u2-lineitems">
             <thead>
               <tr>
@@ -144,6 +145,7 @@ function Body({ kind, bill, person, services, onClose }: { kind: BillKind; bill:
               ))}
             </tbody>
           </table>
+          </div>
         </section>
       )}
       {error && (

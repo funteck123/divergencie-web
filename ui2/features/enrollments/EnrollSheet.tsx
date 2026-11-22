@@ -97,7 +97,7 @@ function EnrollForm({ group, people, services, onClose }: { group: string; peopl
             </Field>
             {batches.length > 1 && (
               <Field label="Batch">
-                <Combobox value={row.batchId} onChange={(id) => update(i, { batchId: id, rateId: "" })} options={batches.map((b) => ({ value: b.BatchID, label: `${b.BatchName ?? ""}${batchScheduleLabel(b) ? ` — ${batchScheduleLabel(b)}` : ""}` }))} />
+                <Combobox value={row.batchId} onChange={(id) => update(i, { batchId: id, rateId: "" })} options={batches.map((b) => ({ value: b.BatchID, label: `${b.BatchName ?? ""}${batchScheduleLabel(b) ? ` · ${batchScheduleLabel(b)}` : ""}` }))} />
               </Field>
             )}
             {rates.length > 0 && (

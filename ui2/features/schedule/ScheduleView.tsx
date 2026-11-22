@@ -52,7 +52,7 @@ export function ScheduleView() {
   const failed = sched.error ?? services.error ?? enrollments.error ?? attendance.error ?? requests.error;
 
   const reqColumns: Column<RescheduleRequest>[] = [
-    { id: "service", header: "Service", sortValue: (r) => r.Slot?.ServiceName ?? "", cell: (r) => r.Slot?.ServiceName || "—" },
+    { id: "service", header: "Service", lines: 2, sortValue: (r) => r.Slot?.ServiceName ?? "", cell: (r) => r.Slot?.ServiceName || "—" },
     { id: "by", header: "Requested by", width: 170, sortValue: (r) => r.RequesterName, cell: (r) => r.RequesterName },
     { id: "current", header: "Current", width: 150, cell: (r) => (r.Slot ? `${formatDate(r.Slot.RescheduledDate || r.Slot.Date) as string} ${r.Slot.RescheduledTime || r.Slot.Time}` : "—") },
     { id: "requested", header: "Requested", width: 150, sortValue: (r) => `${r.RequestedDate} ${r.RequestedTime}`, cell: (r) => `${formatDate(r.RequestedDate) as string} ${r.RequestedTime}` },
@@ -67,7 +67,7 @@ export function ScheduleView() {
     },
   ];
   const conflictColumns: Column<ScheduleItem>[] = [
-    { id: "service", header: "Service", sortValue: (s) => s.ServiceName ?? "", cell: (s) => s.ServiceName },
+    { id: "service", header: "Service", lines: 2, sortValue: (s) => s.ServiceName ?? "", cell: (s) => s.ServiceName },
     { id: "date", header: "Date", width: 100, sortValue: (s) => s.Date, cell: (s) => formatDate(s.Date) as string },
     { id: "time", header: "Time", width: 100, sortValue: (s) => s.Time, cell: when },
     { id: "who", header: "Instructor", width: 160, sortValue: (s) => s.Facilitator ?? "", cell: (s) => s.Facilitator || "—" },
@@ -121,7 +121,7 @@ function OfferSlot({ items, openIds, services, loading }: { items: readonly Sche
 
   const columns: Column<ScheduleItem>[] = [
     { id: "type", header: "Type", width: 110, sortValue: (s) => s.ServiceType ?? "", cell: (s) => s.ServiceType },
-    { id: "service", header: "Service", sortValue: (s) => s.ServiceName ?? "", tip: (s) => s.ServiceName, cell: (s) => <>{swatch(s)}{s.ServiceName}</> },
+    { id: "service", header: "Service", lines: 2, sortValue: (s) => s.ServiceName ?? "", tip: (s) => s.ServiceName, cell: (s) => <>{swatch(s)}{s.ServiceName}</> },
     { id: "date", header: "Date", width: 100, sortValue: (s) => s.Date, cell: (s) => formatDate(s.Date) as string },
     { id: "time", header: "Time", width: 100, sortValue: (s) => s.Time, cell: when },
     { id: "who", header: "Instructor", width: 130, sortValue: (s) => s.Facilitator ?? "", cell: (s) => s.Facilitator },
@@ -201,7 +201,7 @@ function ServiceSchedule({ items, attendance, enrollments, requests, conflictIds
   const count = (id: string) => attendance.filter((a) => a.ScheduleItemID === id).length;
 
   const columns: Column<ScheduleItem>[] = [
-    { id: "service", header: "Service", sortValue: (s) => s.ServiceName ?? "", tip: (s) => s.ServiceName, cell: (s) => <>{swatch(s)}{s.ServiceName}</> },
+    { id: "service", header: "Service", lines: 2, sortValue: (s) => s.ServiceName ?? "", tip: (s) => s.ServiceName, cell: (s) => <>{swatch(s)}{s.ServiceName}</> },
     { id: "date", header: "Date", width: 96, sortValue: (s) => s.Date, cell: (s) => formatDate(s.Date) as string },
     { id: "time", header: "Time", width: 92, sortValue: (s) => s.Time, cell: when },
     { id: "hrs", header: "Hrs", width: 44, numeric: true, sortValue: (s) => Number(s.Duration), cell: (s) => s.Duration },

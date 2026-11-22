@@ -52,5 +52,24 @@ export function groupRows<T>(rows: readonly T[], get: (r: T) => Cell): Group<T>[
   return [...m].map(([key, list]) => ({ key, rows: list })).sort((a, b) => byLabel(a.key, b.key));
 }
 
-/** Big grouped tables start collapsed, so opening the page does not draw thousands of rows. */
-export const GROUPS_START_OPEN_UNDER = 200;
+// TKT-0431: grouped tables always open with every group closed (the person opens the ones they want), however few rows there are.
+
+/** TKT-0428: the grouping a person made their default for one table. Kept in this browser only, one entry per table caption. */
+export const groupDefaultKey = (caption: string) => `u2.groupDefault:${caption}`;
+export function readGroupDefault(storage: Pick<Storage, "getItem"> | null | undefined, caption: string): string {
+  try {
+    return storage?.getItem(groupDefaultKey(caption)) ?? "";
+  } catch {
+    return "";
+  }
+}
+/** An empty id means "no grouping" and removes the default. A browser that refuses storage (private mode) just does not keep it. */
+export function writeGroupDefault(storage: Pick<Storage, "setItem" | "removeItem"> | null | undefined, caption: string, id: string): void {
+  try {
+    if (!storage) return;
+    if (id) storage.setItem(groupDefaultKey(caption), id);
+    else storage.removeItem(groupDefaultKey(caption));
+  } catch {
+    /* not kept */
+  }
+}

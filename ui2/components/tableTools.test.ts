@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { activeFilterCount, applyFilters, distinctValues, groupRows, toggleFilter, valueKey, type Filters } from "./tableTools";
+import { activeFilterCount, applyFilters, distinctValues, groupDefaultKey, groupRows, readGroupDefault, toggleFilter, valueKey, writeGroupDefault, type Filters } from "./tableTools";
 
 const rows = [
   { id: 1, course: "IGCSE", batch: "B8", n: 3 }, { id: 2, course: "A Level", batch: "B9", n: 10 }, { id: 3, course: "IGCSE", batch: "", n: 2 },
@@ -35,5 +35,29 @@ describe("table tools", () => {
   it("groups keep row order inside a group", () => {
     const g = groupRows(rows, get.batch);
     expect(g.map((x) => [x.key, x.rows.map((r) => r.id)])).toEqual([["B8", [1, 4]], ["B9", [2, 5]], ["(blank)", [3]]]);
+  });
+});
+
+// TKT-0428: Group by can be made the default of a table, kept in this browser.
+describe("group by default", () => {
+  const fake = () => { const m = new Map<string, string>(); return { m, getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => void m.set(k, v), removeItem: (k: string) => void m.delete(k) }; };
+  it("is empty until one is saved, and one table does not affect another", () => {
+    const s = fake();
+    expect(readGroupDefault(s, "Student enrollments")).toBe("");
+    writeGroupDefault(s, "Student enrollments", "batch");
+    expect(readGroupDefault(s, "Student enrollments")).toBe("batch");
+    expect(readGroupDefault(s, "Teacher enrollments")).toBe("");
+    expect(groupDefaultKey("x")).toBe("u2.groupDefault:x");
+  });
+  it("saving None removes the default", () => {
+    const s = fake(); writeGroupDefault(s, "t", "batch"); writeGroupDefault(s, "t", "");
+    expect(readGroupDefault(s, "t")).toBe(""); expect(s.m.size).toBe(0);
+  });
+  it("a missing or refusing storage never throws", () => {
+    expect(readGroupDefault(null, "t")).toBe("");
+    expect(() => writeGroupDefault(undefined, "t", "a")).not.toThrow();
+    const bad = { getItem: () => { throw new Error("denied"); }, setItem: () => { throw new Error("denied"); }, removeItem: () => { throw new Error("denied"); } };
+    expect(readGroupDefault(bad, "t")).toBe("");
+    expect(() => writeGroupDefault(bad, "t", "a")).not.toThrow();
   });
 });

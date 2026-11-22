@@ -51,6 +51,7 @@
   --u2-radius: 6px;
   --u2-radius-round: 50%;
   --u2-font-sans: "Satoshi", var(--font-inter), Inter, Arial, Helvetica, sans-serif;
+  --u2-text-3xs: 10px;
   --u2-text-2xs: 11px;
   --u2-text-xs: 12px;
   --u2-text-sm: 13px;

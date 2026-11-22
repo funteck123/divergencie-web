@@ -18,6 +18,7 @@ import { usePatchUser, useUsers } from "@/ui2/queries/users";
 import { ExportAttendanceSheet } from "@/ui2/features/attendanceExport/ExportAttendanceSheet";
 import { AccountDetails } from "./AccountDetails";
 import { AccountSheet } from "./AccountSheet";
+import { buildWelcomeMessage } from "./welcomeMessage";
 import { BulkBar } from "./BulkBar";
 import { CreateSheet } from "./CreateSheet";
 import { DeleteAccountDialog } from "./DeleteAccountDialog";
@@ -306,6 +307,8 @@ export function AccountsView() {
                   {c.username} / {c.password}
                 </span>
                 <CopyButton text={`${c.username} / ${c.password}`} />
+                {/* TKT-0435: the whole message to paste to the person: link, username, password, first steps. */}
+                {owner && <CopyButton label="Copy welcome message" text={buildWelcomeMessage(owner, c, window.location.origin)} />}
                 <Button size="sm" variant="ghost" onClick={() => forget(id)}>
                   Hide
                 </Button>
@@ -382,7 +385,7 @@ export function AccountsView() {
   );
 }
 
-function CopyButton({ text }: { text: string }) {
+function CopyButton({ text, label = "Copy" }: { text: string; label?: string }) {
   const [copied, setCopied] = useState(false);
   return (
     <Button
@@ -398,7 +401,7 @@ function CopyButton({ text }: { text: string }) {
         }
       }}
     >
-      {copied ? "Copied" : "Copy"}
+      {copied ? "Copied" : label}
     </Button>
   );
 }

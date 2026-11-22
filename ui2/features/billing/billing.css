@@ -23,4 +23,15 @@
   .u2-statuscell__date { color: var(--u2-color-text-muted); font-size: var(--u2-text-xs); font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; }
   .u2-statuscell__date--warn { color: var(--u2-color-warning-text); }
   .u2-mono { font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+  /* TKT-0432: the "How amounts are calculated" note opens on a tap. The summary row is a full-height tap target. */
+  .u2-note summary { cursor: pointer; padding: var(--u2-space-2) 0; color: var(--u2-color-brand); text-decoration: underline dotted; }
+  .u2-note p { margin: 0 0 var(--u2-space-2); }
+  /* TKT-0433: a service and its Amount. On a phone the Amount sits on its own line under the name, full width; from 640 px it sits beside it. */
+  .u2-svcrow { display: grid; gap: var(--u2-space-2); }
+  .u2-svcrow input { width: 100%; }
+  @media (min-width: 640px) { .u2-svcrow { grid-template-columns: minmax(0, 1fr) 150px; align-items: center; } }
+  /* TKT-0434: the sheet is a one-column grid, and a wide child (the Subjects table, about 490 px) used to widen the whole column, so the sheet scrolled sideways on a phone.
+     Children may now shrink; the table scrolls inside its own box. */
+  .u2-form > * { min-width: 0; }
+  .u2-scrollx { overflow-x: auto; max-width: 100%; }
 }

@@ -11,8 +11,9 @@ MGMT = {"UserID": "MGT-0001", "UserType": "Management", "Name": "Test Admin", "U
 
 
 class Session:
-    def __init__(self, user=None, width=1280, height=800, state=None, anon=False):
+    def __init__(self, user=None, width=1280, height=800, state=None, anon=False, touch=False):
         self.anon = anon
+        self.touch = touch  # a touch screen (pointer: coarse), as on a real phone: buttons grow to the touch target
         self.user = user or MGMT
         self.size = {"width": int(os.environ.get("U2_WIDTH", width)), "height": height}
         self.state = state if state is not None else {}
@@ -26,7 +27,7 @@ class Session:
     def __enter__(self):
         self._p = sync_playwright().start()
         self.browser = self._p.chromium.launch()
-        ctx = self.browser.new_context(viewport=self.size, permissions=["clipboard-read", "clipboard-write"])
+        ctx = self.browser.new_context(viewport=self.size, permissions=["clipboard-read", "clipboard-write"], **({"is_mobile": True, "has_touch": True, "device_scale_factor": 2} if self.touch else {}))
         # Journeys send broken replies on purpose. Their crash reports must never reach the production Sentry project.
         ctx.route(re.compile(r"https?://[^/]*sentry\.io/.*"), lambda route: route.abort())
         if not self.anon:

@@ -79,12 +79,12 @@ export function ScheduleCard({ user, services, scheduleItems, attendance, resche
   }
 
   const cols: Column<ScheduleItem>[] = [
-    { id: "service", header: "Service", sortValue: (s) => s.ServiceName ?? "", tip: (s) => s.ServiceName, cell: (s) => s.ServiceName },
+    { id: "service", header: "Service", lines: 2, sortValue: (s) => s.ServiceName ?? "", tip: (s) => s.ServiceName, cell: (s) => s.ServiceName },
     { id: "date", header: "Date", width: 96, sortValue: (s) => s.Date + s.Time, cell: (s) => formatDate(s.Date) as string },
     ...(showDay ? ([{ id: "day", header: "Day", width: 60, cell: (s: ScheduleItem) => formatDay(s.Date) as string }] satisfies Column<ScheduleItem>[]) : []),
     { id: "time", header: "Time", width: 92, cell: (s) => `${s.Time} ${tz(s)}` },
     ...(readOnly ? [] : ([{ id: "hrs", header: "Hrs", width: 44, numeric: true, sortValue: (s: ScheduleItem) => Number(s.Duration), cell: (s: ScheduleItem) => s.Duration }] satisfies Column<ScheduleItem>[])),
-    { id: "who", header: "Instructor", width: 130, tip: (s) => s.Facilitator, cell: (s) => s.Facilitator || "—" },
+    { id: "who", header: "Instructor", lines: 2, width: 130, tip: (s) => s.Facilitator, cell: (s) => s.Facilitator || "—" },
     ...(attendanceMode === "none"
       ? []
       : ([{

@@ -109,6 +109,7 @@ export const TOKENS = {
   "radius-round": "50%",
   // type (dense UI scale inside the guideline family)
   "font-sans": '"Satoshi", var(--font-inter), Inter, Arial, Helvetica, sans-serif',
+  "text-3xs": "10px", // the smallest: only where a label must fit a tight cell (the calendar time chip on a 360 px phone)
   "text-2xs": "11px",
   "text-xs": "12px",
   "text-sm": "13px",

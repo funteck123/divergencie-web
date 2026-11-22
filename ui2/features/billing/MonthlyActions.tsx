@@ -80,11 +80,13 @@ function GeneratePanel({ onDone }: { onDone: (s: { text: string; skippedItems: s
     <section className="u2-box">
       <h2>Generate Drafts</h2>
       <p className="u2-muted">
-        Use for: the normal monthly run.{" "}
-        <span title="Amount is auto-calculated: (Service monthly cost ÷ scheduled hours) × attended hours. INR Amount is auto-converted using the exchange rate as of the 1st of the invoice/paycheck's own month, only INR Due is manually adjustable, for tracking partial payments." style={{ textDecoration: "underline dotted", cursor: "help" }}>
-          How amounts are calculated
-        </span>
+        Use for: the normal monthly run.
       </p>
+      {/* TKT-0432: this was a hover tooltip, which a phone cannot show. A tap-to-open note works with a finger, a mouse and a keyboard. */}
+      <details className="u2-note">
+        <summary>How amounts are calculated</summary>
+        <p className="u2-muted">Amount is auto-calculated: (Service monthly cost ÷ scheduled hours) × attended hours. INR Amount is auto-converted using the exchange rate as of the 1st of the invoice/paycheck&apos;s own month, only INR Due is manually adjustable, for tracking partial payments.</p>
+      </details>
       <YearMonth year={year} month={month} setYear={setYear} setMonth={setMonth} />
       <div className="u2-form__actions">
         <Button variant="primary" loading={gen.isPending} onClick={() => void run()}>
@@ -215,9 +217,9 @@ function ManualInvoicePanel({ people, services, enrollments }: { people: readonl
           <div className="u2-rows">
             {enrolled.length === 0 && <p className="u2-muted">No enrollments for this student.</p>}
             {enrolled.map((s) => (
-              <div key={s.ServiceID} className="u2-inline u2-inline--center">
+              <div key={s.ServiceID} className="u2-svcrow">
                 <CheckField label={s.Name} checked={!!checked[s.ServiceID]} onChange={(on) => setChecked((p) => ({ ...p, [s.ServiceID]: on }))} />
-                <TextInput type="number" aria-label={`Amount for ${s.Name}`} placeholder="Amount" style={{ maxWidth: 110 }} disabled={!checked[s.ServiceID]} value={amounts[s.ServiceID] || ""} onChange={(e) => setAmounts((p) => ({ ...p, [s.ServiceID]: e.target.value }))} />
+                <TextInput type="number" aria-label={`Amount for ${s.Name}`} placeholder="Amount" disabled={!checked[s.ServiceID]} value={amounts[s.ServiceID] || ""} onChange={(e) => setAmounts((p) => ({ ...p, [s.ServiceID]: e.target.value }))} />
               </div>
             ))}
           </div>

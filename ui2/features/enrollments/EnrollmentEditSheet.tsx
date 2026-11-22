@@ -70,7 +70,7 @@ function Form({ enrollment, users, services, onClose }: { enrollment: Enrollment
             setBatchId(id);
             setRateId("");
           }}
-          options={batches.map((b) => ({ value: b.BatchID, label: `${b.BatchName ?? ""}${batchScheduleLabel(b) ? ` — ${batchScheduleLabel(b)}` : ""}` }))}
+          options={batches.map((b) => ({ value: b.BatchID, label: `${b.BatchName ?? ""}${batchScheduleLabel(b) ? ` · ${batchScheduleLabel(b)}` : ""}` }))}
         />
       </Field>
       <Field label="Rate">

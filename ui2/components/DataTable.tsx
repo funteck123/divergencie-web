@@ -4,7 +4,7 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 import { clsx } from "clsx";
 import { useMediaQuery } from "@/ui2/lib/useMediaQuery";
 import { TableTools } from "./TableTools";
-import { GROUPS_START_OPEN_UNDER, applyFilters, groupRows, type Cell, type Filters } from "./tableTools";
+import { applyFilters, groupRows, readGroupDefault, writeGroupDefault, type Cell, type Filters } from "./tableTools";
 import "./DataTable.css";
 
 export interface Column<T> {
@@ -21,12 +21,16 @@ export interface Column<T> {
   tip?: (row: T) => string | undefined;
   align?: "left" | "center" | "right";
   numeric?: boolean;
+  /** TKT-0437: let a long text wrap onto two lines (then an ellipsis) inside the normal row height, so a name such as a service stays readable and rows stay uniform. */
+  lines?: 2;
   /** What the Filter and Group tools use for this column. Defaults to sortValue. Set `filterable: false` to leave a column out. */
   filterValue?: (row: T) => string | number | null | undefined;
   filterable?: boolean;
 }
 
 export interface DataTableProps<T> {
+  /** An action shown on the Filter line (or alone when there is no Filter line), for example Enroll a Student. */
+  toolbarEnd?: ReactNode;
   rows: readonly T[];
   columns: readonly Column<T>[];
   rowKey: (row: T) => string;
@@ -107,8 +111,8 @@ function RowInner<T>({ row, id, columns, checked, active, onToggle, position }: 
         </td>
       )}
       {columns.map((c) => (
-        <td key={c.id} className={clsx(c.numeric && "u2-table__num", c.align && `u2-table__${c.align}`)} title={c.tip?.(row)}>
-          {c.cell(row)}
+        <td key={c.id} className={clsx(c.numeric && "u2-table__num", c.align && `u2-table__${c.align}`, c.lines === 2 && "u2-table__wrap2")} title={c.tip?.(row)}>
+          {c.lines === 2 ? <span className="u2-table__clamp2">{c.cell(row)}</span> : c.cell(row)}
         </td>
       ))}
     </tr>
@@ -128,13 +132,20 @@ function Spacer({ height, span }: { height: number; span: number }) {
  * growing the table; the header stays pinned; sorting is by a typed accessor (blanks last, numbers numeric).
  * Rows are memoised so a keystroke in a filter re-renders only what changed.
  */
-export function DataTable<T>({ rows, columns, rowKey, caption, initialSort, loading, emptyText = "Nothing to show.", card, selected, onSelectedChange, activeKey }: DataTableProps<T>) {
+export function DataTable<T>({ rows, columns, rowKey, caption, initialSort, loading, emptyText = "Nothing to show.", card, selected, onSelectedChange, activeKey, toolbarEnd }: DataTableProps<T>) {
   const [sort, setSort] = useState(initialSort ?? null);
   const phone = useMediaQuery("(max-width: 767px)");
 
   const [filters, setFilters] = useState<Filters>({});
-  const [groupBy, setGroupBy] = useState("");
-  const [flipped, setFlipped] = useState<ReadonlySet<string>>(new Set()); // groups the person opened or closed against the default
+  // The grouping: what the person picked here, else the one they saved as this table's default (TKT-0428), else none.
+  const [groupChoice, setGroupChoice] = useState<{ caption: string; id: string } | null>(null);
+  const [defaultVersion, setDefaultVersion] = useState(0);
+  const defaultGroup = useMemo(() => {
+    void defaultVersion; // read again after "Make default" saved a new one
+    return readGroupDefault(typeof window === "undefined" ? null : window.localStorage, caption);
+  }, [caption, defaultVersion]);
+  const groupBy = groupChoice && groupChoice.caption === caption ? groupChoice.id : defaultGroup;
+  const [flipped, setFlipped] = useState<ReadonlySet<string>>(new Set()); // the groups the person has opened
   const getters = useMemo(() => {
     const g: Record<string, (r: T) => Cell> = {};
     for (const c of columns) {
@@ -171,8 +182,7 @@ export function DataTable<T>({ rows, columns, rowKey, caption, initialSort, load
   const [rowH, setRowH] = useState(37);
   const grouping = groupBy && getters[groupBy] ? groupBy : "";
   const groups = useMemo(() => (grouping ? groupRows(sorted, getters[grouping] as (r: T) => Cell) : null), [sorted, grouping, getters]);
-  const groupsStartOpen = sorted.length <= GROUPS_START_OPEN_UNDER;
-  const groupOpen = (key: string) => groupsStartOpen !== flipped.has(key);
+  const groupOpen = (key: string) => flipped.has(key); // TKT-0431: every group starts closed; `flipped` holds the ones the person opened
   const flipGroup = (key: string) => setFlipped((f) => { const n = new Set(f); if (n.has(key)) n.delete(key); else n.add(key); return n; });
   const windowed = !phone && !grouping && sorted.length > WINDOW_AFTER;
   const onScroll = useCallback(() => {
@@ -215,7 +225,10 @@ export function DataTable<T>({ rows, columns, rowKey, caption, initialSort, load
     );
   }
   const tools = toolColumns.length > 0 && rows.length > 1 ? (
-    <TableTools caption={caption} columns={toolColumns} rows={rows} filters={filters} onFilters={setFilters} group={grouping} onGroup={(id) => { setGroupBy(id); setFlipped(new Set()); }} shown={sorted.length} />
+    <TableTools caption={caption} columns={toolColumns} rows={rows} filters={filters} onFilters={setFilters} group={grouping} onGroup={(id) => { setGroupChoice({ caption, id }); setFlipped(new Set()); }} shown={sorted.length}
+      defaultGroup={defaultGroup} onMakeDefault={() => { writeGroupDefault(window.localStorage, caption, grouping); setDefaultVersion((v) => v + 1); }} end={toolbarEnd} />
+  ) : toolbarEnd ? (
+    <div className="u2-tt u2-tt--end-only">{<span className="u2-tt__end">{toolbarEnd}</span>}</div>
   ) : null;
 
   if (sorted.length === 0) {

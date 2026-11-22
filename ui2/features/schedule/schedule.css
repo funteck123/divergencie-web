@@ -28,7 +28,7 @@
   .u2-agenda__date { margin: 0; font-size: var(--u2-text-md); font-weight: var(--u2-weight-bold); }
   .u2-agenda__row { display: grid; grid-template-columns: 110px minmax(0, 1fr) 70px minmax(0, 160px) auto; gap: var(--u2-space-2); align-items: center; padding: var(--u2-space-2) var(--u2-space-3); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); font-size: var(--u2-text-sm); }
   /* TKT-0422: on a phone a day cell is about 30 px wide, so the chip showed "1…". It shows the time only, with extra padding (owner, 16 Nov); the mark and the rest stay in the tap-to-open view and the accessible name. The grid gap and cell padding are trimmed so "17:00" still fits with that padding. */
-  @media (max-width: 480px) { .u2-chip--cut .u2-chip__m, .u2-chip--cut .u2-chip__r { display: none; } .u2-chip--cut { padding: 6px 2px; text-align: center; font-size: 10px; letter-spacing: -0.02em; } .u2-cal__grid { gap: 2px; } .u2-cal__cell { padding: 4px 1px; } .u2-cal__day { padding-left: 3px; } }
+  @media (max-width: 480px) { .u2-chip--cut .u2-chip__m, .u2-chip--cut .u2-chip__r { display: none; } .u2-chip--cut { padding: 6px 2px; text-align: center; font-size: var(--u2-text-3xs); letter-spacing: -0.02em; } .u2-cal__grid { gap: 2px; } .u2-cal__cell { padding: 4px 1px; } .u2-cal__day { padding-left: 3px; } }
   @media (max-width: 767px) { .u2-cal__cell { min-height: 60px; } .u2-agenda__row { grid-template-columns: 1fr; } }}
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
   .u2-swatch { display: inline-block; width: 10px; height: 10px; border-radius: var(--u2-radius); margin-right: 6px; }}

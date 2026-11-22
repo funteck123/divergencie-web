@@ -54,7 +54,7 @@ export function EnrollmentsView() {
         const svc = serviceOf(e.ServiceID);
         const batch = batchesFor(svc).find((b) => b.BatchID === e.BatchID);
         const rate = e.Currency ? `${e.Currency} ${(rateById(svc, e.BatchID, e.RateID) as { Rate?: number | string } | undefined)?.Rate ?? ""}` : "";
-        return { ...e, _person: nameOf(e.UserID), _service: svc?.Name ?? e.ServiceID, _batch: batch?.BatchName || e.BatchID || "—", _rate: rate };
+        return { ...e, _person: nameOf(e.UserID), _service: svc?.Name ?? e.ServiceID, _batch: batch?.BatchName || e.BatchID || "No batch", _rate: rate };
       })
       .filter((r) => !needle || r._person.toLowerCase().includes(needle) || r._service.toLowerCase().includes(needle));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -65,9 +65,9 @@ export function EnrollmentsView() {
       { id: "person", header: "Person", width: 170, sortValue: (r) => r._person, tip: (r) => r._person, cell: (r) => <strong className="u2-strong">{r._person}</strong> },
       { id: "service", header: "Service", sortValue: (r) => r._service, tip: (r) => r._service, cell: (r) => r._service },
       { id: "batch", header: "Batch", width: 90, sortValue: (r) => r._batch, cell: (r) => r._batch },
-      { id: "rate", header: "Rate", width: 110, numeric: true, sortValue: (r) => r._rate, cell: (r) => r._rate || "—" },
-      { id: "start", header: "Start", width: 110, numeric: true, sortValue: (r) => r.StartDate ?? "", cell: (r) => (r.StartDate ? (formatDate(r.StartDate) as string) : "—") },
-      { id: "end", header: "End", width: 110, numeric: true, sortValue: (r) => r.EndDate ?? "", cell: (r) => (r.EndDate ? (formatDate(r.EndDate) as string) : "—") },
+      { id: "rate", header: "Rate", width: 110, numeric: true, sortValue: (r) => r._rate, cell: (r) => r._rate || "Not set" },
+      { id: "start", header: "Start", width: 110, numeric: true, sortValue: (r) => r.StartDate ?? "", cell: (r) => (r.StartDate ? (formatDate(r.StartDate) as string) : "Not set") },
+      { id: "end", header: "End", width: 110, numeric: true, sortValue: (r) => r.EndDate ?? "", cell: (r) => (r.EndDate ? (formatDate(r.EndDate) as string) : "Ongoing") },
       {
         id: "actions", header: "", title: "Actions", width: 156,
         cell: (r) => (
@@ -107,12 +107,6 @@ export function EnrollmentsView() {
       </div>
       <div className="u2-toolbar">
         <input type="search" className="u2-search" placeholder={`Search ${g.toLowerCase()} enrollments…`} aria-label="Search enrollments" value={q} onChange={(e) => void setQ(e.target.value || null)} />
-        <span className="u2-muted" aria-live="polite">
-          {rows.length} enrollments
-        </span>
-        <Button variant="primary" className="u2-toolbar__new" onClick={() => setEnrolling(true)}>
-          Enroll a {g}
-        </Button>
       </div>
 
       {failed ? (
@@ -120,7 +114,7 @@ export function EnrollmentsView() {
           Could not load enrollments: {failed.message}
         </div>
       ) : (
-        <DataTable caption={`${g} enrollments`} rows={rows} columns={columns} rowKey={(r) => r.EnrolmentID} loading={loading} initialSort={{ id: "person", dir: "asc" }} emptyText={`No ${g.toLowerCase()} enrollments yet.`} />
+        <DataTable caption={`${g} enrollments`} toolbarEnd={<Button variant="primary" onClick={() => setEnrolling(true)}>Enroll a {g}</Button>} rows={rows} columns={columns} rowKey={(r) => r.EnrolmentID} loading={loading} initialSort={{ id: "person", dir: "asc" }} emptyText={`No ${g.toLowerCase()} enrollments yet.`} />
       )}
 
       <EnrollSheet open={enrolling} group={g} people={people.filter((u) => roleGroupOf(u) === g)} services={svcList} onClose={() => setEnrolling(false)} />

@@ -9,7 +9,7 @@
   .u2-pdfv__input { width: 72px; height: var(--u2-control-h); padding: 0 var(--u2-space-2); border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius); font: inherit; }
   .u2-pdfv__zoom { min-width: 48px; text-align: center; font-variant-numeric: tabular-nums; }
   .u2-pdfv__scroll { flex: 1 1 auto; overflow: auto; padding: var(--u2-space-3); display: flex; flex-direction: column; align-items: flex-start; gap: var(--u2-space-3); -webkit-overflow-scrolling: touch; }
-  .u2-pdfv__page { flex: 0 0 auto; margin-left: auto; margin-right: auto; background: #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25); }
+  .u2-pdfv__page { flex: 0 0 auto; margin-left: auto; margin-right: auto; background: var(--u2-color-surface); box-shadow: var(--u2-shadow-md); }
   .u2-pdfv__page canvas { display: block; }
   .u2-pdfv__msg { margin: auto; max-width: 420px; text-align: center; display: grid; gap: var(--u2-space-3); justify-items: center; }
   .u2-pdfv__progress { width: 260px; max-width: 100%; }

@@ -1,7 +1,7 @@
 "use client";
 
 import * as Popover from "@radix-ui/react-popover";
-import { useId, useMemo, useState } from "react";
+import { useId, useMemo, useState, type ReactNode } from "react";
 import { Button } from "./Button";
 import { activeFilterCount, distinctValues, toggleFilter, type Cell, type Filters } from "./tableTools";
 
@@ -15,7 +15,7 @@ const GROUPABLE_MAX = 60;
  * The tools every table has: Filter (pick values per column), Group by, chips for what is filtered, and a count.
  * Works the same on a phone, where the table is a list of cards.
  */
-export function TableTools<T>({ caption, columns, rows, filters, onFilters, group, onGroup, shown }: {
+export function TableTools<T>({ caption, columns, rows, filters, onFilters, group, onGroup, shown, defaultGroup, onMakeDefault, end }: {
   caption: string;
   columns: readonly ToolColumn<T>[];
   rows: readonly T[];
@@ -24,6 +24,11 @@ export function TableTools<T>({ caption, columns, rows, filters, onFilters, grou
   group: string;
   onGroup: (id: string) => void;
   shown: number;
+  /** The grouping this person saved as the default for this table ("" for none), and how to save the current one (TKT-0428). */
+  defaultGroup: string;
+  onMakeDefault: () => void;
+  /** An action that belongs on this line, such as Enroll a Student (TKT-0429). */
+  end?: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const groupId = useId();
@@ -54,6 +59,11 @@ export function TableTools<T>({ caption, columns, rows, filters, onFilters, grou
           <option value="">None</option>
           {groupable.map((c) => <option key={c.id} value={c.id}>{c.header}</option>)}
         </select>
+        {group !== defaultGroup ? (
+          <Button size="sm" variant="ghost" onClick={onMakeDefault}>Make default</Button>
+        ) : group !== "" ? (
+          <span className="u2-muted">Default</span>
+        ) : null}
       </span>
 
       {Object.entries(filters).filter(([, s]) => s.size > 0).map(([id, set]) => (
@@ -61,7 +71,9 @@ export function TableTools<T>({ caption, columns, rows, filters, onFilters, grou
           {label(id)}: {[...set].join(", ")} <span aria-hidden="true">✕</span>
         </button>
       ))}
-      <span className="u2-tt__count" role="status" aria-live="polite">{shown === rows.length ? `${rows.length} rows` : `${shown} of ${rows.length} rows`}</span>
+      {/* TKT-0429: the plain "N rows" repeated the count the page already shows, so it is spoken but not drawn; a filtered "5 of 26 rows" is shown. */}
+      {shown === rows.length ? <span className="u2-visually-hidden" role="status" aria-live="polite">{rows.length} rows</span> : <span className="u2-tt__count" role="status" aria-live="polite">{`${shown} of ${rows.length} rows`}</span>}
+      {end && <span className="u2-tt__end">{end}</span>}
     </div>
   );
 }

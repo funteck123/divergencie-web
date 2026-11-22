@@ -21,7 +21,7 @@ export interface RowMenuItem {
 export function RowMenu({ label, items, trigger = "⋯" }: { label: string; items: readonly RowMenuItem[]; trigger?: ReactNode }) {
   return (
     <Menu.Root>
-      <Menu.Trigger className="u2-iconbtn" aria-label={label} title={label}>
+      <Menu.Trigger className={typeof trigger === "string" && trigger.length > 2 ? "u2-iconbtn u2-iconbtn--text" : "u2-iconbtn"} aria-label={label} title={label}>
         {trigger}
       </Menu.Trigger>
       <Menu.Portal>
