@@ -30,7 +30,7 @@ const useImpersonator = () => {
 };
 
 /**
- * Two-tier shell (sketch 1A): the pinned top bar with the logo, the person, Report an Issue, My tickets, Install app and Sign out
+ * Two-tier shell (sketch 1A): the pinned top bar (white, 23 Nov 2026: the bar is white and the tab row navy) with the logo, the person, Report an Issue, My tickets, Install app and Sign out
  * (no switch back to the old UI: it was discontinued on 17 Nov 2026); the optional second tier holds the section tabs. On a phone the actions fold
  * into one menu. An admin viewing as someone else always sees the amber banner with Stop impersonating.
  */
@@ -96,9 +96,14 @@ export function AppShell({ user, tabs, children }: { user: SessionUser; tabs?: r
           </Button>
         </div>
       )}
-      <header className={`${styles.bar} u2-on-dark`} style={impersonator ? { top: 0 } : undefined}>
+      <header className={styles.bar} style={impersonator ? { top: 0 } : undefined}>
         <div className={styles.brand}>
-          <Image src="/ui2/logo/logo-white-160.webp" alt="DivergenCIE Coaching" width={120} height={44} priority unoptimized />
+          {/* Design A: the icon and the name as text, with CIE in gold, in place of the stacked logo that was made for a dark bar. */}
+          <Image src="/ui2/logo/icon-64.webp" alt="" width={36} height={36} priority unoptimized />
+          <span className={styles.wordmark}>
+            Divergen<span className={styles.cie}>CIE</span>
+            <span className="u2-visually-hidden"> Coaching</span>
+          </span>
         </div>
         <div className={styles.who}>
           <span className={styles.name}>{user.Name}</span>
@@ -108,25 +113,25 @@ export function AppShell({ user, tabs, children }: { user: SessionUser; tabs?: r
           {phone ? (
             <>
               {/* One tap, not two (TKT-0329): reporting a problem must not hide inside the menu. */}
-              <Button variant="ghost" size="sm" onDark onClick={() => openReport()}>
+              <Button variant="ghost" size="sm" onClick={() => openReport()}>
                 Report issue
               </Button>
               <RowMenu label="Menu" trigger="Menu ▾" items={menu.filter((i) => i.label !== "Report an Issue")} />
             </>
           ) : (
             <>
-              <Button variant="ghost" size="sm" onDark onClick={() => openReport()}>
+              <Button variant="ghost" size="sm" onClick={() => openReport()}>
                 Report an Issue
               </Button>
-              <Button variant="ghost" size="sm" onDark onClick={() => setMyTickets(true)}>
+              <Button variant="ghost" size="sm" onClick={() => setMyTickets(true)}>
                 My tickets
               </Button>
               {install.available && (
-                <Button variant="ghost" size="sm" onDark onClick={() => void install.run()}>
+                <Button variant="ghost" size="sm" onClick={() => void install.run()}>
                   Install app
                 </Button>
               )}
-              <Button variant="ghost" size="sm" onDark onClick={signOut}>
+              <Button variant="ghost" size="sm" onClick={signOut}>
                 Sign out
               </Button>
             </>
@@ -134,7 +139,7 @@ export function AppShell({ user, tabs, children }: { user: SessionUser; tabs?: r
         </div>
       </header>
       {tabs && (
-        <nav className={styles.tabs} aria-label="Sections">
+        <nav className={`${styles.tabs} u2-on-dark`} aria-label="Sections">
           {tabs.map((t) => {
             const current = pathname === t.href || pathname.startsWith(t.href + "/");
             return (

@@ -4,31 +4,37 @@
   position: sticky; top: 0; z-index: var(--u2-z-bar);
   display: flex; align-items: center; gap: var(--u2-space-4);
   height: var(--u2-bar-height); padding: 0 var(--u2-space-4);
-  background: var(--u2-color-brand); color: var(--u2-color-on-brand);
+  background: var(--u2-color-surface); color: var(--u2-color-brand); border-bottom: 1px solid var(--u2-color-border);
 }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .brand { display: flex; align-items: center; gap: var(--u2-space-2); }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .who { display: flex; flex-direction: column; line-height: 1.2; margin-left: auto; text-align: right; }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .name { font-weight: var(--u2-weight-semibold); font-size: var(--u2-text-md); }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .type { font-size: var(--u2-text-xs); opacity: 0.85; }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .actions { display: flex; align-items: center; gap: var(--u2-space-2); }
-:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .actions :global(.u2-iconbtn) { height: var(--u2-control-h); padding: 0 var(--u2-space-3); background: transparent; color: var(--u2-color-on-brand); border-color: var(--u2-color-on-brand-line); font-weight: var(--u2-weight-semibold); }
-:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .actions :global(.u2-iconbtn):hover { background: var(--u2-color-on-brand-wash); }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .actions :global(.u2-iconbtn) { height: var(--u2-control-h); padding: 0 var(--u2-space-3); background: transparent; color: var(--u2-color-brand); border-color: var(--u2-color-border-strong); font-weight: var(--u2-weight-semibold); }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .actions :global(.u2-iconbtn):hover { background: var(--u2-color-selected); }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .main { padding: var(--u2-space-6) var(--u2-space-4); max-width: 1320px; margin: 0 auto; }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .tabs {
   position: sticky; top: var(--u2-bar-height); z-index: var(--u2-z-bar);
   display: flex; gap: var(--u2-space-2); align-items: center; padding: var(--u2-space-2) var(--u2-space-4);
-  background: var(--u2-color-surface); border-bottom: 1px solid var(--u2-color-border);
+  background: var(--u2-color-brand); border-bottom: 1px solid var(--u2-color-brand);
   overflow-x: auto; scrollbar-width: none;
 }
-:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .tab {
+/* two classes, so it outranks the global link colour (.u2 a) */
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .tabs .tab {
   display: inline-flex; align-items: center; flex-shrink: 0; min-height: var(--u2-control-h); padding: 0 var(--u2-space-4);
-  color: var(--u2-color-brand); text-decoration: none; font-weight: var(--u2-weight-semibold);
-  background: transparent; border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius);
+  color: var(--u2-color-on-brand); text-decoration: none; font-weight: var(--u2-weight-semibold);
+  background: transparent; border: 1px solid var(--u2-color-on-brand-line); border-radius: var(--u2-radius);
 }
-:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .tab:hover { background: var(--u2-color-selected); }
-:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .tab[aria-current="page"] { background: var(--u2-color-brand); color: var(--u2-color-on-brand); border-color: var(--u2-color-brand); }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .tabs .tab:hover { background: var(--u2-color-on-brand-wash); }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .tabs .tab[aria-current="page"] { background: var(--u2-color-surface); color: var(--u2-color-brand); border-color: var(--u2-color-surface); }
 @media (max-width: 767px) { :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .who { display: none; } :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .actions { margin-left: auto; } }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .imp {
   display: flex; align-items: center; justify-content: space-between; gap: var(--u2-space-3); flex-wrap: wrap;
   padding: var(--u2-space-2) var(--u2-space-4); background: var(--u2-color-impersonate); color: var(--u2-color-on-brand); font-size: var(--u2-text-sm);
 }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .wordmark { font-family: var(--u2-font-sans); font-weight: 900; font-size: var(--u2-text-xl); line-height: 1; letter-spacing: -0.3px; color: var(--u2-color-brand); white-space: nowrap; }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .cie { color: var(--u2-color-accent); }
+/* On a phone the wordmark and icon are smaller, so they do not run into the two buttons (checked at 360 and 320 px). */
+@media (max-width: 480px) { :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .brand img { width: 30px; height: auto; } :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .wordmark { font-size: var(--u2-text-lg); letter-spacing: -0.4px; } :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .brand { gap: var(--u2-space-1); } }
+@media (max-width: 340px) { :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .brand img { width: 26px; height: auto; } :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .wordmark { font-size: var(--u2-text-sm); } :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .bar { gap: var(--u2-space-2); padding: 0 var(--u2-space-3); } }
