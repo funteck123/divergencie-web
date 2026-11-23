@@ -1,6 +1,7 @@
 "use client";
 
 import { useDeferredValue, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { parseAsString, useQueryState } from "nuqs";
 import { DefaultViewButton, useDefaultView } from "@/ui2/lib/defaultView";
 import { toast } from "sonner";
@@ -11,6 +12,7 @@ import { Badge } from "@/ui2/components/Badge";
 import { Button, LinkButton } from "@/ui2/components/Button";
 import { ConfirmDialog } from "@/ui2/components/ConfirmDialog";
 import { DataTable, type Column } from "@/ui2/components/DataTable";
+import { writeGroupDefault } from "@/ui2/components/tableTools";
 import { Field, TextInput } from "@/ui2/components/Field";
 import { Combobox } from "@/ui2/components/Combobox";
 import { RowMenu, type RowMenuItem } from "@/ui2/components/RowMenu";
@@ -28,7 +30,7 @@ import "@/ui2/features/accounts/accounts.css";
 
 const MODES = Object.keys(MODE_LABEL) as Mode[];
 
-export function BillTable({ kind, users, services }: { kind: BillKind; users: readonly UserRecord[]; services: readonly ServiceRecord[] }) {
+export function BillTable({ kind, users, services, viewsInto }: { kind: BillKind; users: readonly UserRecord[]; services: readonly ServiceRecord[]; /** Draw the view switch and Make default in this element (the line of the Billing tabs). */ viewsInto?: HTMLElement | null }) {
   const k = KINDS[kind];
   const { data, isPending, error, refetch } = useBills(kind);
   const patch = usePatchBill(kind);
@@ -39,7 +41,16 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
   const mode: Mode = (MODES as string[]).includes(modeParam) ? (modeParam as Mode) : "table";
   const [q, setQ] = useQueryState(`${kind}Q`, parseAsString.withDefault(""));
   const defaultView = useDefaultView(`billing-${kind}`, mode, "table", (v) => void setMode(v === "table" ? null : v));
+  // One Make default keeps the view and, in the table, the grouping with it (TKT-0429, level 1: there were two buttons).
+  const tableCaption = `${KINDS[kind].noun}s`;
+  const viewState: typeof defaultView = {
+    ...defaultView,
+    set: () => { defaultView.set(); if (mode === "table") writeGroupDefault(window.localStorage, tableCaption, tableGroup); },
+    clear: () => { defaultView.clear(); writeGroupDefault(window.localStorage, tableCaption, ""); },
+  };
   const [status, setStatus] = useQueryState(`${kind}Status`, parseAsString.withDefault("all"));
+  const [toolsSlot, setToolsSlot] = useState<HTMLElement | null>(null); // Filter and Group by are drawn on the search line, in this slot
+  const [tableGroup, setTableGroup] = useState("");
   const [filters, setFilters] = useState<BillFilters>(emptyFilters);
   const [showFilters, setShowFilters] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
@@ -250,17 +261,28 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
           </Button>
         )}
         <span className="u2-muted" aria-live="polite">{rows.length === all.length ? `${all.length}` : `${rows.length} of ${all.length}`} {k.noun}s</span>
-        <div className="u2-cluster u2-push">
-          <div className="u2-seg" role="group" aria-label="View">
-            {MODES.map((m) => (
-              <button key={m} type="button" className="u2-seg__btn" aria-pressed={mode === m} data-on={mode === m} onClick={() => void setMode(m === "table" ? null : m)}>
-                {MODE_LABEL[m]}
-              </button>
-            ))}
-          </div>
-          <DefaultViewButton state={defaultView} />
-        </div>
+        <span ref={setToolsSlot} className="u2-cluster u2-push" />
       </div>
+
+      {viewsInto === undefined ? <div className="u2-toolbar">        <div className="u2-cluster">
+            <div className="u2-seg" role="group" aria-label="View">
+              {MODES.map((m) => (
+                <button key={m} type="button" className="u2-seg__btn" aria-pressed={mode === m} data-on={mode === m} onClick={() => void setMode(m === "table" ? null : m)}>
+                  {MODE_LABEL[m]}
+                </button>
+              ))}
+            </div>
+            <DefaultViewButton state={viewState} />
+          </div></div> : viewsInto && createPortal(        <div className="u2-cluster">
+            <div className="u2-seg" role="group" aria-label="View">
+              {MODES.map((m) => (
+                <button key={m} type="button" className="u2-seg__btn" aria-pressed={mode === m} data-on={mode === m} onClick={() => void setMode(m === "table" ? null : m)}>
+                  {MODE_LABEL[m]}
+                </button>
+              ))}
+            </div>
+            <DefaultViewButton state={viewState} />
+          </div>, viewsInto)}
 
       {showFilters && (
         <div className="u2-filters" role="group" aria-label="Value and range filters">
@@ -296,7 +318,7 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
           })}
         </div>
       ) : mode === "table" ? (
-        <DataTable caption={`${k.noun}s`} rows={rows} columns={columns} rowKey={idOf} loading={isPending} initialSort={{ id: "period", dir: "desc" }} emptyText={all.length === 0 ? "None generated yet." : `No ${k.noun}s match this filter.`} card={card} />
+        <DataTable caption={`${k.noun}s`} rows={rows} columns={columns} rowKey={idOf} loading={isPending} toolsInto={toolsSlot} makeDefaultGroup={false} onGrouping={setTableGroup} initialSort={{ id: "period", dir: "desc" }} emptyText={all.length === 0 ? "None generated yet." : `No ${k.noun}s match this filter.`} card={card} />
       ) : (
         groups.map((g) => {
           const isClosed = mode === "person" ? !closed.has(g.key) : closed.has(g.key);

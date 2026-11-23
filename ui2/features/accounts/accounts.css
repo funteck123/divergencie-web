@@ -28,4 +28,10 @@
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
   .u2-details > summary { cursor: pointer; color: var(--u2-color-link); }
   .u2-details > div { white-space: normal; padding: var(--u2-space-1) 0; }
-  .u2-table .u2-details { overflow: visible; }}
+  .u2-table .u2-details { overflow: visible; }
+  /* TKT-0429: account-type tabs in two labelled lines. */
+  .u2-tabgroup { display: flex; align-items: center; gap: var(--u2-space-2); margin-bottom: var(--u2-space-2); }
+  .u2-tabgroup .u2-seg { margin-bottom: 0; }
+  .u2-tabgroup__title { flex: 0 0 auto; min-width: 124px; font-size: var(--u2-text-xs); font-weight: var(--u2-weight-bold); color: var(--u2-color-text-muted); }
+  @media (max-width: 639px) { .u2-tabgroup { display: grid; gap: var(--u2-space-1); } .u2-tabgroup__title { min-width: 0; } }
+}

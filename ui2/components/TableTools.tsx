@@ -26,7 +26,8 @@ export function TableTools<T>({ caption, columns, rows, filters, onFilters, grou
   shown: number;
   /** The grouping this person saved as the default for this table ("" for none), and how to save the current one (TKT-0428). */
   defaultGroup: string;
-  onMakeDefault: () => void;
+  /** Missing: the page offers its own Make default and this bar draws none. */
+  onMakeDefault?: () => void;
   /** An action that belongs on this line, such as Enroll a Student (TKT-0429). */
   end?: ReactNode;
 }) {
@@ -59,7 +60,7 @@ export function TableTools<T>({ caption, columns, rows, filters, onFilters, grou
           <option value="">None</option>
           {groupable.map((c) => <option key={c.id} value={c.id}>{c.header}</option>)}
         </select>
-        {group !== defaultGroup ? (
+        {!onMakeDefault ? null : group !== defaultGroup ? (
           <Button size="sm" variant="ghost" onClick={onMakeDefault}>Make default</Button>
         ) : group !== "" ? (
           <span className="u2-muted">Default</span>

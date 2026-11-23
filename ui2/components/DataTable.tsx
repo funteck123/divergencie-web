@@ -1,6 +1,7 @@
 "use client";
 
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { clsx } from "clsx";
 import { useMediaQuery } from "@/ui2/lib/useMediaQuery";
 import { TableTools } from "./TableTools";
@@ -29,6 +30,12 @@ export interface Column<T> {
 }
 
 export interface DataTableProps<T> {
+  /** Draw the Filter and Group by bar inside this element (a slot the page made on its own toolbar) instead of above the table. null: the slot is not ready yet, draw nothing. */
+  toolsInto?: HTMLElement | null;
+  /** false: no Make default for the grouping here, because the page offers one Make default for the view and the grouping together (Billing). */
+  makeDefaultGroup?: boolean;
+  /** Told the grouping on screen ("" for none), including the saved default on arrival. */
+  onGrouping?: (id: string) => void;
   /** An action shown on the Filter line (or alone when there is no Filter line), for example Enroll a Student. */
   toolbarEnd?: ReactNode;
   rows: readonly T[];
@@ -132,7 +139,7 @@ function Spacer({ height, span }: { height: number; span: number }) {
  * growing the table; the header stays pinned; sorting is by a typed accessor (blanks last, numbers numeric).
  * Rows are memoised so a keystroke in a filter re-renders only what changed.
  */
-export function DataTable<T>({ rows, columns, rowKey, caption, initialSort, loading, emptyText = "Nothing to show.", card, selected, onSelectedChange, activeKey, toolbarEnd }: DataTableProps<T>) {
+export function DataTable<T>({ rows, columns, rowKey, caption, initialSort, loading, emptyText = "Nothing to show.", card, selected, onSelectedChange, activeKey, toolbarEnd, toolsInto, makeDefaultGroup = true, onGrouping }: DataTableProps<T>) {
   const [sort, setSort] = useState(initialSort ?? null);
   const phone = useMediaQuery("(max-width: 767px)");
 
@@ -181,6 +188,7 @@ export function DataTable<T>({ rows, columns, rowKey, caption, initialSort, load
   const [view, setView] = useState({ top: 0, height: 700 });
   const [rowH, setRowH] = useState(37);
   const grouping = groupBy && getters[groupBy] ? groupBy : "";
+  useEffect(() => { onGrouping?.(grouping); }, [grouping, onGrouping]);
   const groups = useMemo(() => (grouping ? groupRows(sorted, getters[grouping] as (r: T) => Cell) : null), [sorted, grouping, getters]);
   const groupOpen = (key: string) => flipped.has(key); // TKT-0431: every group starts closed; `flipped` holds the ones the person opened
   const flipGroup = (key: string) => setFlipped((f) => { const n = new Set(f); if (n.has(key)) n.delete(key); else n.add(key); return n; });
@@ -226,15 +234,18 @@ export function DataTable<T>({ rows, columns, rowKey, caption, initialSort, load
   }
   const tools = toolColumns.length > 0 && rows.length > 1 ? (
     <TableTools caption={caption} columns={toolColumns} rows={rows} filters={filters} onFilters={setFilters} group={grouping} onGroup={(id) => { setGroupChoice({ caption, id }); setFlipped(new Set()); }} shown={sorted.length}
-      defaultGroup={defaultGroup} onMakeDefault={() => { writeGroupDefault(window.localStorage, caption, grouping); setDefaultVersion((v) => v + 1); }} end={toolbarEnd} />
+      defaultGroup={defaultGroup} onMakeDefault={makeDefaultGroup ? () => { writeGroupDefault(window.localStorage, caption, grouping); setDefaultVersion((v) => v + 1); } : undefined} end={toolbarEnd} />
   ) : toolbarEnd ? (
     <div className="u2-tt u2-tt--end-only">{<span className="u2-tt__end">{toolbarEnd}</span>}</div>
   ) : null;
 
+  // The tools can be drawn in a slot on the page's own toolbar (Billing puts them on the search line).
+  const toolsNode = toolsInto === undefined ? tools : toolsInto && tools ? createPortal(tools, toolsInto) : null;
+
   if (sorted.length === 0) {
     return (
       <>
-        {tools}
+        {toolsNode}
         <p className="u2-table__empty">{rows.length > 0 ? "No rows match the filters." : emptyText}</p>
       </>
     );
@@ -249,7 +260,7 @@ export function DataTable<T>({ rows, columns, rowKey, caption, initialSort, load
     );
     return (
       <>
-        {tools}
+        {toolsNode}
         {groups ? (
           groups.map((g) => (
             <section key={g.key} className="u2-group">
@@ -272,7 +283,7 @@ export function DataTable<T>({ rows, columns, rowKey, caption, initialSort, load
   };
   return (
     <>
-    {tools}
+    {toolsNode}
     <div className="u2-table__wrap" tabIndex={0} role="region" aria-label={caption} ref={wrapRef} onScroll={windowed ? onScroll : undefined}>
       <table className="u2-table" style={{ minWidth: fixed }} aria-rowcount={windowed ? sorted.length + 1 : undefined}>
         <caption className="u2-visually-hidden">{caption}</caption>

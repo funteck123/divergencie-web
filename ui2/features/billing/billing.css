@@ -34,4 +34,10 @@
      Children may now shrink; the table scrolls inside its own box. */
   .u2-form > * { min-width: 0; }
   .u2-scrollx { overflow-x: auto; max-width: 100%; }
+  /* TKT-0429: the lifecycle note folds to one line: the summary is the tap target. */
+  .u2-bill-hint--fold summary { cursor: pointer; font-weight: var(--u2-weight-semibold); }
+  .u2-bill-hint--fold p { margin: var(--u2-space-1) 0 0; }
+  /* The Billing tabs and the view switch share one line; the views wrap below the tabs when the screen is narrow. */
+  .u2-bill-tabs { display: flex; flex-wrap: wrap; gap: var(--u2-space-2); align-items: center; justify-content: space-between; margin-bottom: var(--u2-space-3); }
+  .u2-bill-tabs .u2-seg { margin-bottom: 0; }
 }

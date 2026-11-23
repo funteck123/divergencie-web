@@ -286,14 +286,20 @@ export function AccountsView() {
     <section className="u2-accounts">
       <h1>Accounts</h1>
 
-      <div className="u2-seg" role="tablist" aria-label="Account type">
-        {ACCOUNT_GROUPS.map((g) => (
-          <button key={g.id} type="button" role="tab" aria-selected={g.id === group.id} className="u2-seg__btn" onClick={() => { setSelected(new Set()); void setGroupId(g.id); }}>
-            {g.label}
-            <span className="u2-seg__count">{countByGroup.get(g.id) ?? 0}</span>
-          </button>
-        ))}
-      </div>
+      {/* TKT-0429, level 1: ten tabs did not fit on one line (the last was cut off). Two labelled lines: the people, and the accounts waiting to be converted. */}
+      {([["People", ACCOUNT_GROUPS.filter((g) => !g.showConvert)], ["Waiting to convert", ACCOUNT_GROUPS.filter((g) => g.showConvert)]] as const).map(([title, list]) => (
+        <div key={title} className="u2-tabgroup">
+          <span className="u2-tabgroup__title" id={`u2-tabgroup-${title.split(" ")[0]}`}>{title}</span>
+          <div className="u2-seg" role="tablist" aria-labelledby={`u2-tabgroup-${title.split(" ")[0]}`}>
+            {list.map((g) => (
+              <button key={g.id} type="button" role="tab" aria-selected={g.id === group.id} className="u2-seg__btn" onClick={() => { setSelected(new Set()); void setGroupId(g.id); }}>
+                {g.showConvert ? g.label.replace(/^Pending /, "") : g.label}
+                <span className="u2-seg__count">{countByGroup.get(g.id) ?? 0}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
 
       {issuedEntries.length > 0 && (
         <div className="u2-issued" role="status" aria-live="polite">
@@ -330,9 +336,6 @@ export function AccountsView() {
         <span className="u2-muted" aria-live="polite">
           {rows.length === groupRows.length ? `${groupRows.length} accounts` : `${rows.length} of ${groupRows.length}`}
         </span>
-        <Button variant="primary" className="u2-toolbar__new" onClick={() => setCreating(true)}>
-          New account
-        </Button>
       </div>
 
       {selected.size > 0 && <BulkBar selected={all.filter((u) => selected.has(u.UserID))} onClear={() => setSelected(new Set())} />}
@@ -347,6 +350,7 @@ export function AccountsView() {
       ) : (
         <DataTable
           caption={group.title}
+          toolbarEnd={<Button variant="primary" onClick={() => setCreating(true)}>New account</Button>}
           rows={rows}
           columns={columns}
           rowKey={(u) => u.UserID}
