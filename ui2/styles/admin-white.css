@@ -1,0 +1,6 @@
+/* Admin portal (the /v2/management pages): grey backgrounds become white (owner request, 23 Nov 2026).
+   Scope: the class u2-admin on <html>, set by AdminWhite while a management page is shown, so dialogs and menus drawn outside the page are covered too.
+   What stays grey on purpose: control borders and divider lines (white boxes on a white page would disappear), muted caption text (white text is unreadable),
+   and the light tint under the mouse on a row. Status colors (green, red, blue, gold) are not grey and do not change. */
+html.u2-admin .u2, html.u2-admin .u2-portal { --u2-color-bg-subtle: var(--u2-color-surface); }
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#).u2-admin .u2-badge--neutral { background: var(--u2-color-surface); box-shadow: inset 0 0 0 1px var(--u2-color-border); }

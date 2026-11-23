@@ -71,9 +71,12 @@ export function AppShell({ user, tabs, children }: { user: SessionUser; tabs?: r
     router.push("/login");
   };
 
+  // Management reads every ticket on its Tickets tab, which includes the ones it filed, so My tickets would only repeat a part of that page (23 Nov 2026).
+  // Every other role has no tickets page, so My tickets stays for them: it is where the replies are read.
+  const admin = user.UserType === "Management";
   const menu: RowMenuItem[] = [
     { label: "Report an Issue", onSelect: () => openReport() },
-    { label: "My tickets", onSelect: () => setMyTickets(true) },
+    ...(admin ? [] : [{ label: "My tickets", onSelect: () => setMyTickets(true) }]),
     ...(install.available ? [{ label: "Install app", onSelect: () => void install.run() }] : []),
     { label: "Sign out", onSelect: signOut },
   ];
@@ -110,7 +113,17 @@ export function AppShell({ user, tabs, children }: { user: SessionUser; tabs?: r
           <span className={styles.type}>{user.UserType}</span>
         </div>
         <div className={styles.actions}>
-          {phone ? (
+          {phone && admin ? (
+            <>
+              {/* Management on a phone: two buttons of one height in a row, no menu. */}
+              <Button variant="ghost" size="sm" onClick={() => openReport()}>
+                Report issue
+              </Button>
+              <Button variant="ghost" size="sm" onClick={signOut}>
+                Sign out
+              </Button>
+            </>
+          ) : phone ? (
             <>
               {/* One tap, not two (TKT-0329): reporting a problem must not hide inside the menu. */}
               <Button variant="ghost" size="sm" onClick={() => openReport()}>
@@ -123,9 +136,11 @@ export function AppShell({ user, tabs, children }: { user: SessionUser; tabs?: r
               <Button variant="ghost" size="sm" onClick={() => openReport()}>
                 Report an Issue
               </Button>
-              <Button variant="ghost" size="sm" onClick={() => setMyTickets(true)}>
-                My tickets
-              </Button>
+              {!admin && (
+                <Button variant="ghost" size="sm" onClick={() => setMyTickets(true)}>
+                  My tickets
+                </Button>
+              )}
               {install.available && (
                 <Button variant="ghost" size="sm" onClick={() => void install.run()}>
                   Install app
@@ -154,7 +169,7 @@ export function AppShell({ user, tabs, children }: { user: SessionUser; tabs?: r
         {children}
       </main>
       <ReportIssueDialog key={reportKey} open={reporting} onOpenChange={setReporting} shot={reportShot} meta={reportMeta} />
-      <MyTicketsSheet open={myTickets} onOpenChange={setMyTickets} />
+      {!admin && <MyTicketsSheet open={myTickets} onOpenChange={setMyTickets} />}
       <ScreenshotFab onCapture={(shot, meta) => openReport(shot, meta)} />
       {install.help}
     </>

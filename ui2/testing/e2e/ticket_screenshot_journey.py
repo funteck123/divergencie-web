@@ -44,7 +44,7 @@ def main():
     with Session(state={"users": A.mk_users(), "mine": mine, "all": all_t}) as s:
         s.on(r"^/api/users", lambda m, p, b, st: (200, {"users": st["users"]}) if m == "GET" else None)
         s.on(r"^/api/tickets", handler)
-        s.goto("/v2/management/tickets")
+        s.goto("/v2/management/tickets"); s.page.add_style_tag(content="nextjs-portal { display: none !important; }")
         s.page.get_by_role("table").wait_for(timeout=60000) if s.size["width"] >= 768 else s.page.wait_for_timeout(1500)
 
         # 1. the stealth screenshot button: one tap, the dialog opens ready for the description, with the picture of the screen already attached
@@ -90,7 +90,31 @@ def main():
         dialog.get_by_role("button", name="Send").click(); s.page.get_by_text(re.compile("Sent\\. Thanks")).wait_for()
         dialog.get_by_role("button", name="Close").click()
 
-        # 3. My tickets: the list, a thread with support's reply, a closed ticket with its resolution and no reply box, and a reply from the sender
+        # 4. Management: the conversation, the screenshot, the screen details, the internal note kept apart, and a reply
+        s.page.get_by_role("button", name="Open").first.click()
+        panel = s.page.get_by_role("dialog").last
+        panel.get_by_text("Conversation (the sender sees this)").wait_for()
+        out["admin_conversation"] = panel.get_by_text("Which paper?").is_visible() and panel.get_by_text("Paper 3").is_visible()
+        out["admin_notes_labelled"] = panel.get_by_text("Internal notes (hidden from the sender)").is_visible()
+        panel.get_by_role("button", name="Show screenshot").click()
+        panel.get_by_role("img", name="Picture attached to TKT-1").wait_for(timeout=10000)
+        out["admin_screenshot"] = True
+        panel.get_by_text("Screen details").click()
+        out["admin_details"] = panel.get_by_text("/v2/question-solver?paper=3").is_visible() and panel.get_by_text("abc1234").is_visible()
+        panel.get_by_label(re.compile("^Reply to")).fill("Thanks, fixed now")
+        panel.get_by_role("button", name="Send reply").click()
+        s.page.get_by_text(re.compile("Reply sent")).first.wait_for()   # two toasts can be on screen at once
+        replies = [b for m, p, b in s.calls if m == "POST" and p == "/api/tickets" and b.get("reply")]
+        out["admin_reply_posted"] = [(b["ticketId"], b["reply"]) for b in replies]
+        out["errors"] = s.errors[:3]
+
+    # 3. My tickets, as a student: Management has no My tickets button any more (its Tickets tab is the full queue), every other role keeps it
+    import portals_journey as P
+    STU = {"UserID": "STU-1", "UserType": "Student", "Name": "Test Student", "UiPreference": "next"}
+    with Session(user=STU, state={"users": A.mk_users(), "mine": mine, "all": all_t}) as s:
+        s.on(r"^/api/tickets", handler)
+        s.on(r"^/api/", P.handler_for(STU, "student"))
+        s.goto("/v2/student"); s.page.get_by_role("heading", name=re.compile("My Info|Resources", re.I)).first.wait_for(timeout=90000); s.page.wait_for_timeout(1500); s.page.add_style_tag(content="nextjs-portal { display: none !important; }")
         s.page.get_by_role("button", name="My tickets").first.click() if s.size["width"] >= 640 else (s.page.get_by_role("button", name="Menu").click(), s.page.get_by_role("menuitem", name="My tickets").click())
         sheet = s.page.get_by_role("dialog").last; sheet.wait_for()  # its title changes to the ticket number once one is open
         sheet.get_by_text("TKT-9001").wait_for()
@@ -115,24 +139,6 @@ def main():
         out["closed_has_no_reply_box"] = sheet.get_by_label("Add a reply").count() == 0
         out["internal_never_here"] = "internal" not in sheet.inner_text().lower()
         s.page.keyboard.press("Escape")
-
-        # 4. Management: the conversation, the screenshot, the screen details, the internal note kept apart, and a reply
-        s.page.get_by_role("button", name="Open").first.click()
-        panel = s.page.get_by_role("dialog").last
-        panel.get_by_text("Conversation (the sender sees this)").wait_for()
-        out["admin_conversation"] = panel.get_by_text("Which paper?").is_visible() and panel.get_by_text("Paper 3").is_visible()
-        out["admin_notes_labelled"] = panel.get_by_text("Internal notes (hidden from the sender)").is_visible()
-        panel.get_by_role("button", name="Show screenshot").click()
-        panel.get_by_role("img", name="Picture attached to TKT-1").wait_for(timeout=10000)
-        out["admin_screenshot"] = True
-        panel.get_by_text("Screen details").click()
-        out["admin_details"] = panel.get_by_text("/v2/question-solver?paper=3").is_visible() and panel.get_by_text("abc1234").is_visible()
-        panel.get_by_label(re.compile("^Reply to")).fill("Thanks, fixed now")
-        panel.get_by_role("button", name="Send reply").click()
-        s.page.get_by_text(re.compile("Reply sent")).first.wait_for()   # two toasts can be on screen at once
-        replies = [b for m, p, b in s.calls if m == "POST" and p == "/api/tickets" and b.get("reply")]
-        out["admin_reply_posted"] = [(b["ticketId"], b["reply"]) for b in replies]
-        out["errors"] = s.errors[:3]
     for k, v in out.items(): print(k, v)
     failed = [k for k, v in out.items() if v is False]
     assert not failed, f"checks failed: {failed}"
