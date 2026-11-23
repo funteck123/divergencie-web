@@ -65,13 +65,15 @@ def choose(lib, a):
     if a.pilot:
         for b, s, c, p in allp:
             if b == "IGCSE" and s == "Physics" and re.search(r"Ch1\.1\b", p["title"]) and worksheet_of(p["title"]) == 1: chosen[p["qpId"]] = (b, s, c, p); break
+    # Only multiple-choice worksheets can be saved: Theory, Practical and Maths papers have no digitized MCQ reply (the local solver answers 400 or 0 questions).
+    mcq = [x for x in allp if "multiple choice" in x[2].lower() or "(mcq)" in x[3]["title"].lower()]
     if a.two_per_chapter:
         groups = {}
-        for b, s, c, p in allp: groups.setdefault((b, s, chapter_of(p["title"])), []).append((b, s, c, p))
+        for b, s, c, p in mcq: groups.setdefault((b, s, chapter_of(p["title"])), []).append((b, s, c, p))
         for g in groups.values():
             for b, s, c, p in sorted(g, key=lambda t: (worksheet_of(t[3]["title"]), t[3]["title"]))[:2]: chosen[p["qpId"]] = (b, s, c, p)
     if a.all:
-        for b, s, c, p in allp: chosen[p["qpId"]] = (b, s, c, p)
+        for b, s, c, p in mcq: chosen[p["qpId"]] = (b, s, c, p)
     return chosen
 
 class Store:
@@ -103,9 +105,19 @@ def main():
         if not store.create_bucket(): raise SystemExit("could not create the bucket")
     lib = local_json("/api/library"); chosen = choose(lib, a); print(f"chosen {len(chosen)} worksheet(s)")
     raw_index = store.get("index.json"); index = json.loads(raw_index) if raw_index else {"version": 1, "papers": {}}
-    tot_png = tot_avif = tot_json = done = skipped = 0
+    tot_png = tot_avif = tot_json = done = skipped = 0; failed = []
+    def flush():
+        # rebuild the library shape from every saved paper, and write index.json (also called every 20 saves, so an interrupted run loses nothing)
+        library = {}
+        for e in index["papers"].values():
+            library.setdefault(e["board"], {}).setdefault(e["subject"], {}).setdefault(e["component"], []).append({k: e[k] for k in ("title", "qpId", "qpName", "msId", "msName") if e.get(k)} | {"cached": True})
+        index["library"] = library; index["updatedAt"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()); index["totalBytes"] = sum(e["bytes"] for e in index["papers"].values())
+        store.put("index.json", json.dumps(index, separators=(",", ":")).encode())
     for qp, (board, subject, comp, p) in chosen.items():
-        t0 = time.time(); reply = local_json("/api/fetch-and-digitize", {"qpId": p["qpId"], "msId": p.get("msId", "")})
+        t0 = time.time()
+        try: reply = local_json("/api/fetch-and-digitize", {"qpId": p["qpId"], "msId": p.get("msId", "")})
+        except SystemExit as e: failed.append(p["title"]); print(f"  FAILED {p['title'][:60]}: {e}"); continue
+        if not reply.get("questions"): failed.append(p["title"]); print(f"  empty  {p['title'][:60]} (0 questions, not saved)"); continue
         h = hashlib.sha256((json.dumps(reply, sort_keys=True) + f"|q{a.quality}").encode()).hexdigest()[:16]
         if index["papers"].get(qp, {}).get("hash") == h: skipped += 1; print(f"  same   {p['title'][:60]}"); continue
         qs = []; png = avif = 0
@@ -118,14 +130,12 @@ def main():
         data = json.dumps(stored, separators=(",", ":")).encode()
         if not store.put(f"papers/{qp}.json", data): continue
         index["papers"][qp] = {"board": board, "subject": subject, "component": comp, "title": p["title"], "qpId": qp, "msId": p.get("msId"), "qpName": p.get("qpName"), "msName": p.get("msName"), "questions": len(qs), "bytes": len(data), "hash": h}
-        done += 1; tot_png += png; tot_avif += avif; tot_json += len(data)
+        done += 1
+        if done % 20 == 0: flush()
+        tot_png += png; tot_avif += avif; tot_json += len(data)
         print(f"  saved  {p['title'][:56]:56} {len(qs):3} q  PNG {png/1e3:7.0f} KB -> AVIF {avif/1e3:6.0f} KB  json {len(data)/1e3:6.0f} KB  {time.time()-t0:4.1f}s")
-    # rebuild the library shape from every saved paper
-    library = {}
-    for e in index["papers"].values():
-        library.setdefault(e["board"], {}).setdefault(e["subject"], {}).setdefault(e["component"], []).append({k: e[k] for k in ("title", "qpId", "qpName", "msId", "msName") if e.get(k)} | {"cached": True})
-    index["library"] = library; index["updatedAt"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()); index["totalBytes"] = sum(e["bytes"] for e in index["papers"].values())
-    store.put("index.json", json.dumps(index, separators=(",", ":")).encode())
+    flush()
+    if failed: print(f"{len(failed)} worksheet(s) not saved (failed or empty): " + "; ".join(failed[:8]))
     print(f"done: saved {done}, unchanged {skipped} | PNG {tot_png/1e6:.1f} MB -> AVIF {tot_avif/1e6:.1f} MB, stored {tot_json/1e6:.2f} MB | bucket now holds {len(index['papers'])} paper(s), {index['totalBytes']/1e6:.1f} MB")
 
 if __name__ == "__main__": main()
