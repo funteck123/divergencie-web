@@ -5,7 +5,7 @@ import { Button, LinkButton } from "@/ui2/components/Button";
 import { CheckField, TextArea } from "@/ui2/components/Field";
 import { yearlyAudioUrl } from "@/ui2/queries/solver";
 import { PaperPdfLinks } from "./PaperPdfLinks";
-import { formatTimer } from "./solverLogic";
+import { formatTimer, imageBox } from "./solverLogic";
 import { needsCancelConfirm, unansweredQuestions, type QuizAction, type QuizState } from "./quizMachine";
 import type { McqQuestion, StructuredItem, YearlyPaper } from "./solverTypes";
 import "./solver.css";
@@ -224,7 +224,7 @@ function McqCard({ q, state: s, dispatch, checked, onCheck }: { q: McqQuestion; 
       {practice && <TabBar tab={tab} setTab={setTab} />}
       {(!practice || tab === "question") && (
         // eslint-disable-next-line @next/next/no-img-element -- the image is a data URL made by the solver service
-        <img src={q.image} alt={`Question ${q.questionNumber}`} loading="lazy" />
+        <img src={q.image} alt={`Question ${q.questionNumber}`} loading="lazy" {...imageBox(q.image)} />
       )}
       {practice && tab === "answer" && (q.correctAnswer ? <p>Correct answer: <strong className="u2-verdict u2-verdict--correct">{q.correctAnswer}</strong></p> : <p className="u2-muted">No clear-cut answer was found in the mark scheme for this question.</p>)}
       {!practice && !q.correctAnswer && <p className="u2-warnbox">This question&apos;s mark scheme wasn&apos;t clear-cut enough to auto-grade. Answer it if you like, but it won&apos;t count toward your score.</p>}
@@ -262,11 +262,11 @@ function StructuredCard({ item, state: s, dispatch, status, onGrade }: { item: S
       {practice && <TabBar tab={tab} setTab={setTab} />}
       {(!practice || tab === "question") && (
         // eslint-disable-next-line @next/next/no-img-element -- data URL from the solver service
-        <img src={item.qImage} alt={`Question ${n}`} loading="lazy" />
+        <img src={item.qImage} alt={`Question ${n}`} loading="lazy" {...imageBox(item.qImage)} />
       )}
       {practice && tab === "answer" && (item.msImage ? (
         // eslint-disable-next-line @next/next/no-img-element -- data URL from the solver service
-        <img src={item.msImage} alt={`Mark scheme for question ${n}`} />
+        <img src={item.msImage} alt={`Mark scheme for question ${n}`} {...imageBox(item.msImage)} />
       ) : <p className="u2-muted">No mark scheme was found for this question.</p>)}
       {!practice && (
         <>

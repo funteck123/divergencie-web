@@ -257,3 +257,24 @@ export function pdfFileName(label: string | undefined): string {
     .trim();
   return `${base || "document"}.pdf`;
 }
+
+/**
+ * TKT-0436: the real size of a PNG sent as a data URL, read from its header (the first 24 bytes), without decoding the picture.
+ * Question pictures load lazily. An image that has not loaded yet is 0 px tall, so the page was a few thousand px shorter than it
+ * finally is and grew as the pictures arrived. On an iPad that height change cut short a swipe. Giving the image its real width
+ * and height lets the browser keep the space free from the start. Returns {} when the size cannot be read (not a PNG data URL).
+ */
+export function imageBox(src: string | undefined): { width?: number; height?: number } {
+  const prefix = "data:image/png;base64,";
+  if (!src || !src.startsWith(prefix)) return {};
+  try {
+    const bytes = atob(src.slice(prefix.length, prefix.length + 32));
+    const isPng = bytes.charCodeAt(0) === 0x89 && bytes.slice(1, 4) === "PNG" && bytes.slice(12, 16) === "IHDR";
+    if (!isPng) return {};
+    const u32 = (i: number) => ((bytes.charCodeAt(i) << 24) | (bytes.charCodeAt(i + 1) << 16) | (bytes.charCodeAt(i + 2) << 8) | bytes.charCodeAt(i + 3)) >>> 0;
+    const width = u32(16), height = u32(20);
+    return width > 0 && height > 0 ? { width, height } : {};
+  } catch {
+    return {};
+  }
+}

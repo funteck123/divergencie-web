@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AUTOSAVE_MAX_AGE_MS, paperTypeChoices, subjectHasTypes, topicalChapters, pickerChapterOf, ELECTRICITY_GROUP, pdfFileName, yearlyPaperName, chapterKey, chapterLabel, chapterNameOf, chapterNames, chapterOf, comparePapers, componentsOf, fetchButtonLabel, formatTimer, gradeMcq, historyRows, hitToPick, searchQueryOf, isFullMarks, isReadingComponent, isStructuredComponent, mistakeResults, naturalQuestionSort, pctOf, resumable, scoreStructured, seriesByAccount, titleIndex, type AutosaveRecord } from "./solverLogic";
+import { imageBox, AUTOSAVE_MAX_AGE_MS, paperTypeChoices, subjectHasTypes, topicalChapters, pickerChapterOf, ELECTRICITY_GROUP, pdfFileName, yearlyPaperName, chapterKey, chapterLabel, chapterNameOf, chapterNames, chapterOf, comparePapers, componentsOf, fetchButtonLabel, formatTimer, gradeMcq, historyRows, hitToPick, searchQueryOf, isFullMarks, isReadingComponent, isStructuredComponent, mistakeResults, naturalQuestionSort, pctOf, resumable, scoreStructured, seriesByAccount, titleIndex, type AutosaveRecord } from "./solverLogic";
 import type { SearchHit, AttemptRow, Library, McqQuestion, SolvedLibrary, YearlyLibrary } from "./solverTypes";
 
 describe("titles", () => {
@@ -185,5 +185,19 @@ describe("pdfFileName", () => {
     expect(pdfFileName(undefined)).toBe("document.pdf");
     expect(pdfFileName("///")).toBe("document.pdf");
     expect(pdfFileName("a".repeat(300)).length).toBe(124);
+  });
+});
+
+describe("imageBox (TKT-0436)", () => {
+  // a real 1190 x 1648 PNG header: signature, IHDR length, "IHDR", width, height
+  const header = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 13, 0x49, 0x48, 0x44, 0x52, 0, 0, 0x04, 0xa6, 0, 0, 0x06, 0x70];
+  const url = "data:image/png;base64," + btoa(String.fromCharCode(...header)) + "AAAA";
+  it("reads width and height from a PNG data URL", () => { expect(imageBox(url)).toEqual({ width: 1190, height: 1648 }); });
+  it("gives nothing for a JPEG, a plain address, an empty value or a broken PNG", () => {
+    expect(imageBox("data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ")).toEqual({});
+    expect(imageBox("https://example.com/a.png")).toEqual({});
+    expect(imageBox(undefined)).toEqual({});
+    expect(imageBox("data:image/png;base64,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")).toEqual({});
+    expect(imageBox("data:image/png;base64,@@@@")).toEqual({});
   });
 });
