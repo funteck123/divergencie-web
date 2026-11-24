@@ -9,12 +9,12 @@ def main():
     out = {}
     with Session(anon=True, width=1280, height=900) as s:
         s.on(r"^/api/", lambda m, p, b, st: (200, {}))
-        s.goto("/slots"); s.page.get_by_role("heading", name="Choose your class times").wait_for(timeout=120000); s.page.wait_for_timeout(1500)
+        s.goto("/slots"); s.page.get_by_role("heading", name="Your class times").wait_for(timeout=120000); s.page.wait_for_timeout(1500)
         s.page.add_style_tag(content="nextjs-portal { display: none !important; }")
         pg = s.page
         out["needs_login"] = "/login" in pg.url
-        out["copy_disabled_at_start"] = pg.get_by_role("button", name="Copy message").is_disabled()
-        out["rows_hourly"] = pg.locator(".u2-tp__time").count()
+        out["copy_disabled_at_start"] = pg.get_by_role("button", name=re.compile("Copy message|Choose a time first")).is_disabled()
+        out["rows_hourly"] = pg.locator("[aria-label$='choose or clear this time on every day']").count()
         # a click, then a mouse drag across Saturday 9 PM and 10 PM and Sunday 9 PM
         cell(pg, "Saturday", "9:00 PM").click()
         a = cell(pg, "Sunday", "9:00 PM").bounding_box(); b = cell(pg, "Sunday", "10:00 PM").bounding_box()
@@ -30,15 +30,15 @@ def main():
         out["row_8pm_all_days"] = all(cell(pg, d, "8:00 PM").get_attribute("aria-checked") == "true" for d in ("Monday", "Wednesday", "Sunday"))
         pg.get_by_role("button", name=re.compile("^8:00 PM, choose or clear this time")).click()
         # half hours: a half-hour cell turns the hourly cell into "mixed"
-        pg.get_by_label("Show half hours").check(); out["rows_half"] = pg.locator(".u2-tp__time").count()
+        pg.get_by_label("Show half hours").check(); out["rows_half"] = pg.locator("[aria-label$='choose or clear this time on every day']").count()
         cell(pg, "Saturday", "9:30 PM").click(); cell(pg, "Saturday", "10:00 PM").click()
         pg.get_by_label("Show half hours").uncheck()
         out["hourly_cell_mixed_or_on"] = [cell(pg, "Saturday", "9:00 PM").get_attribute("aria-checked"), cell(pg, "Saturday", "10:00 PM").get_attribute("aria-checked")]
         # fields and the message
         pg.get_by_label("Your name").fill("Thanishka Reddy"); pg.get_by_label("Subject or class").fill("AS Level Computer Science")
-        pg.get_by_label("Time zone").select_option("Asia/Kolkata"); pg.get_by_label("I am a").select_option("Student")
-        pg.get_by_label("Anything we should know?").fill("Not free in exam week")
-        pg.get_by_role("button", name="Copy message").click(); pg.wait_for_timeout(400)
+        pg.get_by_label("Time zone").select_option("Asia/Kolkata"); pg.get_by_role("radio", name="Student").click()
+        pg.get_by_label("Anything we should know").fill("Not free in exam week")
+        pg.get_by_role("button", name=re.compile("Copy message|Choose a time first")).click(); pg.wait_for_timeout(400)
         text = pg.evaluate("navigator.clipboard.readText()"); out["copied"] = text
         out["button_says"] = pg.get_by_role("button", name=re.compile("Copied")).inner_text()
         out["network_calls_to_server_for_the_message"] = [c for c in s.calls if "slot" in c[1].lower() or "message" in c[1].lower()]
@@ -48,13 +48,13 @@ def main():
         out["errors"] = s.errors[:3]
     with Session(anon=True, width=360, height=800, touch=True) as s:
         s.on(r"^/api/", lambda m, p, b, st: (200, {}))
-        s.goto("/slots"); s.page.get_by_role("heading", name="Choose your class times").wait_for(timeout=120000); s.page.wait_for_timeout(1500)
+        s.goto("/slots"); s.page.get_by_role("heading", name="Your class times").wait_for(timeout=120000); s.page.wait_for_timeout(1500)
         s.page.add_style_tag(content="nextjs-portal { display: none !important; }")
         pg = s.page
         c = cell(pg, "Saturday", "9:00 PM"); c.scroll_into_view_if_needed(); c.tap()
         out["phone_tap_on"] = c.get_attribute("aria-checked"); c.tap(); out["phone_tap_off"] = c.get_attribute("aria-checked")
         out["hscroll_360"] = s.hscroll()
-        box = pg.locator(".u2-tp__grid").bounding_box(); out["phone_grid_fits"] = box["x"] >= 0 and box["x"] + box["width"] <= 360
+        box = pg.get_by_role("group", name=re.compile("^Days and times")).bounding_box(); out["phone_grid_fits"] = box["x"] >= 0 and box["x"] + box["width"] <= 360
         out["phone_cell_size"] = [round(c.bounding_box()["width"]), round(c.bounding_box()["height"])]
         pg.screenshot(path="snapshots/timepicker-phone.png", full_page=False)
         out["errors_phone"] = s.errors[:3]
