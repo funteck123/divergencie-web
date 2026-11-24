@@ -81,7 +81,7 @@ function filterLibraryByEnrollment(library, allowedKeys) {
       const key = subjectMatchKey(board, subject);
       if (!allowedKeys.has(key)) continue;
       const levels = allowedKeys.get(key);
-      const components = Object.fromEntries(Object.entries(subjects[subject] || {}).filter(([component]) => levelAllows(levels, component)));
+      const components = Object.fromEntries(Object.entries(subjects[subject] || {}).filter(([component]) => levelAllows(levels, component, subject)));
       if (Object.keys(components).length === 0) continue;
       filtered[board] = filtered[board] || {};
       filtered[board][subject] = components;
@@ -181,7 +181,7 @@ export async function GET(req, { params }) {
   // TKT-0237: question search. The service returns its best 200 hits across every subject; a student keeps only enrolled subjects, then the best 30.
   if (subPath === "search" && upstream.ok && Array.isArray(body.results)) {
     const allowedKeys = session.userType === "Management" ? null : await enrolledSubjectKeys(session.userId);
-    const results = body.results.filter((r) => !allowedKeys || (allowedKeys.has(subjectMatchKey(r.board, r.subject)) && levelAllows(allowedKeys.get(subjectMatchKey(r.board, r.subject)), r.component)));
+    const results = body.results.filter((r) => !allowedKeys || (allowedKeys.has(subjectMatchKey(r.board, r.subject)) && levelAllows(allowedKeys.get(subjectMatchKey(r.board, r.subject)), r.component, r.subject)));
     return NextResponse.json({ total: results.length, results: results.slice(0, 30) });
   }
 
