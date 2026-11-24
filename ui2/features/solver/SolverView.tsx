@@ -119,7 +119,9 @@ export function SolverView({ user }: { user: SessionUser }) {
     setBusy(true); setError(""); setStatus("Loading questions…");
     const title = p.paper.title;
     const ref = p.source === "yearly" ? { paperId: p.paper.paperId } : { qpId: p.paper.qpId, msId: p.paper.msId };
-    const pdf = p.source === "topical" ? { qpId: p.paper.qpId, msId: p.paper.msId, title } : { qpId: p.paper.paperId, msId: p.paper.paperId, title, yearlyId: p.paper.paperId };
+    // DC's own papers (TKT-0447) have no Cambridge PDF to download.
+    const isDc = p.source === "topical" && p.paper.qpId.startsWith("dc-");
+    const pdf = isDc ? null : p.source === "topical" ? { qpId: p.paper.qpId, msId: p.paper.msId, title } : { qpId: p.paper.paperId, msId: p.paper.paperId, title, yearlyId: p.paper.paperId };
     const audio = p.source === "yearly" && p.paper.audioPath !== undefined ? p.paper : null;
     try {
       if (p.structured) {
