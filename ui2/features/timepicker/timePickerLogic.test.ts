@@ -70,7 +70,7 @@ describe("the message", () => {
         "Name: Thanishka Reddy",
         "I am a: Student",
         "Subject: AS Level Computer Science",
-        "Time zone: India (UTC+05:30)",
+        "Time zone: India, UTC+05:30",
         "",
         "Saturday: 9:00 PM to 11:00 PM",
         "Sunday: 9:00 PM to 10:00 PM",
@@ -86,11 +86,11 @@ describe("the message", () => {
     expect(m).not.toContain("Notes:");
     expect(m).toContain("No times chosen yet.");
   });
-  it("adds the notes, and never uses a dash as a pause", () => {
+  it("adds the notes, with no brackets and no dash as a pause", () => {
     const s = paintCells(empty, [{ day: "Monday", minute: 600 }], true, false);
     const m = buildTimeMessage({ ...base, notes: "Not free in exam week", selected: s });
     expect(m).toContain("Notes: Not free in exam week");
-    expect(m).not.toMatch(/—|–/);
+    expect(m).not.toMatch(/—|–|\(|\)/);
   });
   it("covers all seven days in the order of the week", () => {
     expect(DAYS[0]).toBe("Monday");

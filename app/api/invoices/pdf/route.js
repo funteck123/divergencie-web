@@ -5,7 +5,7 @@ import { requireSelfOrParentOrManagement } from "@/lib/authz";
 import { convertRecordTotal, convertINRAmount } from "@/lib/fxRates";
 import { getSession } from "@/lib/session";
 import { verifyInvoiceShareToken } from "@/lib/invoiceShare";
-import { amountDueInOwnCurrency, firstClassForInvoice, lineItemName, invoicePdfFilename, attachmentDisposition, discountBreakdown, discountSummaryRows } from "@/lib/billing";
+import { amountDueInOwnCurrency, lineItemName, invoicePdfFilename, attachmentDisposition, discountBreakdown, discountSummaryRows } from "@/lib/billing";
 
 const TERMS =
   "Payment ensures the delivery of services; missed classes will be rescheduled or compensated. " +
@@ -37,9 +37,7 @@ export async function GET(req) {
 
   const student = db.users.find((u) => u.UserID === invoice.StudentID);
   const studentCurrency = student?.Currency || "INR";
-  // A starting-month invoice is due by the first class (the 1st would be before the student joined). The billing period line says nothing about it (owner, 24 Nov 2026).
-  const firstClass = firstClassForInvoice(db, invoice);
-  const dueDate = firstClass ? new Date(`${firstClass}T00:00:00`) : new Date(invoice.Year, invoice.Month - 1, 1);
+  const dueDate = new Date(invoice.Year, invoice.Month - 1, 1);
   const fxRatesBefore = Object.keys(db.fxRates || {}).length;
 
   let buffer;

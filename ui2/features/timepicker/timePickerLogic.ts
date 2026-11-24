@@ -87,13 +87,13 @@ export interface TimeMessageInput {
   selected: ReadonlySet<string>;
 }
 
-/** The message that is copied. Plain text, the same warm style as the other DivergenCIE messages, one line per day that has times. */
+/** The message that is copied: plain text in the style of the other DivergenCIE messages, one line per day that has times. */
 export function buildTimeMessage(i: TimeMessageInput): string {
   const lines: string[] = ["Hello DivergenCIE team! 😊", "", "DivergenCIE Preferred Class Times", ""];
   if (i.name.trim()) lines.push(`Name: ${i.name.trim()}`);
   lines.push(`I am a: ${i.role}`);
   if (i.subject.trim()) lines.push(`Subject: ${i.subject.trim()}`);
-  lines.push(`Time zone: ${i.zoneName}${i.zoneOffset ? ` (${i.zoneOffset})` : ""}`, "");
+  lines.push(`Time zone: ${i.zoneName}${i.zoneOffset ? `, ${i.zoneOffset}` : ""}`, "");
   const dayLines = DAYS.map((d) => ({ d, r: rangesForDay(i.selected, d) })).filter((x) => x.r.length > 0).map((x) => `${x.d}: ${x.r.map(formatRange).join(", ")}`);
   lines.push(...(dayLines.length ? dayLines : ["No times chosen yet."]));
   if (i.notes.trim()) lines.push("", `Notes: ${i.notes.trim()}`);

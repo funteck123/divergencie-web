@@ -11,6 +11,7 @@ import { DAYS, ROLES, buildTimeMessage, cellState, clockLabel, paintCells, rowMi
 import "./timepicker.css";
 
 const DEFAULT_ZONE = "Asia/Kolkata";
+const SITE = "https://www.divergencie.co.uk";
 
 /** The person's own time zone. The server page uses the default; the browser then shows its own (no mismatch, no setState in an effect). */
 function ownZone(): string {
@@ -85,80 +86,94 @@ export function TimePicker() {
 
   return (
     <div className="u2-tp">
-      <header className="u2-tp__bar u2-on-dark">
-        <Link href="https://www.divergencie.co.uk" aria-label="DivergenCIE home">
-          <Image src="/ui2/logo/logo-white-160.webp" alt="DivergenCIE Coaching" width={120} height={44} priority unoptimized />
+      <aside className="u2-tp__brand">
+        <Link href={SITE} className="u2-tp__logo" aria-label="DivergenCIE home">
+          <Image src="/ui2/logo/icon-64.webp" alt="" width={40} height={40} priority unoptimized />
+          <span>
+            Divergen<span className="u2-tp__cie">CIE</span>
+          </span>
         </Link>
-      </header>
+        <div className="u2-tp__hero">
+          <h1>
+            Choose your class <span className="u2-tp__cie">times.</span>
+          </h1>
+          <p>Mark every day and time you can do. Copy the message and paste it in our WhatsApp chat. Nothing is saved on this page.</p>
+        </div>
+      </aside>
+
       <main className="u2-tp__main">
-        <section className="u2-tp__card">
-          <h1>Choose your class times</h1>
-          <p className="u2-muted">Mark every day and time you can do. Then press Copy and paste the message in our WhatsApp chat. Nothing is saved on this page.</p>
+        <Link href={SITE} className="u2-tp__back">
+          ← Back to site
+        </Link>
+        <div className="u2-tp__content">
+          <section className="u2-tp__section">
+            <h2>Your details</h2>
+            <div className="u2-tp__fields">
+              <Field label="Your name">
+                <TextInput value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" />
+              </Field>
+              <Field label="I am a">
+                <SelectInput value={role} onChange={(e) => setRole(e.target.value as Role)}>
+                  {ROLES.map((r) => (
+                    <option key={r} value={r}>
+                      {r}
+                    </option>
+                  ))}
+                </SelectInput>
+              </Field>
+              <Field label="Subject or class" hint="For example AS Level Computer Science.">
+                <TextInput value={subject} onChange={(e) => setSubject(e.target.value)} />
+              </Field>
+              <Field label="Time zone" hint="The times you choose are in this time zone.">
+                <SelectInput value={zone} onChange={(e) => setZone(e.target.value)}>
+                  {zoneOptions.map((g) => (
+                    <optgroup key={g.label} label={g.label}>
+                      {g.options.map((o) => (
+                        <option key={o.value} value={o.value}>
+                          {o.label}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </SelectInput>
+              </Field>
+            </div>
+          </section>
 
-          <div className="u2-tp__fields">
-            <Field label="Your name">
-              <TextInput value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" />
-            </Field>
-            <Field label="I am a">
-              <SelectInput value={role} onChange={(e) => setRole(e.target.value as Role)}>
-                {ROLES.map((r) => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
-                ))}
-              </SelectInput>
-            </Field>
-            <Field label="Subject or class" hint="For example AS Level Computer Science">
-              <TextInput value={subject} onChange={(e) => setSubject(e.target.value)} />
-            </Field>
-            <Field label="Time zone" hint="The times you choose are in this time zone.">
-              <SelectInput value={zone} onChange={(e) => setZone(e.target.value)}>
-                {zoneOptions.map((g) => (
-                  <optgroup key={g.label} label={g.label}>
-                    {g.options.map((o) => (
-                      <option key={o.value} value={o.value}>
-                        {o.label}
-                      </option>
-                    ))}
-                  </optgroup>
-                ))}
-              </SelectInput>
-            </Field>
-          </div>
-
-          <div className="u2-tp__tools">
-            <label className="u2-check">
-              <input type="checkbox" checked={halfHours} onChange={(e) => setHalfHours(e.target.checked)} /> Show half hours
-            </label>
-            <span className="u2-muted" role="status">
-              {hours === 0 ? "Nothing chosen yet" : `${hours} ${hours === 1 ? "hour" : "hours"} chosen`}
-            </span>
-            <Button variant="ghost" size="sm" disabled={selected.size === 0} disabledReason="Nothing to clear." onClick={() => paint(DAYS.flatMap((day) => rows.map((minute) => ({ day, minute }))), false)}>
-              Clear all
-            </Button>
-          </div>
-
-          <div className="u2-tp__grid" role="group" aria-label="Days and times. Press a cell to choose it. Press a day or a time to choose the whole column or row.">
-            <span />
-            {DAYS.map((day) => (
-              <button key={day} type="button" className="u2-tp__head" aria-label={`${day}, choose or clear the whole day`} onClick={() => toggleDay(day)}>
-                {day.slice(0, 3)}
-              </button>
-            ))}
-            {rows.map((minute) => (
-              <Row key={minute} minute={minute} halfHours={halfHours} selected={selected} onRow={toggleRow} onToggle={toggleCell} painting={painting} suppressClick={suppressClick} paint={paint} />
-            ))}
-          </div>
-
-          <div className="u2-tp__fields">
-            <Field label="Anything we should know? (optional)" wide>
+          <section className="u2-tp__section">
+            <h2>Choose your times</h2>
+            <div className="u2-tp__tools">
+              <label className="u2-check">
+                <input type="checkbox" checked={halfHours} onChange={(e) => setHalfHours(e.target.checked)} /> Show half hours
+              </label>
+              <span className="u2-tp__count" role="status">
+                {hours === 0 ? "Nothing chosen yet" : `${hours} ${hours === 1 ? "hour" : "hours"} chosen`}
+              </span>
+              <Button variant="ghost" size="sm" disabled={selected.size === 0} disabledReason="Nothing to clear." onClick={() => paint(DAYS.flatMap((day) => rows.map((minute) => ({ day, minute }))), false)}>
+                Clear all
+              </Button>
+            </div>
+            <div className="u2-tp__grid" role="group" aria-label="Days and times. Press a cell to choose it. Press a day or a time to choose the whole column or row.">
+              <span />
+              {DAYS.map((day) => (
+                <button key={day} type="button" className="u2-tp__head" aria-label={`${day}, choose or clear the whole day`} onClick={() => toggleDay(day)}>
+                  {day.slice(0, 3)}
+                </button>
+              ))}
+              {rows.map((minute) => (
+                <Row key={minute} minute={minute} halfHours={halfHours} selected={selected} onRow={toggleRow} onToggle={toggleCell} painting={painting} suppressClick={suppressClick} paint={paint} />
+              ))}
+            </div>
+            <Field label="Anything we should know?" hint="Optional." wide>
               <TextArea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} />
             </Field>
-          </div>
+          </section>
 
-          <div className="u2-tp__out">
+          <section className="u2-tp__section">
             <h2>Your message</h2>
-            <pre className="u2-tp__preview" aria-label="The message that will be copied">{message}</pre>
+            <pre className="u2-tp__preview" aria-label="The message that will be copied">
+              {message}
+            </pre>
             <div className="u2-tp__actions">
               <Button variant="primary" onClick={copy} disabled={selected.size === 0} disabledReason="Choose at least one time first.">
                 {copied ? "Copied. Now paste it in WhatsApp" : "Copy message"}
@@ -169,8 +184,8 @@ export function TimePicker() {
                 Your browser did not allow copying. Select the message above and copy it by hand.
               </p>
             )}
-          </div>
-        </section>
+          </section>
+        </div>
       </main>
     </div>
   );
@@ -202,7 +217,7 @@ function Row({ minute, halfHours, selected, onRow, onToggle, painting, suppressC
             aria-label={`${day} ${clockLabel(minute)}`}
             className="u2-tp__cell"
             data-state={state}
-            // A mouse or pen can drag across cells to paint them. A finger taps (the page still scrolls); the keyboard uses Space.
+            // A mouse or pen can drag across cells to paint them. A finger taps and the page still scrolls. The keyboard uses Space.
             onPointerDown={(e) => {
               if (e.pointerType === "touch") return;
               const on = state !== "on";

@@ -37,7 +37,7 @@ def main():
         # fields and the message
         pg.get_by_label("Your name").fill("Thanishka Reddy"); pg.get_by_label("Subject or class").fill("AS Level Computer Science")
         pg.get_by_label("Time zone").select_option("Asia/Kolkata"); pg.get_by_label("I am a").select_option("Student")
-        pg.get_by_label("Anything we should know? (optional)").fill("Not free in exam week")
+        pg.get_by_label("Anything we should know?").fill("Not free in exam week")
         pg.get_by_role("button", name="Copy message").click(); pg.wait_for_timeout(400)
         text = pg.evaluate("navigator.clipboard.readText()"); out["copied"] = text
         out["button_says"] = pg.get_by_role("button", name=re.compile("Copied")).inner_text()
@@ -62,8 +62,9 @@ def main():
     assert not out["needs_login"] and out["copy_disabled_at_start"] and out["rows_hourly"] == 18 and out["rows_half"] == 36, out
     assert out["click_on"] == "true" and out["drag_painted_two"] == ["true", "true"], out
     assert out["monday_all_on"] and out["monday_cleared"] and out["row_8pm_all_days"], out
-    want = ["Hello DivergenCIE team! 😊", "", "DivergenCIE Preferred Class Times", "", "Name: Thanishka Reddy", "I am a: Student", "Subject: AS Level Computer Science", "Time zone: India (UTC+05:30)", "", "Saturday: 9:00 PM to 10:30 PM, 10:00 PM to 10:30 PM"]
+    want = ["Hello DivergenCIE team! 😊", "", "DivergenCIE Preferred Class Times", "", "Name: Thanishka Reddy", "I am a: Student", "Subject: AS Level Computer Science", "Time zone: India, UTC+05:30", "", "Saturday: 9:00 PM to 10:30 PM, 10:00 PM to 10:30 PM"]
     assert "Sunday: 9:00 PM to 11:00 PM" in out["copied"] and out["copied"].startswith("\n".join(want[:8])), out["copied"]
+    assert "(" not in out["copied"] and ")" not in out["copied"], out["copied"]
     assert "Notes: Not free in exam week" in out["copied"] and out["copied"].rstrip().endswith("We care! ✨"), out["copied"]
     assert out["storage_empty"] and not out["network_calls_to_server_for_the_message"], out
     assert out["phone_tap_on"] == "true" and out["phone_tap_off"] == "false" and out["phone_grid_fits"] and not out["hscroll_360"], out
