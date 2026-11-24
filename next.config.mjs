@@ -39,10 +39,15 @@ const nextConfig = {
   // TKT-0355: short public addresses for the legal pages (Google's consent screen and sign-up forms ask for a plain link). They
   // serve the page itself, with no redirect; the footer keeps linking the long names, which keep working.
   async rewrites() {
-    return [
-      { source: "/privacy", destination: "/privacy-policy" },
-      { source: "/tos", destination: "/terms-of-service" },
-    ];
+    return {
+      // 24 Nov 2026: schedule.divergencie.co.uk shows the public time picker at its front address.
+      beforeFiles: [{ source: "/", has: [{ type: "host", value: "schedule.divergencie.co.uk" }], destination: "/slots" }],
+      afterFiles: [
+        { source: "/privacy", destination: "/privacy-policy" },
+        { source: "/tos", destination: "/terms-of-service" },
+      ],
+      fallback: [],
+    };
   },
 };
 
