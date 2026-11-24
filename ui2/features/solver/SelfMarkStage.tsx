@@ -42,7 +42,7 @@ export function SelfMarkStage(p: { title: string; items: readonly StructuredItem
         <span>Your marks, {t.marked} of {order.length} questions marked</span>
         <span className="u2-banner__big">{t.marked === 0 ? "0 / 0" : `${t.awarded} / ${t.outOf}`}</span>
       </div>
-      <p className="u2-muted">Read the mark scheme under each question, then give yourself marks. Leave a question empty to skip it.</p>
+      <p className="u2-muted">Compare your answer with the answer shown, then give yourself marks. Leave a question empty to skip it.</p>
       {p.items.map((it) => {
         const n = it.questionNumber;
         const m = p.marks[n];
@@ -51,18 +51,23 @@ export function SelfMarkStage(p: { title: string; items: readonly StructuredItem
         return (
           <article key={n} className="u2-qcard" aria-label={`Question ${n}`}>
             <strong>Question {n}</strong>
-            {/* eslint-disable-next-line @next/next/no-img-element -- data URL from the solver service */}
-            <img src={it.qImage} alt={`Question ${n}`} loading="lazy" {...imageBox(it.qImage)} />
+            <div className="u2-selfmark__pair">
+              <figure className="u2-selfmark__fig">
+                <figcaption>Question</figcaption>
+                {/* eslint-disable-next-line @next/next/no-img-element -- data URL from the solver service */}
+                <img src={it.qImage} alt={`Question ${n}`} loading="lazy" {...imageBox(it.qImage)} />
+              </figure>
+              <figure className="u2-selfmark__fig">
+                <figcaption>Answer</figcaption>
+                {it.msImage
+                  // eslint-disable-next-line @next/next/no-img-element -- data URL from the solver service
+                  ? <img src={it.msImage} alt={`Answer for question ${n}`} loading="lazy" {...imageBox(it.msImage)} />
+                  : <p className="u2-muted">No answer was found for this question.</p>}
+              </figure>
+            </div>
             <div>
               <span className="u2-muted">Your answer</span>
               <pre className="u2-selfmark__answer">{(p.texts[n] ?? "").trim() || "No answer written."}</pre>
-            </div>
-            <div>
-              <span className="u2-muted">Mark scheme</span>
-              {it.msImage
-                // eslint-disable-next-line @next/next/no-img-element -- data URL from the solver service
-                ? <img src={it.msImage} alt={`Mark scheme for question ${n}`} loading="lazy" {...imageBox(it.msImage)} />
-                : <p className="u2-muted">No mark scheme was found for this question.</p>}
             </div>
             <div className="u2-selfmark__marks">
               <Field label="Marks you give" error={row.state === "invalid" ? row.message : undefined}>
@@ -72,7 +77,7 @@ export function SelfMarkStage(p: { title: string; items: readonly StructuredItem
                 <TextInput inputMode="numeric" value={m?.outOf ?? ""} onChange={(e) => set("outOf")(e.target.value)} />
               </Field>
             </div>
-            <Field label="Note for yourself" hint="Optional.">
+            <Field label="Comment" hint="Optional.">
               <TextArea rows={2} value={m?.note ?? ""} onChange={(e) => set("note")(e.target.value)} />
             </Field>
           </article>

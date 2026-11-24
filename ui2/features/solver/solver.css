@@ -131,5 +131,9 @@
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
   /* Self-marking (TKT-0442): the student's own answer, then two small number boxes side by side. */
   .u2-selfmark__answer { margin: var(--u2-space-1) 0 0; padding: var(--u2-space-3); white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; background: var(--u2-color-bg-subtle); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); }
+  .u2-selfmark__pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--u2-space-3); align-items: start; }
+  .u2-selfmark__fig { margin: 0; display: grid; gap: var(--u2-space-1); min-width: 0; }
+  .u2-selfmark__fig figcaption { color: var(--u2-color-text-muted); font-size: var(--u2-text-sm); }
+  @media (max-width: 720px) { .u2-selfmark__pair { grid-template-columns: 1fr; } }
   .u2-selfmark__marks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--u2-space-3); }
 }

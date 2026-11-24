@@ -3,7 +3,15 @@ import re, sys, os, json
 sys.path.insert(0, os.path.dirname(__file__))
 from harness import Session
 
-IMG = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+import base64, io
+def picture(text, w=760, h=260):
+    """A readable stand-in for a question or mark scheme crop, so the layout can be judged by eye."""
+    from PIL import Image, ImageDraw
+    im = Image.new("RGB", (w, h), "white"); d = ImageDraw.Draw(im)
+    for i, line in enumerate(text.split("|")): d.text((16, 16 + i * 26), line, fill="black")
+    b = io.BytesIO(); im.save(b, "PNG"); return "data:image/png;base64," + base64.b64encode(b.getvalue()).decode()
+IMG = picture("1  A car travels 120 m in 8.0 s.|(a) Calculate its average speed.  [2]|(b) State the unit of speed.  [1]")
+IMG_MS = picture("1 (a) speed = distance / time  (M1)|    = 120 / 8.0 = 15 m/s  (A1)|(b) m/s  (B1)")
 
 def main():
     out = {}
@@ -16,7 +24,7 @@ def main():
         if p.startswith("/api/mcq/subject-meta"): return 200, {"CIE": {"Physics": {"mcqComponent": "Paper 2 MCQ"}}}
         if p.startswith("/api/mcq/paper-titles"): return 200, {"titles": {"qp4": "1 Motion Q"}, "subjects": {}}
         if p.startswith("/api/mcq/yearly-library"): return 200, {}
-        if p.startswith("/api/mcq/digitize-structured"): return 200, {"questions": [{"questionNumber": "1", "image": IMG}, {"questionNumber": "2", "image": IMG}], "answers": [{"questionNumber": "1", "image": IMG}, {"questionNumber": "2", "image": IMG}]}
+        if p.startswith("/api/mcq/digitize-structured"): return 200, {"questions": [{"questionNumber": "1", "image": IMG}, {"questionNumber": "2", "image": IMG}], "answers": [{"questionNumber": "1", "image": IMG_MS}, {"questionNumber": "2", "image": IMG_MS}]}
         if p.startswith("/api/mcq/grade-structured-question"): return (502, {"error": "Question Solver is busy"}) if fail["on"] else (200, {**graded, "jobId": "j1"})
         if p.startswith("/api/mcq/grade-structured-status"): return 200, {"status": "done", "result": graded}
         if p.startswith("/api/mcq/attempts"): return 200, {"attempt": {"id": "att9"}}
@@ -66,7 +74,7 @@ def main():
         pg.get_by_role("button", name="Mark it myself").wait_for()
         # 5. mark it myself: the mark scheme is shown, bad marks block saving, the total follows
         pg.get_by_role("button", name="Mark it myself").click()
-        out["scheme_images"] = pg.get_by_role("img", name=re.compile("^Mark scheme for question")).count()
+        out["scheme_images"] = pg.get_by_role("img", name=re.compile("^Answer for question")).count()
         out["own_answer_shown"] = pg.get_by_text("v = d/t").count()
         save = pg.get_by_role("button", name="Save my marks")
         out["save_disabled_at_start"] = save.get_attribute("aria-disabled") or save.is_disabled()
@@ -75,10 +83,11 @@ def main():
         out["too_many_marks_error"] = pg.get_by_text("You cannot give more marks than the question is worth.").count()
         out["save_disabled_when_bad"] = save.get_attribute("aria-disabled") or save.is_disabled()
         q1.get_by_label("Marks you give").fill("2")
-        q1.get_by_label("Note for yourself").fill("forgot the unit")
+        q1.get_by_label("Comment").fill("forgot the unit")
         q2.get_by_label("Marks you give").fill("4"); q2.get_by_label("Out of").fill("4")
         out["banner"] = pg.locator(".u2-banner__big").inner_text()
         pg.evaluate("window.scrollTo(0, 0)"); pg.screenshot(path="snapshots/selfmark-marking.png")
+        pg.set_viewport_size({"width": 390, "height": 844}); pg.wait_for_timeout(400); pg.screenshot(path="snapshots/selfmark-marking-phone.png"); pg.set_viewport_size({"width": 1280, "height": 800})
         # 6. close while marking: the typed marks come back
         pg.wait_for_timeout(400)
         open_paper()
