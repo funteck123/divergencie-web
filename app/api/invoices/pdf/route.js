@@ -3,7 +3,8 @@ import { readDB, writeDB } from "@/lib/db";
 import { drawDocumentPDF } from "@/lib/pdfDoc";
 import { requireSelfOrParentOrManagement } from "@/lib/authz";
 import { convertRecordTotal, convertINRAmount } from "@/lib/fxRates";
-import { amountDueInOwnCurrency, lineItemName, invoicePdfFilename, attachmentDisposition, discountBreakdown, discountSummaryRows } from "@/lib/billing";
+import { getSession } from "@/lib/session";
+import { amountDueInOwnCurrency, firstClassForInvoice, lineItemName, invoicePdfFilename, attachmentDisposition, discountBreakdown, discountSummaryRows } from "@/lib/billing";
 
 const TERMS =
   "Payment ensures the delivery of services; missed classes will be rescheduled or compensated. " +
@@ -16,6 +17,12 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const invoiceId = searchParams.get("invoiceId");
 
+  // 24 Nov 2026: a link opened without being signed in (a student who has not logged in yet) showed raw JSON. A browser now gets a page that says to sign in.
+  if (!getSession(req) && (req.headers.get("accept") || "").includes("text/html")) {
+    const page = '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sign in to see your invoice</title><body style="font-family:system-ui,sans-serif;max-width:30rem;margin:15vh auto;padding:0 1.25rem;line-height:1.5"><h1 style="font-size:1.4rem">Please sign in to see your invoice</h1><p>This invoice is private. Sign in to your DivergenCIE account, then open this link again.</p><p><a href="/login" style="display:inline-block;padding:.7rem 1.2rem;background:#14305a;color:#fff;border-radius:.4rem;text-decoration:none">Sign in</a></p>';
+    return new NextResponse(page, { status: 401, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
+  }
+
   const db = await readDB();
   const invoice = db.invoices.find((i) => i.InvoiceID === invoiceId);
   if (!invoice) return NextResponse.json({ error: "Invoice not found." }, { status: 404 });
@@ -25,7 +32,10 @@ export async function GET(req) {
 
   const student = db.users.find((u) => u.UserID === invoice.StudentID);
   const studentCurrency = student?.Currency || "INR";
-  const dueDate = new Date(invoice.Year, invoice.Month - 1, 1);
+  // A starting-month invoice is due by the first class, shown next to the billing period (the 1st would be before the student joined).
+  const firstClass = firstClassForInvoice(db, invoice);
+  const dueDate = firstClass ? new Date(`${firstClass}T00:00:00`) : new Date(invoice.Year, invoice.Month - 1, 1);
+  const firstClassText = firstClass ? ` (first class ${firstClass.slice(8, 10)}/${firstClass.slice(5, 7)}/${firstClass.slice(0, 4)})` : "";
   const fxRatesBefore = Object.keys(db.fxRates || {}).length;
 
   let buffer;
@@ -58,7 +68,7 @@ export async function GET(req) {
       partyLabel: "Student Name",
       partyName: student?.Name || invoice.StudentID,
       secondaryLabel: "Billing Period",
-      secondaryValue: `${invoice.Month}/${invoice.Year}`,
+      secondaryValue: `${invoice.Month}/${invoice.Year}${firstClassText}`,
       balanceLabel: "Balance Due:",
       currency: displayDueCurrency,
       balance: displayDue,

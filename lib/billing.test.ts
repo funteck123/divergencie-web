@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ATTENDED_STATUSES, billableStudentIds, carryOverLineItems, computeHoursAndAmount, describePaycheckChange, describeSkipped, inactiveStudentSkips, nextMonthOf, splitByActiveEnrollment } from "./billing";
+import { firstClassForInvoice, ATTENDED_STATUSES, billableStudentIds, carryOverLineItems, computeHoursAndAmount, describePaycheckChange, describeSkipped, inactiveStudentSkips, nextMonthOf, splitByActiveEnrollment } from "./billing";
 
 // One student, one service, three one-hour sessions in October 2026. attendance: what was logged for each session.
 function hours(attendance: { id: string; status?: string; hours: number }[], opts: Record<string, unknown> = {}) {
@@ -124,5 +124,28 @@ describe("inactive students are not invoiced (TKT-0430)", () => {
     expect(skips[0]).toMatchObject({ studentId: "STU-B", serviceId: "SVC-1", batchId: "B8" });
     expect(skips[0].reason).toMatch(/inactive/i);
     expect(inactiveStudentSkips(db, ["STU-A"], 2026, 11)).toEqual([]);
+  });
+});
+
+describe("firstClassForInvoice (24 Nov 2026)", () => {
+  const db = {
+    enrollments: [{ UserID: "S1", ServiceID: "V", BatchID: "B", StartDate: "2026-11-22" }, { UserID: "S2", ServiceID: "V", BatchID: "B", StartDate: "2026-09-01" }],
+    scheduleItems: [
+      { ServiceID: "V", BatchID: "B", Date: "2026-11-21" },
+      { ServiceID: "V", BatchID: "B", Date: "2026-11-28" },
+      { ServiceID: "V", BatchID: "B", Date: "2026-11-29", RescheduledDate: "2026-11-27" },
+      { ServiceID: "V", BatchID: "OTHER", Date: "2026-11-23" },
+      { ServiceID: "V", BatchID: "B", Date: "2026-12-05" },
+    ],
+  };
+  const inv = (StudentID: string, Month: number) => ({ StudentID, Year: 2026, Month, LineItems: [{ ServiceID: "V", BatchID: "B" }] });
+  it("is the earliest class on or after the enrolment start, using a rescheduled date when there is one", () => {
+    expect(firstClassForInvoice(db, inv("S1", 11))).toBe("2026-11-27");
+  });
+  it("is null for a month the student did not start in, a month with no class yet, or an invoice with no line items", () => {
+    expect(firstClassForInvoice(db, inv("S1", 12))).toBeNull();
+    expect(firstClassForInvoice(db, inv("S2", 11))).toBeNull();
+    expect(firstClassForInvoice(db, { StudentID: "S1", Year: 2026, Month: 11 })).toBeNull();
+    expect(firstClassForInvoice({ enrollments: db.enrollments, scheduleItems: [] }, inv("S1", 11))).toBeNull();
   });
 });
