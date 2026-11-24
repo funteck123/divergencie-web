@@ -32,10 +32,9 @@ export async function GET(req) {
 
   const student = db.users.find((u) => u.UserID === invoice.StudentID);
   const studentCurrency = student?.Currency || "INR";
-  // A starting-month invoice is due by the first class, shown next to the billing period (the 1st would be before the student joined).
+  // A starting-month invoice is due by the first class (the 1st would be before the student joined). The billing period line says nothing about it (owner, 24 Nov 2026).
   const firstClass = firstClassForInvoice(db, invoice);
   const dueDate = firstClass ? new Date(`${firstClass}T00:00:00`) : new Date(invoice.Year, invoice.Month - 1, 1);
-  const firstClassText = firstClass ? ` (first class ${firstClass.slice(8, 10)}/${firstClass.slice(5, 7)}/${firstClass.slice(0, 4)})` : "";
   const fxRatesBefore = Object.keys(db.fxRates || {}).length;
 
   let buffer;
@@ -68,7 +67,7 @@ export async function GET(req) {
       partyLabel: "Student Name",
       partyName: student?.Name || invoice.StudentID,
       secondaryLabel: "Billing Period",
-      secondaryValue: `${invoice.Month}/${invoice.Year}${firstClassText}`,
+      secondaryValue: `${invoice.Month}/${invoice.Year}`,
       balanceLabel: "Balance Due:",
       currency: displayDueCurrency,
       balance: displayDue,
