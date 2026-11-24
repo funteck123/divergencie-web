@@ -56,7 +56,10 @@ export const formatTimer = (total: number) => `${String(Math.floor(total / 60)).
 
 // ---- picker options ----------------------------------------------------------------------------------------
 
+/** DC's own practice papers (25 Nov 2026) are multiple choice in every subject, whatever the subject's Cambridge multiple choice component is. */
+export const DC_PRACTICE_COMPONENT = "DC Practice";
 export const isStructuredComponent = (meta: SubjectMeta, board: string, subject: string, component: string) => {
+  if (component === DC_PRACTICE_COMPONENT) return false;
   const entry = meta[board]?.[subject];
   return !!entry && component !== entry.mcqComponent;
 };

@@ -47,6 +47,10 @@ describe("picker", () => {
     expect(componentsOf(lib, yearly, "B", "S", solved)).toEqual(["P1", "Examiner Report", "Practical"]);
   });
   it("structured means not the subject's MCQ component", () => { expect(isStructuredComponent({ B: { S: { mcqComponent: "P1" } } }, "B", "S", "P2")).toBe(true); expect(isStructuredComponent({ B: { S: { mcqComponent: "P1" } } }, "B", "S", "P1")).toBe(false); expect(isStructuredComponent({}, "B", "S", "P1")).toBe(false); });
+  it("DC Practice is multiple choice in every subject, even where the subject has no Cambridge multiple choice component", () => {
+    expect(isStructuredComponent({ IGCSE: { Mathematics: { mcqComponent: null } } } as never, "IGCSE", "Mathematics", "DC Practice")).toBe(false);
+    expect(isStructuredComponent({ IGCSE: { Mathematics: { mcqComponent: null } } } as never, "IGCSE", "Mathematics", "Paper 2: Non-calculator (Extended)")).toBe(true);
+  });
   it("reading components and button label", () => { expect(isReadingComponent("ZNotes: Physics")).toBe(true); expect(isReadingComponent("P1")).toBe(false); expect(fetchButtonLabel("Examiner Report")).toBe("View examiner report"); expect(fetchButtonLabel("P1")).toBe("Fetch this paper and start"); });
   it("title index merges worksheets, yearly and the account's own", () => expect(titleIndex(lib, yearly, { z: "Z", q: "ignored" })).toEqual({ q: "t", y1: "Y", e: "E", z: "Z" }));
 });

@@ -4,6 +4,7 @@ import { readDB } from "@/lib/db";
 import { getMcqExtractionUrl } from "@/lib/mcqConfig";
 import { FROM_CACHE, forcedCache, liveFailed, savedCopies } from "@/lib/solverSavedProxy";
 import { boardKeyOf, levelAllows, levelsFor, mergeLevels, subjectKeyOf } from "@/lib/solverLevels";
+import { DC_BOARD, DC_SUBJECT, isDcId, loadDcPaper, withDcLibrary } from "@/lib/dcPapers";
 
 // Server-to-server proxy to the mcq-digitizer extraction service
 // (prototypes/mcq-digitizer/server.mjs), which stays on its own always-on
@@ -87,6 +88,15 @@ function filterLibraryByEnrollment(library, allowedKeys) {
   return filtered;
 }
 
+// 25 Nov 2026: a DC practice paper opens for Management and for anyone enrolled in IGCSE Mathematics, with the extraction service on or off.
+async function dcPaperReply(session, id) {
+  if (session.userType !== "Management" && !(await enrolledSubjectKeys(session.userId)).has(subjectMatchKey(DC_BOARD, DC_SUBJECT))) {
+    return NextResponse.json({ error: "This practice paper is for students enrolled in IGCSE Mathematics." }, { status: 403 });
+  }
+  const paper = await loadDcPaper(id);
+  return paper ? NextResponse.json(paper) : NextResponse.json({ error: "Unknown DC paper." }, { status: 404 });
+}
+
 // TKT-0420: saved copies answer only when the live service cannot (lib/solverSavedProxy.js).
 const saved = savedCopies({ enrolledSubjectKeys, filterLibraryByEnrollment, subjectMatchKey });
 
@@ -103,9 +113,11 @@ export async function GET(req, { params }) {
   const subPath = path.join("/");
   const search = new URL(req.url).search;
   const savedLibrary = async () => (subPath === "library" ? saved.library(session).catch(() => null) : null);
+  // 25 Nov 2026: DC's own practice papers are served here, not by the extraction service (lib/dcPapers).
+  if (subPath === "paper" && isDcId(new URL(req.url).searchParams.get("qpId"))) return dcPaperReply(session, new URL(req.url).searchParams.get("qpId"));
   if (forcedCache(req, session) && subPath === "library") {
     const s = await savedLibrary();
-    if (s) return NextResponse.json(s, FROM_CACHE);
+    if (s) return NextResponse.json(withDcLibrary(s), FROM_CACHE);
   }
 
   // TKT-0265: an <audio> element seeks/resumes with Range requests, so the
@@ -119,7 +131,7 @@ export async function GET(req, { params }) {
     upstream = await fetch(`${extractionUrl}/api/${subPath}${search}`, isAudio ? { headers: upstreamHeaders } : subPath === "library" ? { signal: AbortSignal.timeout(10_000) } : undefined);
   } catch (e) {
     const s = await savedLibrary();
-    if (s) return NextResponse.json(s, FROM_CACHE);
+    if (s) return NextResponse.json(withDcLibrary(s), FROM_CACHE);
     // The whole reason this URL needs re-configuring after every restart
     // is that the tunnel is unstable -- an unreachable tunnel must not
     // surface as an unhandled exception/raw 500.
@@ -159,7 +171,7 @@ export async function GET(req, { params }) {
 
   const body = await upstream.json().catch(() => null);
   const s = liveFailed({ threw: false, status: upstream.status, jsonOk: body !== null }) ? await savedLibrary() : null;
-  if (s) return NextResponse.json(s, FROM_CACHE);
+  if (s) return NextResponse.json(withDcLibrary(s), FROM_CACHE);
   if (body === null) {
     return NextResponse.json({ error: `Question Solver did not answer properly (it may be restarting or busy; upstream status ${upstream.status}). Wait a minute and try again.` }, { status: 502 });
   }
@@ -170,9 +182,9 @@ export async function GET(req, { params }) {
     const marked = await saved.mark(body); // TKT-0420: papers with a saved copy carry cached: true
     if (session.userType !== "Management") {
       const allowedKeys = await enrolledSubjectKeys(session.userId);
-      return NextResponse.json(filterLibraryByEnrollment(marked, allowedKeys));
+      return NextResponse.json(withDcLibrary(filterLibraryByEnrollment(marked, allowedKeys)));
     }
-    return NextResponse.json(marked);
+    return NextResponse.json(withDcLibrary(marked));
   }
 
   // TKT-0237: question search. The service returns its best 200 hits across every subject; a student keeps only enrolled subjects, then the best 30.
@@ -197,6 +209,11 @@ export async function POST(req, { params }) {
   const { path } = await params;
   const subPath = path.join("/");
   const bodyText = await req.text();
+  if (subPath === "fetch-and-digitize") {
+    let asked = null;
+    try { asked = JSON.parse(bodyText)?.qpId; } catch { /* not JSON: the service will say so */ }
+    if (isDcId(asked)) return dcPaperReply(session, asked);
+  }
   const savedPaper = async () => (subPath === "fetch-and-digitize" ? saved.paper(session, bodyText).catch(() => null) : null);
   if (forcedCache(req, session)) {
     const s = await savedPaper();
