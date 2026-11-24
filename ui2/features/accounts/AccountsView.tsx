@@ -22,6 +22,7 @@ import { buildWelcomeMessage } from "./welcomeMessage";
 import { BulkBar } from "./BulkBar";
 import { CreateSheet } from "./CreateSheet";
 import { DeleteAccountDialog } from "./DeleteAccountDialog";
+import { WelcomeMessageDialog } from "./WelcomeMessageDialog";
 import { useIssued } from "@/ui2/features/management/IssuedCredentials";
 import { ACCOUNT_GROUPS, CONVERT_LABEL, type AccountGroup } from "./groups";
 import "./accounts.css";
@@ -65,6 +66,7 @@ export function AccountsView() {
   const deferredSearch = useDeferredValue(search);
   const [busy, setBusy] = useState<ReadonlySet<string>>(new Set());
   const [resetTarget, setResetTarget] = useState<UserRecord | null>(null);
+  const [welcomeTarget, setWelcomeTarget] = useState<UserRecord | null>(null);
   const [editId, setEditId] = useQueryState("edit", parseAsString);
   const [viewId, setViewId] = useQueryState("view", parseAsString);
   const [attId, setAttId] = useQueryState("attendance", parseAsString);
@@ -130,6 +132,15 @@ export function AccountsView() {
       toast.success(`New password for ${u.Name} is ready. Copy it from the box above the table.`);
     });
 
+  /** The welcome message for one account. With the password it makes a new one first (the old one stops working) and shows it in the box above the table too. */
+  const welcomeMessageFor = async (u: UserRecord, includePassword: boolean): Promise<string> => {
+    if (!includePassword) return buildWelcomeMessage(u, { username: u.Username ?? "" }, window.location.origin);
+    const res = await patch.mutateAsync({ userId: u.UserID, fields: { resetPassword: true } });
+    if (!res.credentials) throw new Error("The server did not send a new password.");
+    remember(u.UserID, res.credentials);
+    return buildWelcomeMessage(u, res.credentials, window.location.origin);
+  };
+
   const impersonate = (u: UserRecord) =>
     withBusy(u.UserID, async () => {
       try {
@@ -166,6 +177,7 @@ export function AccountsView() {
       if (u.Status === "Active" || u.Status === "Inactive") items.push({ label: u.Status === "Active" ? "Deactivate" : "Activate", onSelect: () => void toggleStatus(u) });
       if (ATTENDANCE_TYPES.includes(u.UserType)) items.push({ label: "Export attendance", onSelect: () => void setAttId(u.UserID) });
       if (u.Username && !u.ConvertedToUserID) items.push({ label: "Reset password", onSelect: () => setResetTarget(u) });
+      if (u.Username && !u.ConvertedToUserID) items.push({ label: "Copy welcome message", onSelect: () => setWelcomeTarget(u) });
       if (group.showSchedule) items.push({ label: "Download schedule PNG", href: `/api/schedule/image?userId=${u.UserID}&download=1`, download: `DC_Schedule_${u.Name}.png` });
       items.push({ label: "Delete", danger: true, onSelect: () => setDeleteTarget(u) });
       return items;
@@ -369,6 +381,7 @@ export function AccountsView() {
       <AccountSheet user={editId ? (all.find((u) => u.UserID === editId) ?? null) : null} users={all} onClose={() => void setEditId(null)} />
       <CreateSheet open={creating} defaultType={DEFAULT_CREATE_TYPE[group.id] ?? "Student"} users={all} onClose={() => setCreating(false)} />
       <DeleteAccountDialog user={deleteTarget} onClose={() => setDeleteTarget(null)} />
+      <WelcomeMessageDialog user={welcomeTarget} build={welcomeMessageFor} onClose={() => setWelcomeTarget(null)} />
 
       <ConfirmDialog
         open={!!resetTarget}

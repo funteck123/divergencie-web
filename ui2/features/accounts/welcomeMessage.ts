@@ -1,6 +1,6 @@
 import { greetingForTimezone } from "@/lib/billing";
 import { normalizeTimezone } from "@/lib/timezones";
-import type { Credentials, UserRecord } from "@/ui2/queries/types";
+import type { UserRecord } from "@/ui2/queries/types";
 
 // TKT-0435: the message Management pastes (WhatsApp, email) to give a new person their Study Portal link, username and password. Same style as the invoice
 // message in billingLogic.ts: plain text, a greeting for the person's time zone, a header line, then the details. Only what the portal really has is promised.
@@ -23,7 +23,7 @@ export function firstLookStep(userType: string): string {
 /** The one witty line. It is the team's own promise, with a wink. Change it here, in one place. */
 export const WELCOME_WITTY_LINE = "Welcome to the team. We do not just teach the syllabus, we teach you to think like the examiner. Please do not tell the examiner.";
 
-export function buildWelcomeMessage(user: Pick<UserRecord, "Name" | "UserID" | "UserType" | "Timezone">, creds: Credentials, origin: string, now: Date = new Date()): string {
+export function buildWelcomeMessage(user: Pick<UserRecord, "Name" | "UserID" | "UserType" | "Timezone">, creds: { username: string; password?: string }, origin: string, now: Date = new Date()): string {
   return [
     `${greetingForTimezone(normalizeTimezone(user.Timezone), now)}! Welcome to DivergenCIE. 😊`,
     "",
@@ -35,7 +35,7 @@ export function buildWelcomeMessage(user: Pick<UserRecord, "Name" | "UserID" | "
     `Account type: ${user.UserType}`,
     `Portal link: ${origin}/login`,
     `Username: ${creds.username}`,
-    `Password: ${creds.password}`,
+    creds.password ? `Password: ${creds.password}` : "Password: the one we gave you before. If you cannot find it, tell us and we will send a new one.",
     "",
     "First steps:",
     "1. Open the portal link and sign in with the details above.",

@@ -42,4 +42,10 @@ describe("welcome message", () => {
     expect(x).toContain("Name: STU-9");
     expect(x.split("\n")[0]).toMatch(/^Good (morning|afternoon|evening)!/);
   });
+  it("without a password it says to use the one they already have, and never prints a password line with a value", () => {
+    const x = buildWelcomeMessage({ UserID: "STU-9", Name: "Ana", UserType: "Student", Timezone: "Asia/Kolkata" }, { username: "ana" }, "https://x", at("2026-11-22T05:00:00Z"));
+    expect(x).toContain("Username: ana");
+    expect(x).toMatch(/Password: the one we gave you before/);
+    expect(x).not.toMatch(/undefined/);
+  });
 });
