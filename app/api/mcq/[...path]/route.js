@@ -3,7 +3,7 @@ import { requireSession } from "@/lib/authz";
 import { readDB } from "@/lib/db";
 import { getMcqExtractionUrl } from "@/lib/mcqConfig";
 import { FROM_CACHE, forcedCache, liveFailed, savedCopies } from "@/lib/solverSavedProxy";
-import { boardKeyOf, levelAllows, levelsFor, mergeLevels, normalizeKey } from "@/lib/solverLevels";
+import { boardKeyOf, levelAllows, levelsFor, mergeLevels, subjectKeyOf } from "@/lib/solverLevels";
 
 // Server-to-server proxy to the mcq-digitizer extraction service
 // (prototypes/mcq-digitizer/server.mjs), which stays on its own always-on
@@ -33,12 +33,9 @@ import { boardKeyOf, levelAllows, levelsFor, mergeLevels, normalizeKey } from "@
 // one confirmed subject-name mismatch (ICT). Both confirmed against the
 // real live library (GET /api/mcq/library as Management) and real live
 // Service records, not assumed.
-const SUBJECT_ALIASES = { "information & communication technology": "ict" };
-
-// 24 Nov 2026: "AS Level" and "A2 Level" courses belong under the same library board as "A-Level" (lib/solverLevels.js).
+// 24 Nov 2026: "AS Level" and "A2 Level" courses belong under the same library board as "A-Level", and "Mathematics: Pure 1" files under "Mathematics" (lib/solverLevels.js).
 function subjectMatchKey(course, subjectName) {
-  const subjectKey = normalizeKey(subjectName);
-  return `${boardKeyOf(course)} ${SUBJECT_ALIASES[subjectKey] || subjectKey}`;
+  return `${boardKeyOf(course)} ${subjectKeyOf(subjectName)}`;
 }
 
 // TKT-0233: enrolledSubjectKeys() never checked enrollment dates at all --
