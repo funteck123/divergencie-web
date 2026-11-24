@@ -3,6 +3,7 @@ import { requireSession } from "@/lib/authz";
 import { readDB } from "@/lib/db";
 import { getMcqExtractionUrl } from "@/lib/mcqConfig";
 import { FROM_CACHE, forcedCache, liveFailed, savedCopies } from "@/lib/solverSavedProxy";
+import { boardKeyOf, levelAllows, levelsFor, mergeLevels, normalizeKey } from "@/lib/solverLevels";
 
 // Server-to-server proxy to the mcq-digitizer extraction service
 // (prototypes/mcq-digitizer/server.mjs), which stays on its own always-on
@@ -32,17 +33,12 @@ import { FROM_CACHE, forcedCache, liveFailed, savedCopies } from "@/lib/solverSa
 // one confirmed subject-name mismatch (ICT). Both confirmed against the
 // real live library (GET /api/mcq/library as Management) and real live
 // Service records, not assumed.
-const BOARD_ALIASES = { "a-level": "a levels", "a level": "a levels" };
 const SUBJECT_ALIASES = { "information & communication technology": "ict" };
 
-function normalizeSubjectKey(s) {
-  return String(s || "").toLowerCase().replace(/[\s-]+/g, " ").trim();
-}
-
+// 24 Nov 2026: "AS Level" and "A2 Level" courses belong under the same library board as "A-Level" (lib/solverLevels.js).
 function subjectMatchKey(course, subjectName) {
-  const boardKey = normalizeSubjectKey(course);
-  const subjectKey = normalizeSubjectKey(subjectName);
-  return `${BOARD_ALIASES[boardKey] || boardKey} ${SUBJECT_ALIASES[subjectKey] || subjectKey}`;
+  const subjectKey = normalizeKey(subjectName);
+  return `${boardKeyOf(course)} ${SUBJECT_ALIASES[subjectKey] || subjectKey}`;
 }
 
 // TKT-0233: enrolledSubjectKeys() never checked enrollment dates at all --
@@ -66,11 +62,13 @@ async function enrolledSubjectKeys(userId) {
   const activeServiceIds = new Set(
     (db.enrollments || []).filter((e) => e.UserID === userId && isEnrollmentActiveToday(e)).map((e) => e.ServiceID)
   );
-  const keys = new Set();
+  // subject key -> the paper levels the person may see ("as", "a2" or "all"); a Map answers .has(key) like the Set it replaced.
+  const keys = new Map();
   for (const service of db.services || []) {
     if (!activeServiceIds.has(service.ServiceID)) continue;
     if (service.Course && service.SubjectName) {
-      keys.add(subjectMatchKey(service.Course, service.SubjectName));
+      const key = subjectMatchKey(service.Course, service.SubjectName);
+      keys.set(key, mergeLevels(keys.get(key), levelsFor(service.Course)));
     }
   }
   return keys;
@@ -82,8 +80,11 @@ function filterLibraryByEnrollment(library, allowedKeys) {
     for (const [subject] of Object.entries(subjects)) {
       const key = subjectMatchKey(board, subject);
       if (!allowedKeys.has(key)) continue;
+      const levels = allowedKeys.get(key);
+      const components = Object.fromEntries(Object.entries(subjects[subject] || {}).filter(([component]) => levelAllows(levels, component)));
+      if (Object.keys(components).length === 0) continue;
       filtered[board] = filtered[board] || {};
-      filtered[board][subject] = subjects[subject];
+      filtered[board][subject] = components;
     }
   }
   return filtered;
@@ -180,7 +181,7 @@ export async function GET(req, { params }) {
   // TKT-0237: question search. The service returns its best 200 hits across every subject; a student keeps only enrolled subjects, then the best 30.
   if (subPath === "search" && upstream.ok && Array.isArray(body.results)) {
     const allowedKeys = session.userType === "Management" ? null : await enrolledSubjectKeys(session.userId);
-    const results = body.results.filter((r) => !allowedKeys || allowedKeys.has(subjectMatchKey(r.board, r.subject)));
+    const results = body.results.filter((r) => !allowedKeys || (allowedKeys.has(subjectMatchKey(r.board, r.subject)) && levelAllows(allowedKeys.get(subjectMatchKey(r.board, r.subject)), r.component)));
     return NextResponse.json({ total: results.length, results: results.slice(0, 30) });
   }
 

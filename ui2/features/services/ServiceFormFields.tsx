@@ -195,7 +195,7 @@ export function ServiceFormFields({ form, setForm, users }: { form: ServiceForm;
             <TextInput placeholder="e.g. Cambridge" value={form.board} onChange={(e) => set("board", e.target.value)} />
           </Field>
           <Field label="Course">
-            <TextInput placeholder="e.g. IGCSE, A-Level, SAT" value={form.course} onChange={(e) => set("course", e.target.value)} />
+            <TextInput placeholder="e.g. IGCSE, AS Level, A2 Level, SAT" value={form.course} onChange={(e) => set("course", e.target.value)} />
           </Field>
           <Field label="Subject Code">
             <TextInput value={form.subjectCode} onChange={(e) => set("subjectCode", e.target.value)} />

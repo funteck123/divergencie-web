@@ -32,6 +32,11 @@ describe("flags and suggestions", () => {
   it("one non-student group is role based", () => expect(flagsOf({ group: ["Staff"], type: "Staff" })).toMatchObject({ isRoleBasedService: true, isStaffRole: true, cohortEligible: false }));
   it("student plus teacher is cohort", () => expect(flagsOf({ group: ["Student", "Teacher"], type: "Course" })).toMatchObject({ isRoleBasedService: false, cohortEligible: true }));
   it("type options are the union", () => expect(typeOptionsFor(["Teacher", "Staff"])).toEqual(["Teacher", "Staff"]));
+  it("suggested names for an AS Level and an A2 Level course (24 Nov 2026)", () => {
+    const f = { ...emptyServiceForm(), board: "Cambridge", subjectCode: "9618", subjectName: "Computer Science" };
+    expect(suggestedName({ ...f, course: "AS Level" })).toBe("Cambridge AS Level 9618 Computer Science");
+    expect(suggestedName({ ...f, course: "A2 Level" })).toBe("Cambridge A2 Level 9618 Computer Science");
+  });
   it("suggested names per type", () => {
     const f = { ...emptyServiceForm(), board: "Cambridge", course: "A-Level", subjectCode: "9702", subjectName: "Physics" };
     expect(suggestedName(f)).toBe("Cambridge A-Level 9702 Physics");
