@@ -4,8 +4,8 @@
 export const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] as const;
 export type Day = (typeof DAYS)[number];
 
-/** The first and last minute a class may start (06:00 to 23:30), counted from midnight. The grid is built from half-hour atoms; an hourly cell is two atoms. */
-export const FIRST_MINUTE = 6 * 60;
+/** The first and last minute a class may start (00:00 to 23:30), counted from midnight, so all 24 hours show. The grid is built from half-hour atoms; an hourly cell is two atoms. */
+export const FIRST_MINUTE = 0;
 export const LAST_MINUTE = 23 * 60 + 30;
 export const ATOM = 30;
 
@@ -14,7 +14,7 @@ export type Role = (typeof ROLES)[number];
 
 export const atomKey = (day: Day, minute: number) => `${day}|${minute}`;
 
-/** The start minutes of the rows: every hour (06:00, 07:00 ... 23:00) or every half hour. */
+/** The start minutes of the rows: every hour (00:00, 01:00 ... 23:00) or every half hour. */
 export function rowMinutes(halfHours: boolean): number[] {
   const out: number[] = [];
   for (let m = FIRST_MINUTE; m <= LAST_MINUTE; m += halfHours ? ATOM : 60) out.push(m);
@@ -57,6 +57,16 @@ export function rangesForDay(selected: ReadonlySet<string>, day: Day): Array<{ f
     if (last && last.to === m) last.to = m + ATOM;
     else out.push({ from: m, to: m + ATOM });
   }
+  return out;
+}
+
+/** The cells inside the box drawn from one cell to another, whichever way it is dragged. */
+export function rectangleCells(rows: ReadonlyArray<number>, a: { day: Day; minute: number }, b: { day: Day; minute: number }): Array<{ day: Day; minute: number }> {
+  const [d0, d1] = [DAYS.indexOf(a.day), DAYS.indexOf(b.day)].sort((x, y) => x - y);
+  const [r0, r1] = [rows.indexOf(a.minute), rows.indexOf(b.minute)].sort((x, y) => x - y);
+  if (r0 < 0 || r1 < 0) return [];
+  const out: Array<{ day: Day; minute: number }> = [];
+  for (let d = d0; d <= d1; d++) for (let r = r0; r <= r1; r++) out.push({ day: DAYS[d], minute: rows[r] });
   return out;
 }
 

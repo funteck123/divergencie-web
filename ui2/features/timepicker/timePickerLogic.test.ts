@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { DAYS, atomKey, buildTimeMessage, cellState, clockLabel, formatRange, paintCells, rangesForDay, rowMinutes, utcOffsetLabel } from "./timePickerLogic";
+import { DAYS, atomKey, rectangleCells, buildTimeMessage, cellState, clockLabel, formatRange, paintCells, rangesForDay, rowMinutes, utcOffsetLabel } from "./timePickerLogic";
 
 const empty = new Set<string>();
 
 describe("rows and labels", () => {
   it("hourly rows run 6 AM to 11 PM, half-hour rows double them", () => {
-    expect(rowMinutes(false)[0]).toBe(360);
+    expect(rowMinutes(false)[0]).toBe(0);
     expect(rowMinutes(false).at(-1)).toBe(23 * 60);
-    expect(rowMinutes(false)).toHaveLength(18);
-    expect(rowMinutes(true)).toHaveLength(36);
+    expect(rowMinutes(false)).toHaveLength(24);
+    expect(rowMinutes(true)).toHaveLength(48);
     expect(rowMinutes(true).at(-1)).toBe(23 * 60 + 30);
   });
   it("12-hour labels", () => {
@@ -105,5 +105,18 @@ describe("time zone offset", () => {
     expect(utcOffsetLabel("Asia/Riyadh", at)).toBe("UTC+03:00");
     expect(utcOffsetLabel("Europe/London", at)).toMatch(/^UTC(\+00:00)?$/);
     expect(utcOffsetLabel("Not/AZone", at)).toBe("");
+  });
+});
+
+describe("rectangleCells", () => {
+  const rows = rowMinutes(false);
+  it("gives the box between two cells, in any drag direction", () => {
+    const a = { day: "Monday" as const, minute: 20 * 60 }, b = { day: "Wednesday" as const, minute: 22 * 60 };
+    expect(rectangleCells(rows, a, b)).toHaveLength(9);
+    expect(rectangleCells(rows, b, a)).toHaveLength(9);
+    expect(rectangleCells(rows, { day: "Sunday", minute: 22 * 60 }, { day: "Saturday", minute: 21 * 60 }).map((c) => `${c.day}${c.minute}`).sort()).toEqual(["Saturday1260", "Saturday1320", "Sunday1260", "Sunday1320"]);
+  });
+  it("one cell is a box of one", () => {
+    expect(rectangleCells(rows, { day: "Friday", minute: 0 }, { day: "Friday", minute: 0 })).toHaveLength(1);
   });
 });
