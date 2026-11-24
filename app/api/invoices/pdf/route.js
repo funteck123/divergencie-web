@@ -4,6 +4,7 @@ import { drawDocumentPDF } from "@/lib/pdfDoc";
 import { requireSelfOrParentOrManagement } from "@/lib/authz";
 import { convertRecordTotal, convertINRAmount } from "@/lib/fxRates";
 import { getSession } from "@/lib/session";
+import { verifyInvoiceShareToken } from "@/lib/invoiceShare";
 import { amountDueInOwnCurrency, firstClassForInvoice, lineItemName, invoicePdfFilename, attachmentDisposition, discountBreakdown, discountSummaryRows } from "@/lib/billing";
 
 const TERMS =
@@ -16,9 +17,11 @@ const TERMS =
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const invoiceId = searchParams.get("invoiceId");
+  // A link made by Management (POST /api/invoices/share) opens this one invoice without a login, until it expires.
+  const sharedLink = verifyInvoiceShareToken(invoiceId, searchParams.get("t"));
 
   // 24 Nov 2026: a link opened without being signed in (a student who has not logged in yet) showed raw JSON. A browser now gets a page that says to sign in.
-  if (!getSession(req) && (req.headers.get("accept") || "").includes("text/html")) {
+  if (!sharedLink && !getSession(req) && (req.headers.get("accept") || "").includes("text/html")) {
     const page = '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sign in to see your invoice</title><body style="font-family:system-ui,sans-serif;max-width:30rem;margin:15vh auto;padding:0 1.25rem;line-height:1.5"><h1 style="font-size:1.4rem">Please sign in to see your invoice</h1><p>This invoice is private. Sign in to your DivergenCIE account, then open this link again.</p><p><a href="/login" style="display:inline-block;padding:.7rem 1.2rem;background:#14305a;color:#fff;border-radius:.4rem;text-decoration:none">Sign in</a></p>';
     return new NextResponse(page, { status: 401, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
   }
@@ -27,8 +30,10 @@ export async function GET(req) {
   const invoice = db.invoices.find((i) => i.InvoiceID === invoiceId);
   if (!invoice) return NextResponse.json({ error: "Invoice not found." }, { status: 404 });
 
-  const { error } = requireSelfOrParentOrManagement(req, db, invoice.StudentID);
-  if (error) return error;
+  if (!sharedLink) {
+    const { error } = requireSelfOrParentOrManagement(req, db, invoice.StudentID);
+    if (error) return error;
+  }
 
   const student = db.users.find((u) => u.UserID === invoice.StudentID);
   const studentCurrency = student?.Currency || "INR";

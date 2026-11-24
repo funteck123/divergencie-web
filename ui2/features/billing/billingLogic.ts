@@ -169,8 +169,9 @@ export function totalDueLine(r: BillRecord): string {
   return `${currency} ${due.toFixed(2)} (INR ${Number(r.INRDue).toFixed(2)})`;
 }
 
-export function buildReminderMessage(r: BillRecord, student: UserRecord | undefined, services: readonly ServiceRecord[], paymentSection: string, origin: string, now: Date = new Date()): string {
-  const pdfUrl = `${origin}/api/invoices/pdf?invoiceId=${r.InvoiceID}`;
+export function buildReminderMessage(r: BillRecord, student: UserRecord | undefined, services: readonly ServiceRecord[], paymentSection: string, origin: string, now: Date = new Date(), pdfLink?: string): string {
+  // pdfLink is a signed link that opens without a login (POST /api/invoices/share); without one the old portal link is used.
+  const pdfUrl = pdfLink || `${origin}/api/invoices/pdf?invoiceId=${r.InvoiceID}`;
   return [
     `${greetingForTimezone(normalizeTimezone(student?.Timezone), now)}! Fee payment is requested. 😊`,
     "",

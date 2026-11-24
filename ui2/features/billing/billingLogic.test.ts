@@ -62,6 +62,13 @@ describe("messages", () => {
       ["Good morning! Fee payment is requested. 😊", "", "DivergenCIE Student Details Export", "", "Student Name: Sam", "Status: Active", "Course: B14 Cambridge IGCSE", "Month(s): Oct 2026", "", "Total due: SAR 1000.00 (INR 25000.00)", "", "Official Invoice PDF: https://x.test/api/invoices/pdf?invoiceId=INV-1", "", "PAY HERE"].join("\n"),
     );
   });
+  it("reminder uses a signed link when one is given, and nothing else in the text changes (24 Nov 2026)", () => {
+    const plain = buildReminderMessage(row, student, services, "PAY HERE", "https://x.test", noon);
+    const signed = buildReminderMessage(row, student, services, "PAY HERE", "https://x.test", noon, "https://x.test/api/invoices/pdf?invoiceId=INV-1&t=123.abc");
+    expect(plain).toContain("Official Invoice PDF: https://x.test/api/invoices/pdf?invoiceId=");
+    expect(signed).toContain("Official Invoice PDF: https://x.test/api/invoices/pdf?invoiceId=INV-1&t=123.abc");
+    expect(signed.split("\n").filter((l) => !l.startsWith("Official Invoice PDF")).join("\n")).toBe(plain.split("\n").filter((l) => !l.startsWith("Official Invoice PDF")).join("\n"));
+  });
   it("acknowledgement text is exactly the classic sentence", () => {
     const text = buildAcknowledgedMessage({ ...row, PaidAt: "2026-10-03T00:00:00Z" }, student, services);
     expect(text).toMatch(/^We acknowledge the fee payment receipt by Sam of SAR 1000\.00\/- for .+ in Oct 2026 on .+\. Updated in the system\. Thank you for choosing DivergenCIE Coaching! 💫$/);
