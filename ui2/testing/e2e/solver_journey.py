@@ -147,7 +147,8 @@ def main():
         s.page.get_by_role("button", name=go).first.click()
         s.page.get_by_role("button", name="Test Mode").click()
         s.page.get_by_label("Your answer to question 1").fill("v = d/t")
-        s.page.get_by_role("button", name="Submit quiz").click()
+        s.page.get_by_role("button", name="End exam").click()
+        s.page.get_by_role("button", name="Submit for AI grading").click()
         s.page.get_by_text("Mark-by-mark breakdown").wait_for(timeout=30000)
         out["structured_score"] = s.page.locator(".u2-banner__big").inner_text()
         out["structured_text"] = [s.page.get_by_text(t).count() for t in ("What a full-mark answer looks like", "Needed: units")]

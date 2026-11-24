@@ -225,10 +225,27 @@ export function historyRows(mine: readonly AttemptRow[], chapter: (subject: stri
   });
 }
 
-export interface AutosaveRecord { v: 1; acct: string; kind: "mcq" | "structured"; paperKey: string; savedAt: number; elapsed: number; answers?: Record<string, string>; flags?: string[]; texts?: Record<string, string> }
+export interface AutosaveRecord {
+  v: 1; acct: string; kind: "mcq" | "structured"; paperKey: string; savedAt: number; elapsed: number; answers?: Record<string, string>; flags?: string[]; texts?: Record<string, string>;
+  /** TKT-0442: where a written test stood when the page closed. Older records, and the classic page, simply lack these. */
+  ended?: boolean; marking?: boolean; selfMarks?: Record<string, { awarded: string; outOf: string; note: string }>; graded?: Record<string, { result: GradeResult; text: string }>;
+}
 export const AUTOSAVE_KEY = "mcqTestAutosave.v1"; // the same key as the classic Question Solver, so an attempt started in one UI can be resumed in the other
-export const AUTOSAVE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
-/** May this saved attempt be offered for resuming? Same account, same kind of quiz, same paper, under a day old. */
+/** One saved attempt per account and paper, so starting a second paper no longer throws the first away. The single classic slot above is still written, so the classic page can resume too. */
+export const SAVES_KEY = "u2SolverSaves.v1";
+export const AUTOSAVE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+export const saveSlot = (account: string, paperKey: string) => `${account}|${paperKey}`;
+/** Drop saves older than the limit, so the store never grows without end. */
+export function pruneSaves(all: Readonly<Record<string, AutosaveRecord>>, now = Date.now()): Record<string, AutosaveRecord> {
+  return Object.fromEntries(Object.entries(all).filter(([, r]) => r && now - r.savedAt < AUTOSAVE_MAX_AGE_MS));
+}
+/** The save for this paper: the per-paper store first, then the classic single slot. */
+export function findSave(all: Readonly<Record<string, AutosaveRecord>>, legacy: AutosaveRecord | null, account: string, kind: "mcq" | "structured", meta: AttemptMeta | null, now = Date.now()): AutosaveRecord | null {
+  const own = meta ? all[saveSlot(account, meta.paperId)] : undefined;
+  if (resumable(own ?? null, kind, account, meta, now)) return own as AutosaveRecord;
+  return resumable(legacy, kind, account, meta, now) ? legacy : null;
+}
+/** May this saved attempt be offered for resuming? Same account, same kind of quiz, same paper, under a week old. */
 export function resumable(rec: AutosaveRecord | null, kind: "mcq" | "structured", account: string, meta: AttemptMeta | null, now = Date.now()): rec is AutosaveRecord {
   return !!rec && rec.v === 1 && rec.kind === kind && rec.acct === account && !!meta && rec.paperKey === meta.paperId && now - rec.savedAt < AUTOSAVE_MAX_AGE_MS;
 }

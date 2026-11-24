@@ -8,9 +8,10 @@
  *  - flags exist only in test and mistakes mode; practice has no answers, only the Question and Answer tabs
  *  - an answer can be changed freely until submit; submit stops the clock and cannot be undone
  *  - cancelling a test or mistakes attempt throws the answers away (the screen asks first); cancelling practice just leaves
+ *  - a written test can be ended before it is submitted: the clock stops, the answers stay as they are, and the student picks AI grading or marks it themselves
  *  - a resumed attempt restores answers, flags, written texts and elapsed time
  */
-export type Phase = "idle" | "ready" | "running" | "paused" | "submitted" | "reviewing";
+export type Phase = "idle" | "ready" | "running" | "paused" | "ended" | "submitted" | "reviewing";
 export type Mode = "practice" | "test" | "mistakes";
 export type Kind = "mcq" | "structured";
 
@@ -26,9 +27,13 @@ export interface QuizState {
   answers: Readonly<Record<string, string>>;
   flags: readonly string[];
   texts: Readonly<Record<string, string>>;
+  /** Written tests only: the marks the student gives themselves, per question, kept as typed text until they save. */
+  selfMarks: Readonly<Record<string, SelfMark>>;
   /** Test mode only: tell the student at once whether a letter is right. */
   instantCheck: boolean;
 }
+
+export interface SelfMark { awarded: string; outOf: string; note: string }
 
 export type QuizAction =
   | { type: "load"; kind: Kind; order: readonly string[] }
@@ -44,13 +49,16 @@ export type QuizAction =
   | { type: "next" }
   | { type: "prev" }
   | { type: "instantCheck"; on: boolean }
-  | { type: "restore"; elapsed: number; answers?: Record<string, string>; flags?: string[]; texts?: Record<string, string> }
+  | { type: "end" }
+  | { type: "reopen" }
+  | { type: "selfMark"; q: string; field: keyof SelfMark; value: string }
+  | { type: "restore"; elapsed: number; answers?: Record<string, string>; flags?: string[]; texts?: Record<string, string>; selfMarks?: Record<string, SelfMark> }
   | { type: "submit" }
   | { type: "review" }
   | { type: "cancel" }
   | { type: "finishPractice" };
 
-export const initialQuiz: QuizState = { phase: "idle", kind: "mcq", mode: null, order: [], index: 0, elapsed: 0, answers: {}, flags: [], texts: {}, instantCheck: false };
+export const initialQuiz: QuizState = { phase: "idle", kind: "mcq", mode: null, order: [], index: 0, elapsed: 0, answers: {}, flags: [], texts: {}, selfMarks: {}, instantCheck: false };
 
 const live = (s: QuizState) => s.phase === "running" || s.phase === "paused";
 const known = (s: QuizState, q: string) => s.order.includes(q);
@@ -61,7 +69,7 @@ export function quizReducer(s: QuizState, a: QuizAction): QuizState {
       return { ...initialQuiz, phase: "ready", kind: a.kind, order: a.order, instantCheck: s.instantCheck };
     case "start":
       if (s.phase !== "ready") return s;
-      return { ...s, phase: "running", mode: a.mode, index: 0, elapsed: 0, answers: {}, flags: [], texts: {} };
+      return { ...s, phase: "running", mode: a.mode, index: 0, elapsed: 0, answers: {}, flags: [], texts: {}, selfMarks: {} };
     case "tick":
       return s.phase === "running" ? { ...s, elapsed: s.elapsed + 1 } : s;
     case "pause":
@@ -90,11 +98,18 @@ export function quizReducer(s: QuizState, a: QuizAction): QuizState {
       return live(s) ? { ...s, index: Math.max(0, s.index - 1) } : s;
     case "instantCheck":
       return { ...s, instantCheck: a.on };
+    case "end":
+      return live(s) && s.mode === "test" && s.kind === "structured" ? { ...s, phase: "ended" } : s;
+    case "reopen":
+      return s.phase === "ended" ? { ...s, phase: "paused" } : s;
+    case "selfMark":
+      if (s.phase !== "ended" || !known(s, a.q)) return s;
+      return { ...s, selfMarks: { ...s.selfMarks, [a.q]: { awarded: "", outOf: "", note: "", ...s.selfMarks[a.q], [a.field]: a.value } } };
     case "restore":
       if (!live(s)) return s;
-      return { ...s, elapsed: a.elapsed, answers: { ...(a.answers ?? {}) }, flags: [...(a.flags ?? [])], texts: { ...(a.texts ?? {}) } };
+      return { ...s, elapsed: a.elapsed, answers: { ...(a.answers ?? {}) }, flags: [...(a.flags ?? [])], texts: { ...(a.texts ?? {}) }, selfMarks: { ...(a.selfMarks ?? {}) } };
     case "submit":
-      return live(s) && s.mode !== "practice" ? { ...s, phase: "submitted" } : s;
+      return (live(s) || s.phase === "ended") && s.mode !== "practice" ? { ...s, phase: "submitted" } : s;
     case "review":
       return s.phase === "submitted" ? { ...s, phase: "reviewing" } : s;
     case "cancel":
@@ -106,6 +121,8 @@ export function quizReducer(s: QuizState, a: QuizAction): QuizState {
 
 /** Questions that still have no answer: where the student should look before submitting. */
 export const unansweredQuestions = (s: QuizState) => (s.kind === "mcq" ? s.order.filter((q) => !(q in s.answers)) : s.order.filter((q) => !(s.texts[q] ?? "").trim()));
+/** A written test that was ended can still be left without losing work, so the screen asks too. */
+export const isEnded = (s: QuizState) => s.phase === "ended";
 export const isClockRunning = (s: QuizState) => s.phase === "running";
 /** Whether leaving now loses work, so the screen should ask first. */
-export const needsCancelConfirm = (s: QuizState) => live(s) && (s.mode === "test" || s.mode === "mistakes");
+export const needsCancelConfirm = (s: QuizState) => (live(s) || s.phase === "ended") && (s.mode === "test" || s.mode === "mistakes");

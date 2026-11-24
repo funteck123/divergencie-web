@@ -8,22 +8,41 @@ import { digitizeUpload, fetchAndDigitize, getMistakes, getPaper, gradeStructure
 import { LibraryStage, type PickedPaper } from "./LibraryStage";
 import { ProgressStage } from "./ProgressStage";
 import { QuizStage, type GradingStatus } from "./QuizStage";
+import { ExamEndedStage, SelfMarkStage } from "./SelfMarkStage";
+import { checkSelfMark, selfMarkRemark, selfMarkTotals } from "./selfMarkLogic";
 import { ResultsStage, type Results } from "./ResultsStage";
 import { UploadStage } from "./UploadStage";
 import { initialQuiz, quizReducer } from "./quizMachine";
 import { statusIndex } from "./progressLogic";
-import { AUTOSAVE_KEY, chapterNames, gradeMcq, isFullMarks, mistakeResults, naturalQuestionSort, resumable, scoreStructured, titleIndex, type AutosaveRecord } from "./solverLogic";
+import { AUTOSAVE_KEY, SAVES_KEY, chapterNames, findSave, gradeMcq, isFullMarks, mistakeResults, naturalQuestionSort, pruneSaves, saveSlot, scoreStructured, titleIndex, type AutosaveRecord } from "./solverLogic";
 import type { AttemptMeta, GradeResult, McqQuestion, StructuredItem, YearlyPaper } from "./solverTypes";
 import "./solver.css";
 
 type Stage = "library" | "upload" | "mode" | "quiz" | "results" | "progress";
 type Paper = { title: string; meta: AttemptMeta | null; pdf: { qpId: string; msId?: string; title: string; yearlyId?: string } | null; audio: YearlyPaper | null; ref: { paperId?: string; qpId?: string; msId?: string } };
 
-const readSave = (): AutosaveRecord | null => {
+// Saved attempts (TKT-0442): one per account and paper, so a second paper no longer replaces the first. The classic single slot is written too, so the classic page can resume.
+const readLegacy = (): AutosaveRecord | null => {
   try { return JSON.parse(window.localStorage.getItem(AUTOSAVE_KEY) || "null"); } catch { return null; }
 };
-const writeSave = (rec: AutosaveRecord) => { try { window.localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(rec)); } catch { /* private mode or quota: autosave is best effort */ } };
-const clearSave = () => { try { window.localStorage.removeItem(AUTOSAVE_KEY); } catch { /* best effort */ } };
+const readSaves = (): Record<string, AutosaveRecord> => {
+  try { return pruneSaves(JSON.parse(window.localStorage.getItem(SAVES_KEY) || "{}")); } catch { return {}; }
+};
+const writeSave = (rec: AutosaveRecord) => {
+  try {
+    window.localStorage.setItem(SAVES_KEY, JSON.stringify({ ...readSaves(), [saveSlot(rec.acct, rec.paperKey)]: rec }));
+    window.localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(rec));
+  } catch { /* private mode or quota: autosave is best effort */ }
+};
+const clearSave = (account: string, paperKey: string | undefined) => {
+  if (!paperKey) return;
+  try {
+    const { [saveSlot(account, paperKey)]: _gone, ...rest } = readSaves();
+    window.localStorage.setItem(SAVES_KEY, JSON.stringify(rest));
+    const legacy = readLegacy();
+    if (legacy && legacy.acct === account && legacy.paperKey === paperKey) window.localStorage.removeItem(AUTOSAVE_KEY);
+  } catch { /* best effort */ }
+};
 const msg = (e: unknown) => (e instanceof Error ? e.message : String(e));
 
 /**
@@ -63,7 +82,11 @@ export function SolverView({ user }: { user: SessionUser }) {
   const [graded, setGraded] = useState<Record<string, { result: GradeResult; text: string }>>({});
   const [pending, setPending] = useState<Record<string, GradingStatus>>({});
   const [resume, setResume] = useState<AutosaveRecord | null>(null);
+  const [marking, setMarking] = useState(false); // TKT-0442: the student is giving their own marks
+  const [selfSaving, setSelfSaving] = useState(false);
   const gradeRuns = useRef(new Map<string, AbortController>());
+  const paperKeyRef = useRef<string | undefined>(undefined);
+  paperKeyRef.current = paper?.meta?.paperId;
 
   // The clock: one tick a second while running.
   useEffect(() => {
@@ -72,22 +95,24 @@ export function SolverView({ user }: { user: SessionUser }) {
     return () => window.clearInterval(id);
   }, [quiz.phase]);
 
-  // Autosave for tracked Test attempts only (same key and shape as classic).
-  const testLive = (quiz.phase === "running" || quiz.phase === "paused") && quiz.mode === "test" && !!paper?.meta;
+  // Autosave for tracked Test attempts: while answering, after the exam is ended, and while marking. It stays until the score is saved.
+  const testLive = (quiz.phase === "running" || quiz.phase === "paused" || quiz.phase === "ended") && quiz.mode === "test" && !!paper?.meta;
   useEffect(() => {
     if (!testLive || !paper?.meta) return;
-    writeSave({ v: 1, acct: account, kind: quiz.kind, paperKey: paper.meta.paperId, savedAt: Date.now(), elapsed: quiz.elapsed, answers: { ...quiz.answers }, flags: [...quiz.flags], texts: { ...quiz.texts } });
-  }, [testLive, quiz, paper, account]);
+    writeSave({ v: 1, acct: account, kind: quiz.kind, paperKey: paper.meta.paperId, savedAt: Date.now(), elapsed: quiz.elapsed, answers: { ...quiz.answers }, flags: [...quiz.flags], texts: { ...quiz.texts }, ended: quiz.phase === "ended", marking: quiz.phase === "ended" && marking, selfMarks: { ...quiz.selfMarks }, graded });
+  }, [testLive, quiz, paper, account, marking, graded]);
 
-  const reset = useCallback(() => {
+  /** Leave the paper. A saved attempt is kept unless the student chose to discard it, so going back never loses their work. */
+  const reset = useCallback((discard = false) => {
     gradeRuns.current.forEach((c) => c.abort());
     gradeRuns.current.clear();
-    clearSave();
+    if (discard) clearSave(account, paperKeyRef.current);
     dispatch({ type: "cancel" });
+    setMarking(false); setSelfSaving(false);
     setPaper(null); setMcq([]); setStructured([]); setGraded({}); setPending({}); setResults(null); setResume(null);
     setSaveStatus(""); setError(""); setStatus(""); setSubmitting(false);
     setStage("library");
-  }, []);
+  }, [account]);
 
   // ---- loading a paper -----------------------------------------------------------------------------------------
   async function openPaper(p: PickedPaper) {
@@ -111,8 +136,7 @@ export function SolverView({ user }: { user: SessionUser }) {
         dispatch({ type: "load", kind: "mcq", order: data.questions.map((q) => q.questionNumber) });
       }
       setPaper({ title, meta: p.meta, pdf, audio, ref });
-      const rec = readSave();
-      setResume(resumable(rec, p.structured ? "structured" : "mcq", account, p.meta) ? rec : null);
+      setResume(findSave(readSaves(), readLegacy(), account, p.structured ? "structured" : "mcq", p.meta));
       setStage("mode");
       setStatus("");
     } catch (e) {
@@ -177,7 +201,11 @@ export function SolverView({ user }: { user: SessionUser }) {
 
   function begin(mode: "practice" | "test", resumeRec?: AutosaveRecord | null) {
     dispatch({ type: "start", mode });
-    if (resumeRec) dispatch({ type: "restore", elapsed: resumeRec.elapsed, answers: resumeRec.answers, flags: resumeRec.flags, texts: resumeRec.texts });
+    if (resumeRec) {
+      dispatch({ type: "restore", elapsed: resumeRec.elapsed, answers: resumeRec.answers, flags: resumeRec.flags, texts: resumeRec.texts, selfMarks: resumeRec.selfMarks });
+      setGraded(resumeRec.graded ?? {});
+      if (resumeRec.ended) { dispatch({ type: "end" }); setMarking(!!resumeRec.marking); }
+    }
     setStage("quiz");
   }
 
@@ -212,10 +240,10 @@ export function SolverView({ user }: { user: SessionUser }) {
   async function submit() {
     if (!paper) return;
     setSubmitting(true); setSaveStatus("");
-    clearSave();
     if (quiz.kind === "mcq") {
       const g = gradeMcq(mcq, quiz.answers, new Set(quiz.flags));
       setResults({ kind: "mcq", results: g.results, correct: g.correct, gradable: g.gradable });
+      clearSave(account, paper.meta?.paperId);
       dispatch({ type: "submit" });
       setStage("results");
       setSubmitting(false);
@@ -254,11 +282,12 @@ export function SolverView({ user }: { user: SessionUser }) {
       setStatus("");
     }
     const failed = stragglers.filter((q) => !fresh[q]);
-    if (failed.length) { setSubmitting(false); setError(`Question${failed.length === 1 ? "" : "s"} ${failed.join(", ")} couldn't be graded. Press Submit quiz to try again.`); dispatch({ type: "resume" }); return; }
+    if (failed.length) { setSubmitting(false); setError(`Question${failed.length === 1 ? "" : "s"} ${failed.join(", ")} couldn't be graded. Press Submit for AI grading to try again, or mark it yourself.`); dispatch({ type: "resume" }); return; }
     setError("");
     const attempted = structured.map((i) => fresh[i.questionNumber] ?? graded[i.questionNumber]?.result).filter((r): r is GradeResult => !!r);
     const { gradable, correct } = scoreStructured(attempted);
     setResults({ kind: "structured", graded: attempted, correct, gradable: gradable.length });
+    clearSave(account, paper.meta?.paperId);
     dispatch({ type: "submit" });
     setStage("results");
     setSubmitting(false);
@@ -275,6 +304,31 @@ export function SolverView({ user }: { user: SessionUser }) {
     } else if (!paper.meta) setSaveStatus("Manually uploaded papers aren't tracked in your progress history.");
   }
 
+  /** TKT-0442: the student's own marks become the attempt. They are saved like an AI result, each answer marked "Self-marked" so a teacher can tell. */
+  async function saveSelfMarks() {
+    if (!paper) return;
+    const rows = structured.map((i) => ({ q: i.questionNumber, r: checkSelfMark(quiz.selfMarks[i.questionNumber]) })).filter((x) => x.r.state === "ok");
+    if (rows.length === 0) return;
+    setSelfSaving(true); setError("");
+    const t = selfMarkTotals(structured.map((i) => i.questionNumber), quiz.selfMarks);
+    const graded: GradeResult[] = rows.flatMap(({ q, r }) => r.state === "ok" ? [{ questionNumber: q, marksAwarded: r.awarded, marksAvailable: r.outOf, remark: selfMarkRemark(r.note), studentAnswerVerbatim: (quiz.texts[q] ?? "").trim() }] : []);
+    setResults({ kind: "structured", graded, correct: t.fullMarks, gradable: t.marked, self: { awarded: t.awarded, outOf: t.outOf } });
+    dispatch({ type: "submit" });
+    setStage("results");
+    setMarking(false); setSelfSaving(false);
+    if (!paper.meta) return setSaveStatus("Manually uploaded papers aren't tracked in your progress history.");
+    setSaveStatus("Saving your marks…");
+    try {
+      const attemptId = await saveAttempt({ accountId: account, accountName: user.Name, meta: paper.meta, mode: "test", score: t.fullMarks, totalQuestions: t.marked, timeTakenSeconds: quiz.elapsed });
+      const items = graded.map((g) => ({ questionNumber: g.questionNumber, verdict: g.marksAwarded === g.marksAvailable ? "correct" : "incorrect", studentAnswer: g.studentAnswerVerbatim ?? "", marksAwarded: g.marksAwarded, marksAvailable: g.marksAvailable, remark: g.remark }));
+      await postMistakes({ accountId: account, accountName: user.Name, subject: paper.meta.subject, chapter: paper.meta.chapter, paperId: paper.meta.paperId, results: mistakeResults(items), attemptId });
+      clearSave(account, paper.meta.paperId);
+      setSaveStatus("Your marks are saved to your progress history, marked as self-marked.");
+    } catch (e) {
+      setSaveStatus(`Couldn't save your marks yet (${msg(e)}). They are kept on this device.`);
+    }
+  }
+
   async function finishPractice() {
     if (paper?.meta) {
       setSubmitting(true);
@@ -287,7 +341,7 @@ export function SolverView({ user }: { user: SessionUser }) {
   // ---- screens --------------------------------------------------------------------------------------------------
   if (stage === "progress") return <ProgressStage account={account} titles={titles} names={names} library={bundle?.library ?? {}} yearly={bundle?.yearly ?? {}} onBack={() => setStage("library")} />;
   if (stage === "upload") return <UploadStage busy={busy} error={error} onDigitize={(qp, ms) => void openUpload(qp, ms)} onBack={() => setStage("library")} />;
-  if (stage === "results" && results) return <ResultsStage results={results} saveStatus={saveStatus} canOpenProgress={!!paper?.meta && quiz.mode === "test"} onProgress={() => setStage("progress")} onBack={reset} backLabel="Back to library" pdfLinks={paper?.pdf} />;
+  if (stage === "results" && results) return <ResultsStage results={results} saveStatus={saveStatus} canOpenProgress={!!paper?.meta && quiz.mode === "test"} onProgress={() => setStage("progress")} onBack={() => reset()} backLabel="Back to library" pdfLinks={paper?.pdf} />;
   if (stage === "mode" && paper) {
     const count = quiz.kind === "mcq" ? mcq.length : structured.length;
     return (
@@ -300,7 +354,7 @@ export function SolverView({ user }: { user: SessionUser }) {
             You have an unfinished attempt on this paper, saved {Math.max(1, Math.round((Date.now() - resume.savedAt) / 60000))} min ago.
             <div className="u2-rowactions">
               <Button variant="primary" onClick={() => begin("test", resume)}>Resume it</Button>
-              <Button variant="ghost" onClick={() => { clearSave(); setResume(null); }}>Start fresh</Button>
+              <Button variant="ghost" onClick={() => { clearSave(account, paper.meta?.paperId); setResume(null); }}>Start fresh</Button>
             </div>
           </div>
         )}
@@ -308,16 +362,20 @@ export function SolverView({ user }: { user: SessionUser }) {
         <p className="u2-muted">Browse freely, no grading.</p>
         <Button variant="secondary" onClick={() => begin("test")}>Test Mode</Button>
         <p className="u2-muted">{quiz.kind === "mcq" ? "Timed, one submission, see your score." : "Timed. Write your working, submit each answer, then submit the quiz."}</p>
-        <Button variant="ghost" onClick={reset}>← Back to library</Button>
+        <Button variant="ghost" onClick={() => reset()}>← Back to library</Button>
       </div>
     );
+  }
+  if (stage === "quiz" && paper && quiz.phase === "ended") {
+    if (marking) return <SelfMarkStage title={paper.title} items={structured} texts={quiz.texts} marks={quiz.selfMarks} dispatch={dispatch} saving={selfSaving} error={error} onSave={() => void saveSelfMarks()} onBack={() => setMarking(false)} />;
+    return <ExamEndedStage title={paper.title} elapsed={quiz.elapsed} answered={structured.filter((i) => (quiz.texts[i.questionNumber] ?? "").trim()).length} total={structured.length} error={error} status={status} busy={submitting} onAi={() => void submit()} onSelf={() => { setError(""); setMarking(true); }} onReopen={() => dispatch({ type: "reopen" })} onLeave={() => { if (window.confirm("Leave without saving? Your answers will be lost.")) reset(true); }} />;
   }
   if (stage === "quiz" && paper) {
     return (
       <>
         {error && <p role="alert" className="u2-errorbox">{error}</p>}
         {status && <p role="status" className="u2-muted">{status}</p>}
-        <QuizStage state={quiz} dispatch={dispatch} mcq={mcq} structured={structured} title={paper.title} pdfLinks={paper.pdf} audio={paper.audio} grading={grading} onGrade={(q) => void gradeOne(q)} onSubmit={() => void submit()} onCancel={reset} onFinishPractice={() => void finishPractice()} submitting={submitting} />
+        <QuizStage state={quiz} dispatch={dispatch} mcq={mcq} structured={structured} title={paper.title} pdfLinks={paper.pdf} audio={paper.audio} grading={grading} onGrade={(q) => void gradeOne(q)} onSubmit={() => void submit()} onCancel={() => reset(true)} onFinishPractice={() => void finishPractice()} submitting={submitting} />
       </>
     );
   }

@@ -76,6 +76,8 @@ export function QuizStage(p: QuizStageProps) {
   const [page, setPage] = useState<boolean>(() => readLayout());
   const q = cur?.questionNumber ?? "";
   const practice = s.mode === "practice";
+  /** A written test is ended first; then the student picks AI grading or marks it themselves (TKT-0442). */
+  const endsFirst = s.kind === "structured" && s.mode === "test";
 
   // Load the next question's image while the student reads this one: no network wait when they move on.
   const next = items[s.index + 1];
@@ -128,7 +130,7 @@ export function QuizStage(p: QuizStageProps) {
           <Button size="sm" variant="ghost" onClick={() => dispatch({ type: s.phase === "running" ? "pause" : "resume" })}>{s.phase === "running" ? "Pause" : "Resume"}</Button>
           <Button size="sm" variant="ghost" onClick={confirmCancel}>← Cancel</Button>
           {s.mode !== "practice" ? (
-            <Button size="sm" variant="primary" loading={p.submitting} className="u2-toolbar__new" onClick={() => { if (unanswered.length && !window.confirm(`${unanswered.length} question${unanswered.length === 1 ? " is" : "s are"} still unanswered. Submit anyway?`)) return; p.onSubmit(); }}>Submit quiz</Button>
+            <Button size="sm" variant="primary" loading={p.submitting} className="u2-toolbar__new" onClick={() => { if (unanswered.length && !window.confirm(`${unanswered.length} question${unanswered.length === 1 ? " is" : "s are"} still unanswered. ${endsFirst ? "End the exam" : "Submit"} anyway?`)) return; if (endsFirst) dispatch({ type: "end" }); else p.onSubmit(); }}>{endsFirst ? "End exam" : "Submit quiz"}</Button>
           ) : (
             <Button size="sm" variant="primary" loading={p.submitting} className="u2-toolbar__new" onClick={p.onFinishPractice}>Done practicing</Button>
           )}

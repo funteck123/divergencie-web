@@ -9,7 +9,7 @@ import "./solver.css";
 
 export type Results =
   | { kind: "mcq"; results: McqResult[]; correct: number; gradable: number }
-  | { kind: "structured"; graded: GradeResult[]; correct: number; gradable: number };
+  | { kind: "structured"; graded: GradeResult[]; correct: number; gradable: number; /** TKT-0442: the student marked it themselves; the marks are shown as given. */ self?: { awarded: number; outOf: number } };
 
 /** The banner with the score, then one compact row per question. A question counts only when it is right (MCQ) or has full marks (written). */
 export function ResultsStage({ results, saveStatus, canOpenProgress, onProgress, onBack, backLabel, pdfLinks }: { pdfLinks?: PaperPdfLinksValue | null; results: Results; saveStatus: string; canOpenProgress: boolean; onProgress: () => void; onBack: () => void; backLabel: string }) {
@@ -17,8 +17,9 @@ export function ResultsStage({ results, saveStatus, canOpenProgress, onProgress,
   return (
     <div className="u2-solver">
       <div className="u2-banner" role="status">
-        <span>Score</span>
-        <span className="u2-banner__big">{empty ? "No questions attempted" : `${results.correct} / ${results.gradable}`}</span>
+        <span>{results.kind === "structured" && results.self ? "Your marks, marked by you" : "Score"}</span>
+        <span className="u2-banner__big">{empty ? "No questions attempted" : results.kind === "structured" && results.self ? `${results.self.awarded} / ${results.self.outOf}` : `${results.correct} / ${results.gradable}`}</span>
+        {results.kind === "structured" && results.self && <span>{results.correct} of {results.gradable} questions with full marks</span>}
       </div>
       <PaperPdfLinks links={pdfLinks} showMs />
       {results.kind === "structured" && <p className="u2-muted">A question only counts as correct if it scored full marks. The score on each one shows how close a partial answer got.</p>}

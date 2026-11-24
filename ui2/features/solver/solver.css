@@ -127,3 +127,9 @@
   .u2-hit__snippet { font-size: var(--u2-text-sm); color: var(--u2-color-text-muted); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
   .u2-hit > button { flex: 0 0 auto; }
 }
+
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  /* Self-marking (TKT-0442): the student's own answer, then two small number boxes side by side. */
+  .u2-selfmark__answer { margin: var(--u2-space-1) 0 0; padding: var(--u2-space-3); white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; background: var(--u2-color-bg-subtle); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); }
+  .u2-selfmark__marks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--u2-space-3); }
+}

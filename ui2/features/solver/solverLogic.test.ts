@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { imageBox, AUTOSAVE_MAX_AGE_MS, paperTypeChoices, subjectHasTypes, topicalChapters, pickerChapterOf, ELECTRICITY_GROUP, pdfFileName, yearlyPaperName, chapterKey, chapterLabel, chapterNameOf, chapterNames, chapterOf, comparePapers, componentsOf, fetchButtonLabel, formatTimer, gradeMcq, historyRows, hitToPick, searchQueryOf, isFullMarks, isReadingComponent, isStructuredComponent, mistakeResults, naturalQuestionSort, pctOf, resumable, scoreStructured, seriesByAccount, titleIndex, type AutosaveRecord } from "./solverLogic";
+import { findSave, pruneSaves, saveSlot, imageBox, AUTOSAVE_MAX_AGE_MS, paperTypeChoices, subjectHasTypes, topicalChapters, pickerChapterOf, ELECTRICITY_GROUP, pdfFileName, yearlyPaperName, chapterKey, chapterLabel, chapterNameOf, chapterNames, chapterOf, comparePapers, componentsOf, fetchButtonLabel, formatTimer, gradeMcq, historyRows, hitToPick, searchQueryOf, isFullMarks, isReadingComponent, isStructuredComponent, mistakeResults, naturalQuestionSort, pctOf, resumable, scoreStructured, seriesByAccount, titleIndex, type AutosaveRecord } from "./solverLogic";
 import type { SearchHit, AttemptRow, Library, McqQuestion, SolvedLibrary, YearlyLibrary } from "./solverTypes";
 
 describe("titles", () => {
@@ -199,5 +199,23 @@ describe("imageBox (TKT-0436)", () => {
     expect(imageBox(undefined)).toEqual({});
     expect(imageBox("data:image/png;base64,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")).toEqual({});
     expect(imageBox("data:image/png;base64,@@@@")).toEqual({});
+  });
+});
+
+describe("saves per paper (TKT-0442)", () => {
+  const rec = (paper: string, at: number): AutosaveRecord => ({ v: 1, acct: "STU-1", kind: "structured", paperKey: paper, savedAt: at, elapsed: 5, texts: { "1": "x" } });
+  const meta = (paper: string) => ({ subject: "IGCSE Physics", chapter: null, paperId: paper });
+  const now = 1_000_000_000_000;
+  it("keeps one save per paper and finds the right one", () => {
+    const all = { [saveSlot("STU-1", "A")]: rec("A", now), [saveSlot("STU-1", "B")]: rec("B", now) };
+    expect(findSave(all, null, "STU-1", "structured", meta("B"), now)?.paperKey).toBe("B");
+    expect(findSave(all, null, "STU-1", "structured", meta("C"), now)).toBeNull();
+    expect(findSave(all, null, "STU-2", "structured", meta("B"), now)).toBeNull();
+  });
+  it("falls back to the classic single slot", () => expect(findSave({}, rec("A", now), "STU-1", "structured", meta("A"), now)?.paperKey).toBe("A"));
+  it("a save is good for a week, then dropped", () => {
+    const old = now - 8 * 24 * 3600 * 1000, fresh = now - 6 * 24 * 3600 * 1000;
+    expect(Object.keys(pruneSaves({ a: rec("A", old), b: rec("B", fresh) }, now))).toEqual(["b"]);
+    expect(findSave({ [saveSlot("STU-1", "A")]: rec("A", old) }, null, "STU-1", "structured", meta("A"), now)).toBeNull();
   });
 });
