@@ -31,7 +31,7 @@ t = re.sub(r"\.logo b:nth-child\(1\)\{color:var\(--blue\)\}.*?(?=\n)", ".logo{di
 assert ".logo img{" in t
 t = re.sub(r"\.logo\{font:600 22px/1[^}]*\}\n", "", t, count=1)
 rep('<a href="./" title="Back to MSAStudyHub" aria-label="Back to hub">&#8592;<span class="lb"> Hub</span></a><span class="logo" aria-label="MSAWhiteboard"><b>M</b><b>S</b><b>A</b><b>W</b><b>b</b><b>d</b></span>',
-    '<a href="/" title="Back to DivergenCIE" aria-label="Back to DivergenCIE">&#8592;<span class="lb"> Back</span></a><span class="logo" aria-label="DC Whiteboard"><img src="/assets/images/logo.jpg" alt=""><span>Divergen<b>CIE</b></span><small class="lb">Whiteboard</small></span><span id="sess" class="lb" hidden></span>')
+    '<a href="/v2" id="back" title="Back to DivergenCIE" aria-label="Back to DivergenCIE">&#8592;<span class="lb"> Back</span></a><span class="logo" aria-label="DC Whiteboard"><img src="/assets/images/logo.jpg" alt=""><span>Divergen<b>CIE</b></span><small class="lb">Whiteboard</small></span><span id="sess" class="lb" hidden></span>')
 
 # ---- wording: saved to the account, not to a hub ------------------------------------------------------
 rep("Saved to the hub (smaller board) ", "Saved to your account (smaller board) ")
@@ -64,6 +64,11 @@ const ME=(()=>{try{return JSON.parse(localStorage.getItem("dcp1_user")||"null")}
 if(!ME||!ME.UserID){location.replace("/login")}
 const UID=(ME&&ME.UserID)||"anon";
 const QS=new URLSearchParams(location.search),SESSION=/^[A-Za-z0-9_-]{1,40}$/.test(QS.get("session")||"")?QS.get("session"):"",STITLE=(QS.get("title")||"").slice(0,100);
+// Back goes to the page the person came from, or to their own portal home. It never goes to the public home page, which looks signed out.
+document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("back");if(!b)return;b.addEventListener("click",function(e){e.preventDefault();var ref=document.referrer,ok=false;try{var u=new URL(ref);ok=u.origin===location.origin&&u.pathname!=="/"&&u.pathname.indexOf("whiteboard.html")<0&&u.pathname.indexOf("/login")<0}catch(x){}
+ if(ok){location.href=ref;return}
+ var HOME={Management:"/dashboard/management",Student:"/dashboard/student",Teacher:"/dashboard/teacher",Staff:"/dashboard/staff",Parent:"/dashboard/parent",Ambassador:"/dashboard/ambassador"};
+ location.href=(ME&&ME.UiPreference==="next")?"/v2":(HOME[ME&&ME.UserType]||"/v2")})});
 const SQ=SESSION?"&session="+encodeURIComponent(SESSION):"";
 """)
 # the board's save calls carry the session link

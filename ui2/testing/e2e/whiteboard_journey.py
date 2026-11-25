@@ -71,6 +71,11 @@ def main():
             ps.goto(url, wait_until="networkidle"); ps.wait_for_function("typeof ready !== 'undefined' && ready === true", timeout=60000)
             out["session_reopens_same"] = ps.evaluate("board.id") == sid
             out["session_filter"] = [len(api(ps, "/api/wb/list?session=SCH-TEST")[1]), len(api(ps, "/api/wb/list?session=SCH-OTHER")[1]), len(api(ps, "/api/wb/list")[1])]
+            # Back never lands on the public home page (it looks signed out): it returns to the page the person came from, or to their own home
+            pr = ca.new_page(); pr.goto(BASE + "/whiteboard.html", wait_until="networkidle", referer=BASE + "/v2/question-solver"); pr.wait_for_function("typeof ready !== 'undefined' && ready === true", timeout=60000)
+            pr.click("#back", no_wait_after=True); pr.wait_for_url("**/v2/question-solver", timeout=60000, wait_until="commit"); out["back_to_referrer"] = pr.url.replace(BASE, "")
+            pn = ca.new_page(); pn.goto(BASE + "/whiteboard.html", wait_until="networkidle"); pn.wait_for_function("typeof ready !== 'undefined' && ready === true", timeout=60000)
+            pn.click("#back", no_wait_after=True); pn.wait_for_url(lambda u: "whiteboard.html" not in u, timeout=60000, wait_until="commit"); out["back_without_referrer"] = pn.url.replace(BASE, "").split("?")[0]
             # phone
             cp = ctx("A", 390, 844); pp = cp.new_page(); pp.goto(BASE + "/whiteboard.html", wait_until="networkidle"); pp.wait_for_function("typeof ready !== 'undefined' && ready === true", timeout=60000)
             pp.screenshot(path="snapshots/dc-whiteboard-phone.png")
@@ -87,6 +92,7 @@ def main():
     assert out["B_list_names"] != ["Algebra notes"] and "Algebra notes" not in out["B_list_names"] and out["B_get_A_board"] == 404 and out["B_board_is_new"] and not out["B_sees_A_name"], out
     assert out["anonymous_api"] == 401, out
     assert out["session_board_name"] == "Maths class" and "Maths class" in out["session_chip"] and out["session_reopens_same"] and out["session_filter"] == [1, 0, 2], out
+    assert out["back_to_referrer"] == "/v2/question-solver" and out["back_without_referrer"] in ("/v2", "/v2/"), out
     assert not out["errors"], out
     print("JOURNEY OK")
 

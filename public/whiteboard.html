@@ -163,7 +163,7 @@ body.pres #top,body.pres #tools,body.pres #props,body.pres #undo,body.pres #page
 <symbol id="i-pdf" viewBox="0 0 24 24"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5"/></symbol>
 <symbol id="i-ink" viewBox="0 0 24 24"><path d="M4 19C5 7 19 7 20 19"/><circle cx="12" cy="6.5" r="1.5"/></symbol>
 </defs></svg>
-<div id="top"><a href="/" title="Back to DivergenCIE" aria-label="Back to DivergenCIE">&#8592;<span class="lb"> Back</span></a><span class="logo" aria-label="DC Whiteboard"><img src="/assets/images/logo.jpg" alt=""><span>Divergen<b>CIE</b></span><small class="lb">Whiteboard</small></span><span id="sess" class="lb" hidden></span>
+<div id="top"><a href="/v2" id="back" title="Back to DivergenCIE" aria-label="Back to DivergenCIE">&#8592;<span class="lb"> Back</span></a><span class="logo" aria-label="DC Whiteboard"><img src="/assets/images/logo.jpg" alt=""><span>Divergen<b>CIE</b></span><small class="lb">Whiteboard</small></span><span id="sess" class="lb" hidden></span>
 <input id="name" value="Untitled board" aria-label="Board name" maxlength="120"><span id="st"></span>
 <div class="tb"><button id="bBoards" title="Boards"><svg class="ic"><use href="#i-boards"/></svg><span class="lb">Boards</span></button><button id="bShare" title="Share and export"><svg class="ic"><use href="#i-share"/></svg><span class="lb">Share</span></button><button id="bMore" title="More: templates, present, theme, help"><svg class="ic"><use href="#i-menu"/></svg></button><button id="bSave" class="p" title="Save to your account now (Ctrl+S)"><svg class="ic"><use href="#i-save"/></svg><span class="lb">Save</span></button></div></div>
 <canvas id="cv" tabindex="0" role="application" aria-label="Whiteboard canvas. Tab cycles objects, arrow keys move the selection, Enter edits its text, question mark shows shortcuts."></canvas>
@@ -188,6 +188,11 @@ const ME=(()=>{try{return JSON.parse(localStorage.getItem("dcp1_user")||"null")}
 if(!ME||!ME.UserID){location.replace("/login")}
 const UID=(ME&&ME.UserID)||"anon";
 const QS=new URLSearchParams(location.search),SESSION=/^[A-Za-z0-9_-]{1,40}$/.test(QS.get("session")||"")?QS.get("session"):"",STITLE=(QS.get("title")||"").slice(0,100);
+// Back goes to the page the person came from, or to their own portal home. It never goes to the public home page, which looks signed out.
+document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("back");if(!b)return;b.addEventListener("click",function(e){e.preventDefault();var ref=document.referrer,ok=false;try{var u=new URL(ref);ok=u.origin===location.origin&&u.pathname!=="/"&&u.pathname.indexOf("whiteboard.html")<0&&u.pathname.indexOf("/login")<0}catch(x){}
+ if(ok){location.href=ref;return}
+ var HOME={Management:"/dashboard/management",Student:"/dashboard/student",Teacher:"/dashboard/teacher",Staff:"/dashboard/staff",Parent:"/dashboard/parent",Ambassador:"/dashboard/ambassador"};
+ location.href=(ME&&ME.UiPreference==="next")?"/v2":(HOME[ME&&ME.UserType]||"/v2")})});
 const _f=window.fetch;window.fetch=function(){return _f.apply(this,arguments).then(function(r){if(r.status===401){location.replace("/login")}return r})};
 const SQ=SESSION?"&session="+encodeURIComponent(SESSION):"";
 "use strict";
