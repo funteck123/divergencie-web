@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [Unreleased]
 
+### Fix: AI grading gives the same marks for the same answer (TKT-0441, 26 Nov 2026)
+- **Cause, measured:** the grader rotated through every free model, one per request, and the Gemini calls had no temperature set. The same answer scored 1/7, 0/7 and 0/7 on three attempts, each by a different model. 
+- **Fix:** models now keep the order of `GEMINI_MODEL_POOL` and only the keys of one model rotate (`prototypes/mcq-digitizer/endpointOrder.mjs`, 5 tests); a later model grades only when the earlier ones are on a quota cooldown or fail. Gemini calls now use temperature 0 and a fixed seed, as the OpenRouter path already did (TKT-0339). Measured through the live website after the change: the same answer, 4 runs, 0/7 every time. Still true: when the preferred model is busy (503) the next free model answers, so marks can differ then.
+
 ### Question Solver: three student reports (TKT-0452, TKT-0453, TKT-0454, 25 Nov 2026)
 - **TKT-0454, score chart:** several attempts made close together (the same day) used to sit on top of each other, so the line between them was a vertical stroke. Each attempt now has room of its own (half of its place follows the real time, half its order, shared by every line so the lines still line up), and the axis labels sit at real attempts. `ui2/features/solver/chartScale.ts`, 5 tests.
 - **TKT-0452, mistakes chart:** past papers (and mistakes with no chapter) are no longer drawn as bars in the chapter chart. A short note says how many mistakes from past papers are left out, because past paper questions are not sorted into chapters. `splitMistakeChart` in `progressLogic.ts`, 2 tests.

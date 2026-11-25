@@ -1,3 +1,4 @@
+import { orderEndpoints } from "./endpointOrder.mjs";
 import crypto from "crypto";
 // Standalone server for the mcq-digitizer prototype -- no framework, no
 // LLM, no API key anywhere in this tool. MCQ grading needs zero judgment
@@ -788,12 +789,10 @@ async function waitForGeminiRpmSlot(endpointId, model) {
 // if every endpoint is currently cooling down, so a real request still gets
 // a shot rather than failing outright with endpoints technically available.
 function nextGeminiEndpoints() {
-  const now = Date.now();
-  const available = GEMINI_ENDPOINTS.filter((e) => (geminiQuotaCooldownUntil.get(e.id) || 0) <= now);
-  const pool = available.length > 0 ? available : GEMINI_ENDPOINTS;
-  const start = geminiEndpointRoundRobinCursor % pool.length;
+  // TKT-0441: models keep the pool order, only the keys of one model rotate (see endpointOrder.mjs), so the same answer gets the same marks.
+  const order = orderEndpoints({ endpoints: GEMINI_ENDPOINTS, modelPool: GEMINI_MODEL_POOL, cooldownUntil: geminiQuotaCooldownUntil, now: Date.now(), cursor: geminiEndpointRoundRobinCursor });
   geminiEndpointRoundRobinCursor = (geminiEndpointRoundRobinCursor + 1) % GEMINI_ENDPOINTS.length;
-  return [...pool.slice(start), ...pool.slice(0, start)];
+  return order;
 }
 
 const GEMINI_RESPONSE_SCHEMA = {
@@ -866,6 +865,8 @@ async function gradeViaGemini(imageB64, mimeType, marksAvailable, studentAnswer,
     generationConfig: {
       responseMimeType: "application/json",
       responseSchema: GEMINI_RESPONSE_SCHEMA,
+      temperature: 0, // TKT-0441: the same answer must get the same marks (the OpenRouter path already did this, TKT-0339)
+      seed: 7,
     },
   };
 
