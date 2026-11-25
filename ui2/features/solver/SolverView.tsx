@@ -7,6 +7,7 @@ import type { SessionUser } from "@/ui2/components/RequireUser";
 import { digitizeUpload, fetchAndDigitize, getMistakes, getPaper, gradeStructured, loadLibraryBundle, loadMyAttempts, loadStructured, postAttempt, postMistakes, yearlyDigitizeMcq } from "@/ui2/queries/solver";
 import { LibraryStage, type PickedPaper } from "./LibraryStage";
 import { ProgressStage } from "./ProgressStage";
+import { readBundle, writeBundle } from "./bundleCache";
 import { TeacherCheckStage } from "./TeacherCheckStage";
 import { QuizStage, type GradingStatus } from "./QuizStage";
 import { ExamEndedStage, SelfMarkStage } from "./SelfMarkStage";
@@ -54,7 +55,13 @@ const msg = (e: unknown) => (e instanceof Error ? e.message : String(e));
 export function SolverView({ user }: { user: SessionUser }) {
   const account = user.UserID;
   const canCheck = user.UserType === "Teacher" || user.UserType === "Management"; // TKT-0445
-  const bundleQ = useQuery({ queryKey: ["solver-library"] as const, queryFn: () => loadLibraryBundle(true) });
+  // TKT-0453: show the last copy of the library at once and refresh it in the background (the service takes 4 to 12 seconds to answer).
+  const savedBundle = useMemo(() => (typeof window === "undefined" ? null : readBundle(account)), [account]);
+  const bundleQ = useQuery({
+    queryKey: ["solver-library"] as const,
+    queryFn: async () => { const b = await loadLibraryBundle(true); writeBundle(account, b); return b; },
+    ...(savedBundle ? { initialData: savedBundle.bundle, initialDataUpdatedAt: savedBundle.at } : {}),
+  });
   const bundle = bundleQ.data;
   const qc = useQueryClient();
   const mineQ = useQuery({ queryKey: ["solver-mine", account] as const, queryFn: () => loadMyAttempts(account), enabled: !!account });

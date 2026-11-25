@@ -13,7 +13,7 @@ import { ApiError } from "@/ui2/queries/client";
 import { getQuestionImage, getQuestionResponses, loadProgress } from "@/ui2/queries/solver";
 import { BarChart, LineChart, type Series } from "./Charts";
 import { Feedback } from "./Feedback";
-import { SOLID_AT, completionFor, togo, trendNote, type Completion } from "./progressLogic";
+import { SOLID_AT, splitMistakeChart, completionFor, togo, trendNote, type Completion } from "./progressLogic";
 import { attemptMatches, chapterLabel, historyRows, naturalQuestionSort, pctOf, seriesByAccount, type HistoryRow } from "./solverLogic";
 import type { AttemptRow, Leaderboard, Library, RankEntry, YearlyLibrary } from "./solverTypes";
 import "./solver.css";
@@ -218,6 +218,7 @@ function Answers({ account, attemptId, paperId }: { account: string; attemptId: 
 }
 
 function Mistakes({ chart, subject, setSubject, label }: { chart: Record<string, Record<string, number>>; subject: string; setSubject: (s: string) => void; label: (s: string, c: string | null) => string }) {
+  const { chapters, unsorted } = useMemo(() => splitMistakeChart(chart), [chart]); // TKT-0452: past papers are not chapters, so they are not bars
   const subjects = Object.keys(chart);
   const shown = subject ? [subject] : subjects;
   return (
@@ -228,7 +229,8 @@ function Mistakes({ chart, subject, setSubject, label }: { chart: Record<string,
       {shown.map((s) => (
         <div key={s}>
           <h3 style={{ margin: "0 0 var(--u2-space-2)" }}>{s}</h3>
-          <BarChart label={`Mistakes per chapter, ${s}`} data={Object.entries(chart[s] ?? {}).sort(([a], [b]) => (parseFloat(a) - parseFloat(b)) || a.localeCompare(b)).map(([c, n]) => ({ key: c, label: label(s, c), value: n }))} />
+          {Object.keys(chapters[s] ?? {}).length > 0 && <BarChart label={`Mistakes per chapter, ${s}`} data={Object.entries(chapters[s] ?? {}).sort(([a], [b]) => (parseFloat(a) - parseFloat(b)) || a.localeCompare(b)).map(([c, n]) => ({ key: c, label: label(s, c), value: n }))} />}
+          {(unsorted[s] ?? 0) > 0 && <p className="u2-muted">{unsorted[s]} mistake{unsorted[s] === 1 ? "" : "s"} from past papers {Object.keys(chapters[s] ?? {}).length > 0 ? "are" : "is"} not shown, because past paper questions are not sorted into chapters.</p>}
         </div>
       ))}
     </div>

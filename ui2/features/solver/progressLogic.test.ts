@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { completionFor, isGoodPick, pickHint, statusIndex, statusLabel, statusOf, togo, trendNote } from "./progressLogic";
+import { splitMistakeChart, completionFor, isGoodPick, pickHint, statusIndex, statusLabel, statusOf, togo, trendNote } from "./progressLogic";
 import type { AttemptRow, Library, YearlyLibrary } from "./solverTypes";
 
 const at = (paper_id: string, over: Partial<AttemptRow> = {}): AttemptRow => ({ account_id: "A", subject: "IGCSE Physics", chapter: "1", paper_id, mode: "test", score: 8, total_questions: 10, time_taken_seconds: 60, submitted_at: "2026-10-01T00:00:00Z", ...over });
@@ -53,4 +53,15 @@ describe("trend note", () => {
     expect(trendNote([day(1, 7), day(2, 7), day(3, 7)])).toBe("Steady over your last 3 Tests, at about 70%.");
     expect(trendNote([day(1, 1), day(2, 8), day(3, 8), day(4, 8), day(5, 8), day(6, 8)])).toBe("Steady over your last 5 Tests, at about 80%."); // the first Test is older than the window
   });
+});
+
+describe("splitMistakeChart (TKT-0452)", () => {
+  const chart = { "IGCSE Biology": { "5 Enzymes": 5, "12 Respiration": 9, "Past paper Feb/Mar 2018, Paper 22": 4, "No chapter recorded": 2 }, "IGCSE Maths": { "Past paper Oct/Nov 2020, Paper 42": 3 } };
+  it("keeps only chapters as bars and counts the rest per subject", () => {
+    const r = splitMistakeChart(chart);
+    expect(r.chapters["IGCSE Biology"]).toEqual({ "5 Enzymes": 5, "12 Respiration": 9 });
+    expect(r.unsorted).toEqual({ "IGCSE Biology": 6, "IGCSE Maths": 3 });
+    expect(r.chapters["IGCSE Maths"]).toEqual({});
+  });
+  it("an empty chart stays empty", () => expect(splitMistakeChart({})).toEqual({ chapters: {}, unsorted: {} }));
 });

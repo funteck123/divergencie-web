@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useMemo, useState } from "react";
+import { pickTicks, spreadScale } from "./chartScale";
 import "./solver.css";
 
 export interface Point { x: number; y: number; label: string }
@@ -62,18 +63,16 @@ export function LineChart({ series, emptyText, kind = "score", passMark }: { ser
 
   const { xAt, yAt, ticks, yMax } = useMemo(() => {
     const xs = series.flatMap((s) => s.points.map((p) => p.x));
-    const min = Math.min(...xs);
-    const max = Math.max(...xs);
-    const span = max - min || 1;
     const plotW = w - pad.l - pad.r;
     const plotH = h - pad.t - pad.b;
-    const count = Math.min(5, Math.max(1, new Set(xs).size));
+    // TKT-0454: attempts made close together used to sit on top of each other and the line between them was a vertical stroke. Each moment now has room of its own.
+    const place = spreadScale(xs);
     const yMax = kind === "count" ? Math.max(1, ...series.flatMap((s) => s.points.map((p) => p.y))) : 100;
     return {
       yMax,
-      xAt: (x: number) => pad.l + (max === min ? plotW / 2 : ((x - min) / span) * plotW),
+      xAt: (x: number) => pad.l + place(x) * plotW,
       yAt: (v: number) => pad.t + plotH - (v / yMax) * plotH,
-      ticks: Array.from({ length: count }, (_, i) => (count === 1 ? min : min + (span * i) / (count - 1))),
+      ticks: pickTicks(xs, w < 520 ? 3 : 5),
     };
   }, [series, kind, w, h]);
   const fmtX = (t: number) => (kind === "count" ? String(Math.round(t)) : fmtDay(t));

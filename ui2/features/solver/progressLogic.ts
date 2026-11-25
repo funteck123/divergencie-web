@@ -108,3 +108,20 @@ export function trendNote(attempts: readonly AttemptRow[]): string {
   if (diff <= -3) return `Down ${-diff} points over your last ${tests.length} Tests.`;
   return `Steady over your last ${tests.length} Tests, at about ${Math.round(last)}%.`;
 }
+
+/** TKT-0452: the mistakes chart is per chapter. A past paper belongs to no chapter, and a mistake with no chapter is not in one either, so neither is a bar. */
+export const isUnsortedBucket = (bucket: string) => /^Past paper /.test(bucket) || bucket === "No chapter recorded";
+/** Splits the mistakes chart into chapter bars and the number of mistakes left out because they are not sorted by chapter, per subject. */
+export function splitMistakeChart(chart: Readonly<Record<string, Readonly<Record<string, number>>>>): { chapters: Record<string, Record<string, number>>; unsorted: Record<string, number> } {
+  const chapters: Record<string, Record<string, number>> = {};
+  const unsorted: Record<string, number> = {};
+  for (const [subject, buckets] of Object.entries(chart)) {
+    chapters[subject] = {};
+    unsorted[subject] = 0;
+    for (const [bucket, n] of Object.entries(buckets)) {
+      if (isUnsortedBucket(bucket)) unsorted[subject] = (unsorted[subject] ?? 0) + n;
+      else (chapters[subject] as Record<string, number>)[bucket] = n;
+    }
+  }
+  return { chapters, unsorted };
+}
