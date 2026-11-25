@@ -57,9 +57,34 @@ tick() {
     [[ " $ENABLED " == *" $name "* ]] || continue
 
     if ! port_listening "$port"; then
-      log "$name: server down on :$port, starting"
-      (cd "$REPO/$dir" && exec "$NODE" server.mjs >>"$STATE_DIR/$name-server.log" 2>&1) &
-      sleep 2
+      # 26 Nov 2026: a server takes up to a couple of minutes to open its port after a start. Starting another one every 5 seconds made a pile of
+      # copies that crashed with EADDRINUSE and slowed the first one down, so a new start waits until the last one has had time.
+      local since; since=$(( $(date +%s) - $(cat "$STATE_DIR/started.$name" 2>/dev/null || echo 0) ))
+      if [ "$since" -ge "${START_GRACE:-120}" ]; then
+        log "$name: server down on :$port, starting"
+        (cd "$REPO/$dir" && exec "$NODE" server.mjs >>"$STATE_DIR/$name-server.log" 2>&1) &
+        date +%s >"$STATE_DIR/started.$name"
+        sleep 2
+      fi
+      continue
+    fi
+
+    # 26 Nov 2026: a server that listens but does not answer (hung, or blocked by long work) used to be blamed on the tunnel: the public check failed 3 times,
+    # the tunnel was killed and restarted with a new address, over and over, while the real fault stayed. Ask the server itself first. If it does not answer,
+    # restart the SERVER, and leave the tunnel alone.
+    if curl -s --max-time 10 -o /dev/null "http://127.0.0.1:$port/"; then
+      echo 0 >"$STATE_DIR/lfail.$name"
+    else
+      local ln=$(( $(cat "$STATE_DIR/lfail.$name" 2>/dev/null || echo 0) + 1 )); echo "$ln" >"$STATE_DIR/lfail.$name"
+      log "$name: server on :$port did not answer ($ln of 3)"
+      if [ "$ln" -ge 3 ]; then
+        local spid; spid=$(ss -ltnp "sport = :$port" 2>/dev/null | grep -o 'pid=[0-9]*' | head -1 | cut -d= -f2)
+        log "$name: server pid ${spid:-unknown} is listening but not answering, restarting the server (the tunnel is left alone)"
+        [ -n "$spid" ] && { kill "$spid" 2>/dev/null; sleep 3; kill -9 "$spid" 2>/dev/null || true; }
+        echo 0 >"$STATE_DIR/lfail.$name"
+        echo 0 >"$STATE_DIR/started.$name"   # the next tick may start a new server at once
+      fi
+      continue
     fi
 
     local host; host=$(tunnel_host "$mport")

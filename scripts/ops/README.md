@@ -3,7 +3,7 @@
 `question-solver-supervisor.sh` runs both standalone servers and their Cloudflare
 quick tunnels, restarts whichever is down, and PATCHes the new tunnel URL to
 `/api/mcq-config` (and `/api/syllabus-config`) after every tunnel restart.
-Checks every 30s. A tunnel whose public URL fails 3 probes is restarted.
+Checks every 5s. 26 Nov 2026: it asks the SERVER itself first (`http://127.0.0.1:<port>/`); a server that listens but does not answer 3 times in a row is restarted and the tunnel is left alone. Only a healthy server whose public address fails 3 probes gets a new tunnel. A new server is not started again for 120 seconds after the last start (a slow start no longer piles up copies). State and logs are in `~/.local/state/question-solver/` (`*-server.log`, `*-tunnel.log`, counters `fail.*`, `lfail.*`, `started.*`, `url.*`); `journalctl` can hang on this machine, read those files instead.
 
 Setup on the host (WSL, systemd enabled):
 1. `~/.config/divergencie/tunnel-sync.env` (chmod 600): `SITE`, `MGMT_USER`, `MGMT_PASS` (a Management login).

@@ -77,7 +77,7 @@ import { recordAttempt, getProgressForAccount, getAllProgress, getLeaderboard, S
 import { scoresClient } from "./scores.mjs";
 import { listSelfMarked, recordTeacherCheck, InvalidCheckError } from "./selfMarked.mjs";
 import { SUBJECT_COMPONENTS } from "./subjectComponents.mjs";
-import { buildIndex, search as searchIndex } from "./searchIndex.mjs";
+import { Worker } from "node:worker_threads";
 
 const execFileAsync = promisify(execFile);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -1822,28 +1822,52 @@ function wrapResponseForGzip(req, res) {
 // question). The word index is built in memory on first use and rebuilt only when that file changes. Each question is joined to its paper's
 // mark scheme id and library component; a paper that is not in the library picker is left out, so every hit can be opened.
 const SEARCH_TEXT_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "search-index", "text.json");
-let searchCache = null;
-let searchCacheKey = "";
-function loadSearchIndex() {
+// 26 Nov 2026 (outage report): the index is built and searched in a worker thread (searchWorker.mjs). On the main thread the build took 20 to 90 seconds and froze every
+// request, which made the supervisor kill the tunnel again and again. The main thread now only hands questions to the worker; until the first build is done the search
+// answers "warming up" at once, and a rebuild after the text file changes keeps serving the old index.
+let searchWorker = null;
+let searchReadyKey = "";      // key of the index the worker holds ("" = none yet)
+let searchBuildingKey = "";   // key being built now
+let searchSeq = 0;
+const searchWaiting = new Map();
+function failSearchWaiters(message) { for (const w of searchWaiting.values()) w.reject(new Error(message)); searchWaiting.clear(); }
+function startSearchWorker() {
+  const w = new Worker(new URL("./searchWorker.mjs", import.meta.url), { workerData: { textPath: SEARCH_TEXT_PATH } });
+  w.on("message", (m) => {
+    if (m.type === "ready") { searchReadyKey = m.key; searchBuildingKey = ""; console.log(`search index ready: ${m.docs} questions`); }
+    else if (m.type === "result") { searchWaiting.get(m.id)?.resolve(m.body); searchWaiting.delete(m.id); }
+    else if (m.type === "error") {
+      if (m.id && searchWaiting.has(m.id)) { searchWaiting.get(m.id).reject(new Error(m.message)); searchWaiting.delete(m.id); }
+      else { searchBuildingKey = ""; console.log(`search index build failed: ${m.message}`); }
+    }
+  });
+  const dead = (why) => { console.log(`search worker stopped: ${why}`); searchWorker = null; searchReadyKey = ""; searchBuildingKey = ""; failSearchWaiters("The search worker stopped. Try again in a minute."); };
+  w.on("error", (e) => dead(e.message));
+  w.on("exit", (code) => dead(`exit ${code}`));
+  return w;
+}
+/** True when an index exists to answer with. Starts a (re)build in the worker when the text file or the library map has changed. */
+function ensureSearchIndex() {
   const stat = fs.statSync(SEARCH_TEXT_PATH);
   const key = `${stat.mtimeMs}:${fs.statSync(DRIVE_MAP_PATH).mtimeMs}`;
-  if (searchCache && key === searchCacheKey) return searchCache;
-  const where = new Map(); // qpId -> { component, msId, title }
-  for (const subjects of Object.values(buildLibrary())) for (const comps of Object.values(subjects)) for (const [component, papers] of Object.entries(comps)) {
-    for (const p of papers) where.set(p.qpId, { component, msId: p.msId, title: p.title });
-  }
-  const entries = [];
-  for (const paper of JSON.parse(fs.readFileSync(SEARCH_TEXT_PATH, "utf8"))) {
-    const w = where.get(paper.qpId);
-    if (!w) continue;
-    for (const [questionNumber, text] of Object.entries(paper.questions)) {
-      if (text.trim().length < 25) continue; // a bare number or a picture-only question has nothing to search
-      entries.push({ id: `${paper.qpId}:${questionNumber}`, text, also: `${w.title} ${w.component}`, qpId: paper.qpId, msId: w.msId, board: paper.board, subject: paper.subject, component: w.component, title: w.title, questionNumber, structured: paper.kind === "structured" });
+  if (key !== searchReadyKey && key !== searchBuildingKey) {
+    const where = []; // qpId -> { component, msId, title }
+    for (const subjects of Object.values(buildLibrary())) for (const comps of Object.values(subjects)) for (const [component, papers] of Object.entries(comps)) {
+      for (const p of papers) where.push([p.qpId, { component, msId: p.msId, title: p.title }]);
     }
+    searchWorker ??= startSearchWorker();
+    searchBuildingKey = key;
+    searchWorker.postMessage({ type: "build", key, where });
   }
-  searchCache = buildIndex(entries);
-  searchCacheKey = key;
-  return searchCache;
+  return searchReadyKey !== "";
+}
+function searchViaWorker(q, filter, limit) {
+  return new Promise((resolve, reject) => {
+    const id = ++searchSeq;
+    const timer = setTimeout(() => { searchWaiting.delete(id); reject(new Error("The search took too long. Try again in a minute.")); }, 10000);
+    searchWaiting.set(id, { resolve: (v) => { clearTimeout(timer); resolve(v); }, reject: (e) => { clearTimeout(timer); reject(e); } });
+    searchWorker.postMessage({ type: "search", id, q, filter, limit });
+  });
 }
 
 const server = http.createServer(async (req, res) => {
@@ -1893,9 +1917,13 @@ const server = http.createServer(async (req, res) => {
         return;
       }
       const board = params.get("board"), subject = params.get("subject");
-      const filter = board || subject ? (d) => (!board || d.board === board) && (!subject || d.subject === subject) : undefined;
+      if (!ensureSearchIndex()) {
+        res.writeHead(503, { "Content-Type": "application/json", "Retry-After": "60" });
+        res.end(JSON.stringify({ error: "The question search is warming up after a restart. Try again in a minute." }));
+        return;
+      }
       // Up to 200 raw hits: the proxy drops the subjects a student is not enrolled in and then keeps the best 30.
-      const body = JSON.stringify(searchIndex(loadSearchIndex(), q, { limit: 200, filter }));
+      const body = JSON.stringify(await searchViaWorker(q, { board, subject }, 200));
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(body);
     } catch (e) {
@@ -2705,6 +2733,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
+  try { if (fs.existsSync(SEARCH_TEXT_PATH)) ensureSearchIndex(); } catch (e) { console.log(`search warm-up failed: ${e.message}`); } // build the word index now, in the worker, so the first student search does not wait
   console.log(`mcq-digitizer prototype running at http://localhost:${PORT}`);
   if (!process.env.OPENROUTER_API_KEY) {
     console.warn("WARNING: OPENROUTER_API_KEY is not set -- structured-paper (e.g. Mathematics) grading will fail until it is (see prototypes/mcq-digitizer/.env).");

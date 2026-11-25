@@ -132,10 +132,14 @@ export async function GET(req, { params }) {
 
   let upstream;
   try {
-    upstream = await fetch(`${extractionUrl}/api/${subPath}${search}`, isAudio ? { headers: upstreamHeaders } : subPath === "library" ? { signal: AbortSignal.timeout(10_000) } : undefined);
+    // 26 Nov 2026 (outage): no limit here meant a stalled service held every request for the whole 90 seconds of the function, so nothing showed and the saved copies were never
+    // tried. Every JSON call now gives up in 25 seconds (a question picture 40, the library 10); PDFs and audio are streams and keep no limit.
+    const streams = isAudio || subPath === "pdf" || subPath === "yearly-pdf" || subPath === "solved-pdf";
+    upstream = await fetch(`${extractionUrl}/api/${subPath}${search}`, isAudio ? { headers: upstreamHeaders } : subPath === "library" ? { signal: AbortSignal.timeout(10_000) } : streams ? undefined : { signal: AbortSignal.timeout(subPath === "question-image" ? 40_000 : 25_000) });
   } catch (e) {
     const s = await savedLibrary();
     if (s) return NextResponse.json(withDcLibrary(s), FROM_CACHE);
+    if (e?.name === "TimeoutError") return NextResponse.json({ error: "The Question Solver is busy right now. Try again in a minute." }, { status: 503 });
     // The whole reason this URL needs re-configuring after every restart
     // is that the tunnel is unstable -- an unreachable tunnel must not
     // surface as an unhandled exception/raw 500.
@@ -238,10 +242,12 @@ export async function POST(req, { params }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: bodyText,
+      signal: AbortSignal.timeout(subPath === "fetch-and-digitize" || subPath === "digitize" ? 90_000 : 30_000), // 26 Nov 2026: see the GET above
     });
   } catch (e) {
     const s = await savedPaper();
     if (s) return NextResponse.json(s, FROM_CACHE);
+    if (e?.name === "TimeoutError") return NextResponse.json({ error: "The Question Solver is busy right now. Try again in a minute." }, { status: 503 });
     return NextResponse.json({ error: `Extraction service unreachable: ${e.message}` }, { status: 503 });
   }
   const body = await upstream.json().catch(() => null);
