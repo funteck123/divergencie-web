@@ -97,7 +97,7 @@ export function LineChart({ series, emptyText, kind = "score", passMark }: { ser
             <text x={pad.l - 6} y={yAt(v) + 4} textAnchor="end" className="u2-chart__tick">{v}{kind === "count" ? "" : "%"}</text>
           </g>
         ))}
-        {ticks.map((t) => (
+        {ticks.filter((t, i, all) => i === 0 || fmtX(t) !== fmtX(all[i - 1] as number)).map((t) => (
           <text key={t} x={xAt(t)} y={h - pad.b + 18} textAnchor={xAt(t) > w - 40 ? "end" : "middle"} className="u2-chart__tick">{fmtX(t)}</text>
         ))}
         {showOthers && others.map((s) => <path key={s.id} d={path(s.points)} className="u2-chart__other"><title>{s.label}</title></path>)}

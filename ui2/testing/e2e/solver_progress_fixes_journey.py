@@ -26,13 +26,14 @@ def main():
         pg.get_by_role("button", name=re.compile("View my progress")).click()
         pg.locator("svg circle.u2-chart__dot").first.wait_for(timeout=60000); pg.wait_for_timeout(500)
         xs = pg.evaluate("[...document.querySelectorAll('svg circle.u2-chart__dot')].map(c => parseFloat(c.getAttribute('cx')))")
-        out["points"] = len(xs); out["x_sorted_distinct"] = xs == sorted(xs) and len(set(xs)) == len(xs)
+        xs = sorted(xs)   # the dots come in the order of the data, not of the axis
+        out["points"] = len(xs); out["x_sorted_distinct"] = len(set(xs)) == len(xs)
         out["smallest_gap_px"] = round(min(b - a for a, b in zip(xs, xs[1:])), 1)
         # no run of identical x in the drawn line (a vertical stroke)
         d = pg.evaluate("document.querySelector('svg path.u2-chart__mine').getAttribute('d')")
         nums = [float(n) for n in re.findall(r"-?\d+\.?\d*", d)]; pts = list(zip(nums[0::2], nums[1::2]))
         out["vertical_runs_in_line"] = sum(1 for a, b in zip(pts, pts[1:]) if a[0] == b[0] and a != b and False)
-        out["axis_labels"] = pg.evaluate("[...document.querySelectorAll('svg text.u2-chart__tick')].map(t => t.textContent).filter(t => !t.endsWith('%'))")
+        out["axis_labels"] = pg.evaluate("[...document.querySelectorAll('svg text.u2-chart__tick')].map(t => t.textContent).filter(t => !t.endsWith('%') && !t.includes('solved'))")
         pg.screenshot(path="snapshots/score-chart-fixed.png")
         pg.get_by_role("tab", name="Mistakes").click(); pg.wait_for_timeout(800)
         out["mistake_bar_labels"] = pg.evaluate("[...document.querySelectorAll('figure svg text')].map(t => t.textContent).filter(t => /Motion|Forces|Past|chapter/i.test(t))")
@@ -41,7 +42,8 @@ def main():
         out["errors"] = s.errors[:3]
     for k, v in out.items(): print(k, v)
     assert out["points"] == 7 and out["x_sorted_distinct"] and out["smallest_gap_px"] >= 6, out
-    assert not any("Past" in x or "chapter" in x.lower() for x in out["mistake_bar_labels"]) and len(out["past_paper_notes"]) == 2, out
+    assert len(out["axis_labels"]) == len(set(out["axis_labels"])), out   # each date is written once
+    assert not any("Past" in x or "chapter" in x.lower() for x in out["mistake_bar_labels"]) and len(out["past_paper_notes"]) == 2 and all(" are not shown" in n for n in out["past_paper_notes"]), out
     assert any("Motion" in x for x in out["mistake_bar_labels"]) and not out["errors"], out
     print("JOURNEY OK")
 

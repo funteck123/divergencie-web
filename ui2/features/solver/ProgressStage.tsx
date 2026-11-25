@@ -230,7 +230,7 @@ function Mistakes({ chart, subject, setSubject, label }: { chart: Record<string,
         <div key={s}>
           <h3 style={{ margin: "0 0 var(--u2-space-2)" }}>{s}</h3>
           {Object.keys(chapters[s] ?? {}).length > 0 && <BarChart label={`Mistakes per chapter, ${s}`} data={Object.entries(chapters[s] ?? {}).sort(([a], [b]) => (parseFloat(a) - parseFloat(b)) || a.localeCompare(b)).map(([c, n]) => ({ key: c, label: label(s, c), value: n }))} />}
-          {(unsorted[s] ?? 0) > 0 && <p className="u2-muted">{unsorted[s]} mistake{unsorted[s] === 1 ? "" : "s"} from past papers {Object.keys(chapters[s] ?? {}).length > 0 ? "are" : "is"} not shown, because past paper questions are not sorted into chapters.</p>}
+          {(unsorted[s] ?? 0) > 0 && <p className="u2-muted">{unsorted[s]} mistake{unsorted[s] === 1 ? "" : "s"} from past papers {unsorted[s] === 1 ? "is" : "are"} not shown, because past paper questions are not sorted into chapters.</p>}
         </div>
       ))}
     </div>
