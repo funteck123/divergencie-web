@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [Unreleased]
 
+### Fix: side panels did not scroll (TKT-0450, TKT-0451, student report 25 Nov 2026)
+- **A student could not scroll the answers of a past attempt** (My attempts, View): only the first 15 or so rows of a 38 question paper showed and nothing scrolled, so it looked as if the questions did not load. Cause: a list with `overflow: hidden` inside the side panel was squeezed to the panel's height instead of making the panel scroll. `ui2/components/Sheet.css` now sizes the panel's rows by their content, which fixes every side panel, not only this one. New check `sheet_scroll_journey.py` uses the student's own window (1536 by 958 at 67 percent zoom) and a 60 row list; it failed before the fix and passes after.
+- The question pictures themselves load for every one of that student's attempts. Pictures of old yearly papers take 3 to 10 seconds the first time.
+
 ### Question Solver: teacher check of self-marked papers (TKT-0445, owner request 24 Nov 2026)
 - **Teachers and Management get a button "Check self-marked papers" in the Question Solver library.** It lists every paper a student marked themselves: student, paper, date, the student's marks, and whether a teacher has checked it. Opening one shows, for each question, the question and the answer side by side, the student's own answer, the marks and comment the student gave, and boxes for the teacher's marks (they start on the student's marks) and a comment. "Agree with all the student's marks" fills them in one press; marks above the total are refused and name the question.
 - **The check is saved as new rows next to the student's own**, marked "Teacher check by NAME: agrees with the student's marks" or "changed the marks from 2/3 to 3/3", plus the teacher's comment. Nothing is changed or deleted, the student's own marks stay on record, and the student sees the teacher's check in their answers. The name is the signed-in teacher's, taken by the server, never sent by the browser. A later check by another teacher replaces the first on the list.

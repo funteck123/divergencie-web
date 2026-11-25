@@ -9,6 +9,7 @@
   .u2-sheet__head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--u2-space-3); padding: var(--u2-space-4) var(--u2-space-6); border-bottom: 1px solid var(--u2-color-border); }
   .u2-sheet__title { margin: 0; font-size: var(--u2-text-xl); font-weight: var(--u2-weight-bold); }
   .u2-sheet__subtitle { margin: 2px 0 0; color: var(--u2-color-text-muted); font-size: var(--u2-text-sm); }
-  .u2-sheet__body { overflow-y: auto; padding: var(--u2-space-4) var(--u2-space-6); display: grid; gap: var(--u2-space-4); align-content: start; }
+  /* grid-auto-rows: max-content (26 Nov 2026, TKT-0450): a child with overflow hidden (the answers list) was squeezed to the panel's height instead of making the panel scroll, so only the first rows could be seen and nothing scrolled. */
+  .u2-sheet__body { overflow-y: auto; padding: var(--u2-space-4) var(--u2-space-6); display: grid; grid-auto-rows: max-content; gap: var(--u2-space-4); align-content: start; }
   .u2-sheet__foot { display: flex; justify-content: flex-end; gap: var(--u2-space-2); padding: var(--u2-space-3) var(--u2-space-6); border-top: 1px solid var(--u2-color-border); background: var(--u2-color-bg-subtle); }
 }
