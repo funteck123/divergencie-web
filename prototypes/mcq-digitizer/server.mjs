@@ -669,7 +669,7 @@ const GEMINI_MODEL_POOL = process.env.GEMINI_MODEL_POOL
       "gemini-3.5-flash-lite",
       "gemini-3.1-flash-lite",
     ];
-const GEMINI_LITE_MODELS = new Set(["gemini-3.5-flash-lite", "gemini-3.1-flash-lite"]);
+const GEMINI_LITE_MODELS = new Set(["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.1-flash-lite-preview", "gemini-flash-lite-latest"]);
 // Kept only as the final fallback when every pool endpoint AND OpenRouter
 // have failed outright (see gradeStructuredQuestionAnswer's last block) --
 // distinct from the pool inclusion above, which is about normal rotation.
@@ -717,6 +717,8 @@ const GEMINI_LIMITS_BY_MODEL = {
   "gemini-2.5-flash-lite": { rpm: 10, rpd: 20 },
   "gemini-3.1-flash-lite": { rpm: 15, rpd: 500 },
   "gemini-3.5-flash-lite": { rpm: 15, rpd: 500 },
+  "gemini-3.1-flash-lite-preview": { rpm: 15, rpd: 500 },
+  "gemini-flash-lite-latest": { rpm: 15, rpd: 500 },
 };
 const GEMINI_DEFAULT_LIMITS = { rpm: 2, rpd: 20 };
 function limitsForModel(model) {
