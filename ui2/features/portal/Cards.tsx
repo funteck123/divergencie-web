@@ -120,6 +120,7 @@ export function ResourcesCard({ services, user, showExternalTools = false }: { s
         {showExternalTools && (
           <Link className="u2-pill" href="/v2/recordings">Recording Library</Link>
         )}
+        <a className="u2-pill" href="/whiteboard.html">DC Whiteboard</a>
       </div>
       {services.length === 0 ? (
         <p className="u2-muted">No enrollments yet.</p>
@@ -153,6 +154,7 @@ export function StaffResourcesCard({ user }: { user: UserRecord }) {
           const url = user[field as string] as string | undefined;
           return url ? <a key={field} className="u2-pill" href={url} target="_blank" rel="noreferrer">{label}</a> : <span key={field} className="u2-pill u2-pill--off" title="Not set yet. Ask Management." aria-disabled="true">{label}</span>;
         })}
+        <a className="u2-pill" href="/whiteboard.html">DC Whiteboard</a>
       </div>
     </Card>
   );

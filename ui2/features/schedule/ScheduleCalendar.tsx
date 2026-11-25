@@ -5,7 +5,7 @@ import { useMemo, useState, type ReactNode } from "react";
 import { GROUP_COLORS, groupGradient, normalizeGroup } from "@/lib/client";
 import { readableText } from "@/ui2/lib/contrast";
 import { normalizeTimezone, tzAbbrFor } from "@/lib/timezones";
-import { Button } from "@/ui2/components/Button";
+import { Button, LinkButton } from "@/ui2/components/Button";
 import type { AttendanceItem, ScheduleItem } from "@/ui2/queries/types";
 import { MiniAttendanceForm } from "./MiniAttendanceForm";
 import { attendanceFor, attendanceMark, chipText, occurrenceNumbers } from "./scheduleLogic";
@@ -179,6 +179,8 @@ export function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendan
                 <Dialog.Title className="u2-dialog__title">{panelItem.ServiceName} · {panelItem.Date} · {panelItem.Time}</Dialog.Title>
                 {panelBody(panelItem)}
                 <div className="u2-dialog__actions">
+                  {/* TKT-0443: each person has their own whiteboard for this class session; the page opens it, or makes it the first time */}
+                  <LinkButton variant="secondary" href={`/whiteboard.html?${new URLSearchParams({ session: panelItem.ScheduleID, title: `${panelItem.ServiceName} ${panelItem.Date}` })}`}>Open whiteboard</LinkButton>
                   <Dialog.Close asChild>
                     <Button variant="ghost">Close</Button>
                   </Dialog.Close>
