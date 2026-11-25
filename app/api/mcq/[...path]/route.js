@@ -237,14 +237,21 @@ export async function POST(req, { params }) {
   }
 
   let upstream;
+  // 26 Nov 2026: a worksheet that has a saved copy opens from it after 12 seconds if the live service has not answered, instead of waiting out the full 90.
+  const early = new AbortController();
+  let earlySaved = null;
+  const earlyTimer = subPath === "fetch-and-digitize" ? setTimeout(async () => { const s = await savedPaper(); if (s) { earlySaved = s; early.abort(); } }, 12_000) : null;
   try {
     upstream = await fetch(`${extractionUrl}/api/${subPath}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: bodyText,
-      signal: AbortSignal.timeout(subPath === "fetch-and-digitize" || subPath === "digitize" ? 90_000 : 30_000), // 26 Nov 2026: see the GET above
+      signal: AbortSignal.any([early.signal, AbortSignal.timeout(subPath === "fetch-and-digitize" || subPath === "digitize" ? 90_000 : 30_000)]), // 26 Nov 2026: see the GET above
     });
+    clearTimeout(earlyTimer);
   } catch (e) {
+    clearTimeout(earlyTimer);
+    if (earlySaved) return NextResponse.json(earlySaved, FROM_CACHE);
     const s = await savedPaper();
     if (s) return NextResponse.json(s, FROM_CACHE);
     if (e?.name === "TimeoutError") return NextResponse.json({ error: "The Question Solver is busy right now. Try again in a minute." }, { status: 503 });
