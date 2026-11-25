@@ -35,6 +35,13 @@ export function ResultsStage({ results, saveStatus, canOpenProgress, onProgress,
                 <span>
                   Your answer: {r.studentAnswer ?? "(none selected)"}
                   {r.verdict !== "correct" && r.correctAnswer ? <> · <strong>Correct answer:</strong> {r.correctAnswer}</> : null}
+                  {r.solutionImage && (
+                    <details className="u2-solution">
+                      <summary>Show the working</summary>
+                      {/* eslint-disable-next-line @next/next/no-img-element -- data URL from the DC papers */}
+                      <img src={r.solutionImage} alt={`Worked solution for question ${r.questionNumber}`} loading="lazy" />
+                    </details>
+                  )}
                 </span>
               </div>
             ))

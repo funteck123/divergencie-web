@@ -137,3 +137,10 @@
   @media (max-width: 720px) { .u2-selfmark__pair { grid-template-columns: 1fr; } }
   .u2-selfmark__marks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--u2-space-3); }
 }
+
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  /* DC papers: the worked solution under a result row. */
+  .u2-solution { margin-top: var(--u2-space-2); }
+  .u2-solution summary { cursor: pointer; font-size: var(--u2-text-sm); color: var(--u2-color-text-muted); }
+  .u2-solution img { max-width: 100%; height: auto; margin-top: var(--u2-space-2); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); }
+}

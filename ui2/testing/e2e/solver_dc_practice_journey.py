@@ -38,6 +38,8 @@ def main():
         pg.get_by_role("img", name="Question 1", exact=True).wait_for(); pg.wait_for_timeout(600); pg.screenshot(path="snapshots/dc-practice-practice-mode.png")
         out["practice_has_radios"] = pg.get_by_role("radio").count()
         pg.get_by_role("tab", name="Answer").first.click(); out["practice_answer"] = pg.get_by_text("Correct answer:").first.inner_text()
+        sol = pg.get_by_role("img", name="Worked solution for question 1", exact=True); sol.wait_for(); pg.wait_for_timeout(500)
+        out["practice_working_shown"] = sol.is_visible(); pg.screenshot(path="snapshots/dc-practice-working.png")
         pg.get_by_role("button", name="Done practicing").click()
         # test mode: answer the first three questions, submit, read the score
         pg.get_by_role("combobox").first.wait_for(); pick(0, "IGCSE"); pick(1, "Mathematics"); pick(2, "DC Practice")  # the picker starts again after practice
@@ -51,11 +53,13 @@ def main():
         pg.locator(".u2-banner__big").wait_for(timeout=30000)
         out["score_three_correct"] = pg.locator(".u2-banner__big").inner_text()
         pg.screenshot(path="snapshots/dc-practice-results.png")
+        pg.get_by_text("Show the working").first.click(); rs = pg.get_by_role("img", name="Worked solution for question 1", exact=True); rs.wait_for(); pg.wait_for_timeout(500)
+        out["results_working_shown"] = rs.is_visible(); rs.scroll_into_view_if_needed(); pg.screenshot(path="snapshots/dc-results-working.png")
         att = [b for m, p, b in s.calls if m == "POST" and p.startswith("/api/mcq/attempts")]
         out["attempt_post"] = [(a["subject"], a["paperId"], a["mode"], a.get("score"), a["totalQuestions"]) for a in att]
         out["errors"] = [e for e in s.errors][:3]
     for k, v in out.items(): print(k, v)
-    assert out["practice_has_radios"] == 0 and out["score_three_correct"] == "3 / 30", out
+    assert out["practice_working_shown"] and out["results_working_shown"] and out["practice_has_radios"] == 0 and out["score_three_correct"] == "3 / 30", out
     print("JOURNEY OK")
 
 if __name__ == "__main__":

@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [Unreleased]
 
+### Question Solver: worked solutions on DC papers (owner request 25 Nov 2026)
+- **Practice Mode:** the Answer tab of a DC question now shows the worked solution under the correct letter. **Results:** every row of a DC paper has a "Show the working" fold-out. The working is a picture per question (`solutionImage`); the papers grew to about 2 to 2.8 MB each. `study/dc-papers/algebra-changing-subject/export_to_app.py` rebuilds the data files.
+
 ### Question Solver: DC Practice component, first set Algebra: Changing the Subject (TKT-0447, owner request 25 Nov 2026)
 - **IGCSE Mathematics now has a component "DC Practice"** next to Paper 2 and Paper 4. It holds three DC papers made by DivergenCIE, not taken from Cambridge: Algebra, Changing the Subject, Easy (30 questions, 50 marks), Medium (30 questions, 80 marks) and Difficult (30 questions, 121 marks). Each question is a picture with four options; the student picks a letter, and Test Mode scores it and saves it to the progress history like any multiple choice paper. Practice Mode shows the correct letter.
 - **Served from this app, not from the extraction service**, so the papers open even when that service is off. Management and students enrolled in IGCSE Mathematics can open them; anyone else gets nothing in the library and a 403 on the paper. `lib/dcPapers/` (data, 3 tests), `app/api/mcq/[...path]/route.js` (library list, `fetch-and-digitize` and `paper` for the ids `dc-alg-cs-e`, `-m`, `-d`), and the picker treats "DC Practice" as multiple choice in every subject (`isStructuredComponent`). DC papers show no QP or MS download links, since they have no Cambridge PDF. Journey `solver_dc_practice_journey.py`.

@@ -7,7 +7,7 @@ export interface SolvedItem { solvedId: string; title: string; kind: string; pag
 export type SolvedLibrary = Record<string, Record<string, Record<string, SolvedItem[]>>>;
 export type SubjectMeta = Record<string, Record<string, { mcqComponent?: string }>>;
 
-export interface McqQuestion { questionNumber: string; image: string; optionLetters: string[]; correctAnswer?: string | null; _origin?: { paperId: string; subject: string; chapter: string | null } }
+export interface McqQuestion { questionNumber: string; image: string; optionLetters: string[]; correctAnswer?: string | null; /** DC papers only: a picture of the worked solution, shown after the answer is known. */ solutionImage?: string; _origin?: { paperId: string; subject: string; chapter: string | null } }
 export interface DigitizeResult { questions: McqQuestion[]; ambiguousAnswerKey?: unknown[]; /** TKT-0420: this reply came from the saved copy, not the live Question Solver. */ fromCache?: boolean }
 export interface StructuredItem { questionNumber: string; qImage: string; msImage: string | null }
 
