@@ -7,6 +7,7 @@ import type { SessionUser } from "@/ui2/components/RequireUser";
 import { digitizeUpload, fetchAndDigitize, getMistakes, getPaper, gradeStructured, loadLibraryBundle, loadMyAttempts, loadStructured, postAttempt, postMistakes, yearlyDigitizeMcq } from "@/ui2/queries/solver";
 import { LibraryStage, type PickedPaper } from "./LibraryStage";
 import { ProgressStage } from "./ProgressStage";
+import { TeacherCheckStage } from "./TeacherCheckStage";
 import { QuizStage, type GradingStatus } from "./QuizStage";
 import { ExamEndedStage, SelfMarkStage } from "./SelfMarkStage";
 import { checkSelfMark, selfMarkRemark, selfMarkTotals } from "./selfMarkLogic";
@@ -18,7 +19,7 @@ import { AUTOSAVE_KEY, SAVES_KEY, chapterNames, findSave, gradeMcq, isFullMarks,
 import type { AttemptMeta, GradeResult, McqQuestion, StructuredItem, YearlyPaper } from "./solverTypes";
 import "./solver.css";
 
-type Stage = "library" | "upload" | "mode" | "quiz" | "results" | "progress";
+type Stage = "library" | "upload" | "mode" | "quiz" | "results" | "progress" | "teacher";
 type Paper = { title: string; meta: AttemptMeta | null; pdf: { qpId: string; msId?: string; title: string; yearlyId?: string } | null; audio: YearlyPaper | null; ref: { paperId?: string; qpId?: string; msId?: string } };
 
 // Saved attempts (TKT-0442): one per account and paper, so a second paper no longer replaces the first. The classic single slot is written too, so the classic page can resume.
@@ -52,6 +53,7 @@ const msg = (e: unknown) => (e instanceof Error ? e.message : String(e));
  */
 export function SolverView({ user }: { user: SessionUser }) {
   const account = user.UserID;
+  const canCheck = user.UserType === "Teacher" || user.UserType === "Management"; // TKT-0445
   const bundleQ = useQuery({ queryKey: ["solver-library"] as const, queryFn: () => loadLibraryBundle(true) });
   const bundle = bundleQ.data;
   const qc = useQueryClient();
@@ -342,6 +344,7 @@ export function SolverView({ user }: { user: SessionUser }) {
 
   // ---- screens --------------------------------------------------------------------------------------------------
   if (stage === "progress") return <ProgressStage account={account} titles={titles} names={names} library={bundle?.library ?? {}} yearly={bundle?.yearly ?? {}} onBack={() => setStage("library")} />;
+  if (stage === "teacher" && canCheck) return <TeacherCheckStage titles={titles} onBack={() => setStage("library")} />;
   if (stage === "upload") return <UploadStage busy={busy} error={error} onDigitize={(qp, ms) => void openUpload(qp, ms)} onBack={() => setStage("library")} />;
   if (stage === "results" && results) return <ResultsStage results={results} saveStatus={saveStatus} canOpenProgress={!!paper?.meta && quiz.mode === "test"} onProgress={() => setStage("progress")} onBack={() => reset()} backLabel="Back to library" pdfLinks={paper?.pdf} />;
   if (stage === "mode" && paper) {
@@ -386,7 +389,7 @@ export function SolverView({ user }: { user: SessionUser }) {
       bundle={bundle} loading={bundleQ.isPending} error={bundleQ.error ? `Couldn't load the library (${bundleQ.error.message}).` : error}
       canMistakes busy={busy} status={status} statuses={statuses}
       onPick={(p) => void openPaper(p)} onMistakes={(b, s, c) => void startMistakes(b, s, c)}
-      onUpload={() => { setError(""); setStage("upload"); }} onProgress={() => setStage("progress")}
+      onUpload={() => { setError(""); setStage("upload"); }} onProgress={() => setStage("progress")} onTeacherCheck={canCheck ? () => setStage("teacher") : undefined}
     />
   );
 }

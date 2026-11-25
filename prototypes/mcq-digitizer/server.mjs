@@ -74,6 +74,8 @@ import { fileURLToPath } from "url";
 import { execFile } from "child_process";
 import { promisify } from "util";
 import { recordAttempt, getProgressForAccount, getAllProgress, getLeaderboard, ScoresUnavailableError, InvalidAttemptError, recordQuestionResults, getMistakeChartData, getUnresolvedMistakes, InvalidMistakeResultsError, getQuestionResponsesForAttempt } from "./scores.mjs";
+import { scoresClient } from "./scores.mjs";
+import { listSelfMarked, recordTeacherCheck, InvalidCheckError } from "./selfMarked.mjs";
 import { SUBJECT_COMPONENTS } from "./subjectComponents.mjs";
 import { buildIndex, search as searchIndex } from "./searchIndex.mjs";
 
@@ -2518,6 +2520,31 @@ const server = http.createServer(async (req, res) => {
     } catch (e) {
       res.writeHead(500, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  // TKT-0445: self-marked papers for a teacher to check. The website's proxy lets only Teacher and Management reach these two.
+  if (req.method === "GET" && req.url.startsWith("/api/self-marked")) {
+    try {
+      const items = await listSelfMarked(scoresClient());
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ items }));
+    } catch (e) {
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+  if (req.method === "POST" && req.url === "/api/teacher-check") {
+    try {
+      const body = JSON.parse(await readBody(req));
+      const out = await recordTeacherCheck(scoresClient(), body);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(out));
+    } catch (e) {
+      res.writeHead(e instanceof InvalidCheckError || e instanceof SyntaxError ? 400 : 500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e instanceof SyntaxError ? "Request body must be valid JSON." : e.message }));
     }
     return;
   }

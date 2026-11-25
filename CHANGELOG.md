@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [Unreleased]
 
+### Question Solver: teacher check of self-marked papers (TKT-0445, owner request 24 Nov 2026)
+- **Teachers and Management get a button "Check self-marked papers" in the Question Solver library.** It lists every paper a student marked themselves: student, paper, date, the student's marks, and whether a teacher has checked it. Opening one shows, for each question, the question and the answer side by side, the student's own answer, the marks and comment the student gave, and boxes for the teacher's marks (they start on the student's marks) and a comment. "Agree with all the student's marks" fills them in one press; marks above the total are refused and name the question.
+- **The check is saved as new rows next to the student's own**, marked "Teacher check by NAME: agrees with the student's marks" or "changed the marks from 2/3 to 3/3", plus the teacher's comment. Nothing is changed or deleted, the student's own marks stay on record, and the student sees the teacher's check in their answers. The name is the signed-in teacher's, taken by the server, never sent by the browser. A later check by another teacher replaces the first on the list.
+- Only Teacher and Management can list or save (the website's proxy answers 403 to anyone else). `prototypes/mcq-digitizer/selfMarked.mjs` and two new endpoints `GET /api/self-marked` and `POST /api/teacher-check` in the extraction service, 3 service tests, 9 screen tests, journey `solver_teacher_check_journey.py`. No database change.
+
 ### Question Solver: worked solutions on DC papers (owner request 25 Nov 2026)
 - **Practice Mode:** the Answer tab of a DC question now shows the worked solution under the correct letter. **Results:** every row of a DC paper has a "Show the working" fold-out. The working is a picture per question (`solutionImage`); the papers grew to about 2 to 2.8 MB each. `study/dc-papers/algebra-changing-subject/export_to_app.py` rebuilds the data files.
 

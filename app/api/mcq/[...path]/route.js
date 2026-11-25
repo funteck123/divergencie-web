@@ -88,6 +88,9 @@ function filterLibraryByEnrollment(library, allowedKeys) {
   return filtered;
 }
 
+// TKT-0445: only a teacher or Management may list self-marked papers and save a check.
+const isChecker = (session) => session.userType === "Teacher" || session.userType === "Management";
+
 // 25 Nov 2026: a DC practice paper opens for Management and for anyone enrolled in IGCSE Mathematics, with the extraction service on or off.
 async function dcPaperReply(session, id) {
   if (session.userType !== "Management" && !(await enrolledSubjectKeys(session.userId)).has(subjectMatchKey(DC_BOARD, DC_SUBJECT))) {
@@ -111,6 +114,7 @@ export async function GET(req, { params }) {
 
   const { path } = await params;
   const subPath = path.join("/");
+  if (subPath === "self-marked" && !isChecker(session)) return NextResponse.json({ error: "Teachers and Management only." }, { status: 403 });
   const search = new URL(req.url).search;
   const savedLibrary = async () => (subPath === "library" ? saved.library(session).catch(() => null) : null);
   // 25 Nov 2026: DC's own practice papers are served here, not by the extraction service (lib/dcPapers).
@@ -208,7 +212,15 @@ export async function POST(req, { params }) {
 
   const { path } = await params;
   const subPath = path.join("/");
-  const bodyText = await req.text();
+  let bodyText = await req.text();
+  // TKT-0445: a teacher's check of self-marked papers. The name on the check is the signed-in teacher's, never one sent by the browser.
+  if (subPath === "teacher-check") {
+    if (!isChecker(session)) return NextResponse.json({ error: "Teachers and Management only." }, { status: 403 });
+    let sent = {};
+    try { sent = JSON.parse(bodyText); } catch { return NextResponse.json({ error: "Request body must be valid JSON." }, { status: 400 }); }
+    const me = (await readDB()).users?.find((u) => u.UserID === session.userId);
+    bodyText = JSON.stringify({ attemptId: sent.attemptId, rows: sent.rows, teacherName: me?.Name || session.userId });
+  }
   if (subPath === "fetch-and-digitize") {
     let asked = null;
     try { asked = JSON.parse(bodyText)?.qpId; } catch { /* not JSON: the service will say so */ }

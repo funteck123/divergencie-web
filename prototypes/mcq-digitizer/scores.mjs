@@ -53,6 +53,8 @@ function requireClient() {
 }
 
 export class InvalidAttemptError extends Error {}
+/** The database client, for modules that take it as a parameter (selfMarked.mjs). */
+export const scoresClient = () => requireClient();
 
 export async function recordAttempt({ accountId, accountName, subject, chapter, paperId, score, totalQuestions, timeTakenSeconds, mode }) {
   const attemptMode = mode === "practice" ? "practice" : "test";

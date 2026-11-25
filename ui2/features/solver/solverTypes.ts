@@ -40,3 +40,6 @@ export interface QuestionResponse { question_number: string; marks_awarded: numb
 
 /** One question found by the text search (TKT-0237). `msId` is null when no mark scheme was found for the paper. */
 export interface SearchHit { qpId: string; msId: string | null; board: string; subject: string; component: string; title: string; questionNumber: string; structured: boolean; snippet: string }
+
+/** TKT-0445: one self-marked attempt in the teacher's list, with the student's total and the newest teacher check if there is one. */
+export interface SelfMarkedItem { attemptId: string; accountId: string; accountName: string; subject: string; chapter: string | null; paperId: string; createdAt: string; questions: number; awarded: number; available: number; check: { by: string; at: string; awarded: number; available: number; questions: number } | null }

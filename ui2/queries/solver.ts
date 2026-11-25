@@ -1,5 +1,5 @@
 import { apiFetch } from "./client";
-import type { SearchHit, AttemptMeta, AttemptRow, DigitizeResult, GradeResult, Leaderboard, Library, QuestionResponse, SolvedLibrary, SubjectMeta, YearlyLibrary } from "@/ui2/features/solver/solverTypes";
+import type { SearchHit, AttemptMeta, AttemptRow, DigitizeResult, GradeResult, Leaderboard, Library, QuestionResponse, SelfMarkedItem, SolvedLibrary, SubjectMeta, YearlyLibrary } from "@/ui2/features/solver/solverTypes";
 
 interface TitlesReply { titles?: Record<string, string>; subjects?: Record<string, string> }
 
@@ -109,3 +109,9 @@ export const yearlyAudioUrl = (paperId: string) => `/api/mcq/yearly-audio?paperI
 
 /** Question text search over the library. The server already limits the hits to the subjects this account may see. */
 export const searchQuestions = (q: string) => apiFetch<{ total: number; results: SearchHit[] }>(`/api/mcq/search?q=${encodeURIComponent(q)}`);
+
+/** TKT-0445: self-marked papers for a teacher to check (Teacher and Management only; the server refuses anyone else). */
+export const loadSelfMarked = () => apiFetch<{ items: SelfMarkedItem[] }>("/api/mcq/self-marked").then((r) => r.items ?? []);
+/** Saves a teacher's check. The teacher's name is added by the server from the signed-in account. */
+export const saveTeacherCheck = (body: { attemptId: string; rows: { questionNumber: string; marksAwarded: number; marksAvailable: number; comment: string }[] }) =>
+  apiFetch<{ saved: number }>("/api/mcq/teacher-check", { method: "POST", body });

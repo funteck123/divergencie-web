@@ -25,7 +25,7 @@ const opt = (v: string): ComboOption => ({ value: v, label: v });
  * Pick board, subject, component, paper type, (year and session for yearly papers) and paper, all in one column, with the
  * button that loads the paper pinned to the bottom of the screen on a phone. Reading-only components open a PDF instead.
  */
-export function LibraryStage({ bundle, loading, error, canMistakes, busy, status, statuses, onPick, onMistakes, onUpload, onProgress }: {
+export function LibraryStage({ bundle, loading, error, canMistakes, busy, status, statuses, onPick, onMistakes, onUpload, onProgress, onTeacherCheck }: {
   bundle: LibraryBundle | undefined;
   loading: boolean;
   error: string;
@@ -38,6 +38,8 @@ export function LibraryStage({ bundle, loading, error, canMistakes, busy, status
   onMistakes: (board: string, subject: string, component: string) => void;
   onUpload: () => void;
   onProgress: () => void;
+  /** TKT-0445: only given to a teacher or Management. */
+  onTeacherCheck?: () => void;
 }) {
   const lib = useMemo(() => bundle?.library ?? {}, [bundle]);
   const yearly = useMemo(() => bundle?.yearly ?? {}, [bundle]);
@@ -154,6 +156,7 @@ export function LibraryStage({ bundle, loading, error, canMistakes, busy, status
       <div className="u2-cluster">
         <Button size="sm" variant="ghost" onClick={onUpload}>Or upload your own QP + MS PDFs instead</Button>
         <Button size="sm" variant="ghost" onClick={onProgress}>View my progress &amp; the leaderboard</Button>
+        {onTeacherCheck && <Button size="sm" variant="ghost" onClick={onTeacherCheck}>Check self-marked papers</Button>}
       </div>
     </section>
   );
