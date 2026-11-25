@@ -924,6 +924,8 @@ async function gradeViaOpenRouter(imageB64, mimeType, marksAvailable, studentAns
           model: STRUCTURED_GRADING_VISION_MODEL,
           max_tokens: GRADING_MAX_TOKENS,
           temperature: 0, // TKT-0339: the same answer must get the same marks every time
+          // 25 Nov 2026: a thinking model (qwen3.8-flash) spent its whole token budget thinking and returned an empty reply. Low effort keeps room for the JSON; models that do not think ignore it.
+          reasoning: { effort: "low" },
           messages: [
             { role: "system", content: STRUCTURED_QUESTION_GRADING_SYSTEM_PROMPT + (extraInstructions || "") },
             { role: "user", content: userContent },
