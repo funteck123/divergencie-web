@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [Unreleased]
 
+### Question Solver: a small progress tracker beside the library (TKT-0448, part 1 of 2, 26 Nov 2026)
+- **What:** on a screen 1360 px wide or more, the empty space to the right of the library and of the Practice or Test choice now shows a small card: papers solved out of all papers, a bar of solved and tried, the last six Test scores as small bars, the trend sentence, and a button to open the full Progress screen. A student with no attempts yet sees one line saying it fills in after the first paper. Narrower screens, tablets and phones do not show it (there is no empty side there).
+- **Same numbers as the Progress screen:** `miniStats` in `progressLogic.ts` is built on `completionFor` and `trendNote`, with a test that the two agree. 4 new tests (18 in the file).
+- **Not done (part 2):** the dark screen setting. It touches every screen and needs its own ticket and a colour check on each.
+
 ### Fix: AI grading gives the same marks for the same answer (TKT-0441, 26 Nov 2026)
 - **Cause, measured:** the grader rotated through every free model, one per request, and the Gemini calls had no temperature set. The same answer scored 1/7, 0/7 and 0/7 on three attempts, each by a different model. 
 - **Fix:** models now keep the order of `GEMINI_MODEL_POOL` and only the keys of one model rotate (`prototypes/mcq-digitizer/endpointOrder.mjs`, 5 tests); a later model grades only when the earlier ones are on a quota cooldown or fail. Gemini calls now use temperature 0 and a fixed seed, as the OpenRouter path already did (TKT-0339). Measured through the live website after the change: the same answer, 4 runs, 0/7 every time. Still true: when the preferred model is busy (503) the next free model answers, so marks can differ then.

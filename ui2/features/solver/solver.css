@@ -24,6 +24,17 @@
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
   /* One content column for every stage, left-aligned with the page title (a centered column left the title and the content on different edges). */
   .u2-solver { display: grid; gap: var(--u2-space-4); max-width: var(--u2-solver-width, 960px); margin: 0; }
+  /* TKT-0448: the library and the mode screen sit in a 960 px column; on a wide screen the right side was empty. The tracker takes it, and is hidden where there is no room. */
+  .u2-solver-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--u2-space-4); align-items: start; }
+  .u2-minitracker { display: none; }
+  @media (min-width: 1360px) {
+    .u2-solver-layout { grid-template-columns: minmax(0, var(--u2-solver-width, 960px)) 280px; gap: var(--u2-space-6); }
+    .u2-minitracker { display: grid; gap: var(--u2-space-2); position: sticky; top: calc(var(--u2-bar-height) + var(--u2-space-4)); padding: var(--u2-space-3); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); }
+    .u2-minitracker h2 { margin: 0; font-size: var(--u2-text-md, 1rem); }
+    .u2-minitracker__big { margin: 0; font-size: var(--u2-text-lg, 1.125rem); }
+    .u2-minitracker__bars { display: flex; align-items: flex-end; gap: var(--u2-space-1); height: 56px; border-bottom: 1px solid var(--u2-color-border); }
+    .u2-minitracker__bars > span { flex: 1 1 0; background: var(--u2-color-brand); border-radius: 2px 2px 0 0; }
+  }
   .u2-solver-picker { max-width: var(--u2-solver-width, 960px); display: grid; gap: var(--u2-space-3); padding: var(--u2-space-4); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); }
   .u2-solver-picker__go { position: sticky; bottom: 0; display: flex; gap: var(--u2-space-2); align-items: stretch; padding: var(--u2-space-2) 0; background: var(--u2-color-surface); }
   .u2-solver-picker__go > button { flex: 1 1 auto; width: auto; }

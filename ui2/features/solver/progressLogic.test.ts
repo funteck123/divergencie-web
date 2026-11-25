@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { splitMistakeChart, completionFor, isGoodPick, pickHint, statusIndex, statusLabel, statusOf, togo, trendNote } from "./progressLogic";
+import { miniStats, splitMistakeChart, completionFor, isGoodPick, pickHint, statusIndex, statusLabel, statusOf, togo, trendNote } from "./progressLogic";
 import type { AttemptRow, Library, YearlyLibrary } from "./solverTypes";
 
 const at = (paper_id: string, over: Partial<AttemptRow> = {}): AttemptRow => ({ account_id: "A", subject: "IGCSE Physics", chapter: "1", paper_id, mode: "test", score: 8, total_questions: 10, time_taken_seconds: 60, submitted_at: "2026-10-01T00:00:00Z", ...over });
@@ -64,4 +64,28 @@ describe("splitMistakeChart (TKT-0452)", () => {
     expect(r.chapters["IGCSE Maths"]).toEqual({});
   });
   it("an empty chart stays empty", () => expect(splitMistakeChart({})).toEqual({ chapters: {}, unsorted: {} }));
+});
+
+describe("miniStats (TKT-0448)", () => {
+  const lib: Library = { IGCSE: { Physics: { "Paper 2": [{ qpId: "a", title: "A" }, { qpId: "b", title: "B" }, { qpId: "c", title: "C" }] } } };
+  const yearly: YearlyLibrary = {};
+  it("a student with no attempts: nothing tried, nothing solved, no tests", () => {
+    const s = miniStats(lib, yearly, []);
+    expect(s).toMatchObject({ total: 3, tried: 0, solved: 0, tests: 0, recent: [] });
+  });
+  it("counts tried and solved like the Completion tab does", () => {
+    const rows = [at("a", { score: 9, total_questions: 10, submitted_at: "2026-11-01" }), at("b", { mode: "practice", score: null, submitted_at: "2026-11-02" }), at("c", { score: 3, total_questions: 10, submitted_at: "2026-11-03" })];
+    const s = miniStats(lib, yearly, rows);
+    expect(s).toMatchObject({ total: 3, tried: 3, solved: 1, tests: 2, recent: [90, 30] });
+    const c = completionFor(lib, yearly, rows)[0];
+    expect([s.tried, s.solved]).toEqual([c?.tried, c?.solved]);
+  });
+  it("keeps only the last six Tests, oldest first", () => {
+    const rows = Array.from({ length: 9 }, (_, i) => at("a", { score: i + 1, total_questions: 10, submitted_at: `2026-11-0${i + 1}` }));
+    expect(miniStats(lib, yearly, rows).recent).toEqual([40, 50, 60, 70, 80, 90]);
+  });
+  it("the note is the score trend sentence", () => {
+    const rows = [at("a", { score: 5, total_questions: 10, submitted_at: "2026-11-01" }), at("a", { score: 8, total_questions: 10, submitted_at: "2026-11-02" })];
+    expect(miniStats(lib, yearly, rows).note).toBe(trendNote(rows));
+  });
 });

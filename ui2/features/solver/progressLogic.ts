@@ -125,3 +125,21 @@ export function splitMistakeChart(chart: Readonly<Record<string, Readonly<Record
   }
   return { chapters, unsorted };
 }
+
+export interface MiniStats {
+  /** Papers in the library, papers opened in any mode, papers solved (a Test at SOLID_AT or more), over worksheets and yearly papers together. */
+  total: number; tried: number; solved: number;
+  /** TKT-0448: percent of the last six Tests, oldest to newest. */
+  recent: number[];
+  /** Tests ever taken. */
+  tests: number;
+  note: string;
+}
+
+/** TKT-0448: the few numbers the small tracker beside the library shows. Same rules as the Completion tab and the score trend, so the two never disagree. */
+export function miniStats(lib: Library, yearly: YearlyLibrary, attempts: readonly AttemptRow[]): MiniStats {
+  const rows = completionFor(lib, yearly, attempts);
+  const sum = (k: "total" | "tried" | "solved") => rows.reduce((n, r) => n + r[k], 0);
+  const tests = attempts.filter(scored).sort((a, b) => (a.submitted_at ?? "").localeCompare(b.submitted_at ?? ""));
+  return { total: sum("total"), tried: sum("tried"), solved: sum("solved"), recent: tests.slice(-6).map((a) => Math.round(pct(a))), tests: tests.length, note: trendNote(attempts) };
+}

@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/ui2/components/Button";
 import type { SessionUser } from "@/ui2/components/RequireUser";
 import { digitizeUpload, fetchAndDigitize, getMistakes, getPaper, gradeStructured, loadLibraryBundle, loadMyAttempts, loadStructured, postAttempt, postMistakes, yearlyDigitizeMcq } from "@/ui2/queries/solver";
 import { LibraryStage, type PickedPaper } from "./LibraryStage";
 import { ProgressStage } from "./ProgressStage";
+import { MiniTracker } from "./MiniTracker";
 import { readBundle, writeBundle } from "./bundleCache";
 import { TeacherCheckStage } from "./TeacherCheckStage";
 import { QuizStage, type GradingStatus } from "./QuizStage";
@@ -350,13 +351,20 @@ export function SolverView({ user }: { user: SessionUser }) {
   }
 
   // ---- screens --------------------------------------------------------------------------------------------------
+  /** TKT-0448: the library and the mode screen share the page with a small progress card on wide screens. */
+  const withTracker = (node: ReactNode) => (
+    <div className="u2-solver-layout">
+      <div>{node}</div>
+      {mineQ.data && bundle ? <MiniTracker attempts={mineQ.data} library={bundle.library} yearly={bundle.yearly} onProgress={() => setStage("progress")} /> : null}
+    </div>
+  );
   if (stage === "progress") return <ProgressStage account={account} titles={titles} names={names} library={bundle?.library ?? {}} yearly={bundle?.yearly ?? {}} onBack={() => setStage("library")} />;
   if (stage === "teacher" && canCheck) return <TeacherCheckStage titles={titles} onBack={() => setStage("library")} />;
   if (stage === "upload") return <UploadStage busy={busy} error={error} onDigitize={(qp, ms) => void openUpload(qp, ms)} onBack={() => setStage("library")} />;
   if (stage === "results" && results) return <ResultsStage results={results} saveStatus={saveStatus} canOpenProgress={!!paper?.meta && quiz.mode === "test"} onProgress={() => setStage("progress")} onBack={() => reset()} backLabel="Back to library" pdfLinks={paper?.pdf} />;
   if (stage === "mode" && paper) {
     const count = quiz.kind === "mcq" ? mcq.length : structured.length;
-    return (
+    return withTracker(
       <div className="u2-solver">
         <h2>{paper.title}</h2>
         <p role="status" className="u2-muted">{count} question{count === 1 ? "" : "s"} ready.</p>
@@ -391,7 +399,7 @@ export function SolverView({ user }: { user: SessionUser }) {
       </>
     );
   }
-  return (
+  return withTracker(
     <LibraryStage
       bundle={bundle} loading={bundleQ.isPending} error={bundleQ.error ? `Couldn't load the library (${bundleQ.error.message}).` : error}
       canMistakes busy={busy} status={status} statuses={statuses}
