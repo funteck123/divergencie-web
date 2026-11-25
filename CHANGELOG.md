@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [Unreleased]
 
+### Tests: live check for the DC Whiteboard
+- `ui2/testing/e2e/whiteboard_live_check.py` was left uncommitted after TKT-0443; it is the live-site check that signs in with the Management API key and opens a board. Now tracked.
+
 ### Question Solver: a small progress tracker beside the library (TKT-0448, part 1 of 2, 26 Nov 2026)
 - **What:** on a screen 1360 px wide or more, the empty space to the right of the library and of the Practice or Test choice now shows a small card: papers solved out of all papers, a bar of solved and tried, the last six Test scores as small bars, the trend sentence, and a button to open the full Progress screen. A student with no attempts yet sees one line saying it fills in after the first paper. Narrower screens, tablets and phones do not show it (there is no empty side there).
 - **Same numbers as the Progress screen:** `miniStats` in `progressLogic.ts` is built on `completionFor` and `trendNote`, with a test that the two agree. 4 new tests (18 in the file).
