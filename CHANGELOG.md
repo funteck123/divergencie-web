@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [Unreleased]
 
+### Fix: controls on a phone are one height (TKT-0456, 28 Nov 2026)
+- On a touch screen only buttons grew to the 44 px touch target (Report issue, Sign out, Filter, New account), while Group by, the tabs, the people chips and the search box stayed 36 px. The shared control and chip heights are now 44 px on touch screens, so every control matches. Desktop is unchanged. Small buttons inside table rows and cards keep their row size.
+- Check: `ui2/testing/e2e/touch_heights_journey.py` (Accounts page, 411 and 360 px touch, 1280 px desktop).
+
 ### Tests: live check for the DC Whiteboard
 - `ui2/testing/e2e/whiteboard_live_check.py` was left uncommitted after TKT-0443; it is the live-site check that signs in with the Management API key and opens a board. Now tracked.
 

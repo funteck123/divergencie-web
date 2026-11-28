@@ -76,3 +76,6 @@
   }
 }
 }
+
+/* TKT-0456: on a touch screen only buttons grew to the 44 px touch target, so Group by, tabs, chips and the search box (36 px) sat beside taller ones. One height for all of them. */
+@media (pointer: coarse) { .u2, .u2-portal { --u2-control-h: var(--u2-touch-target); --u2-chip-h: var(--u2-touch-target); } }
